@@ -1,2 +1,4 @@
-# pods
-A database first code generator for Go's database/sql
+# gnorm
+GORM is Not an ORM.
+
+It is a datebase-first code generator that generates boilerplate database/sql code that matches your database's schema.
