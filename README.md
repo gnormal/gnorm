@@ -1,10 +1,11 @@
-# GNORM (WIP do not use)
+<h1 align="center">GNORM (WIP do not use)</h1>
 
-![gnorm-the-gnome-sm](https://user-images.githubusercontent.com/3185864/29083720-a7644ba2-7c37-11e7-8e3f-a9a73b7f83c5.png)
+<p align="center"><img src="https://user-images.githubusercontent.com/3185864/29083720-a7644ba2-7c37-11e7-8e3f-a9a73b7f83c5.png" /></p>
+<p align="center">GNORM is Not an ORM.</p>
 
-GNORM is Not an ORM.
+## About
 
-It is a datebase-first code generator that generates boilerplate code that matches your database's schema.
+Gnorm is a datebase-first code generator that generates boilerplate that matches your database's schema.  This allows for faster, type-safe queries than you get from a traditional ORM, without losing any of the development speed.
 
 ## Templates
 
