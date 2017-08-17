@@ -1,3 +1,3 @@
-[submodule "site/themes/dockdock"]
-path = site/themes/dockdock
+[submodule "site/themes/docdock"]
+path = site/themes/docdock
 url = git://github.com/vjeantet/hugo-theme-docdock.git
