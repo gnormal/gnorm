@@ -1,0 +1,7 @@
+baseURL = "http://gnorm.org/"
+languageCode = "en-us"
+title = "GNORM is Not an ORM"
+theme = "docdock"
+
+[params]
+themeVariant = "gray"
