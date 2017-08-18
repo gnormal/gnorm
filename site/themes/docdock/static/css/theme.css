@@ -638,6 +638,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 }
 #body-inner {
     margin-bottom: 5rem;
+    max-width: 80rem;
 }
 #chapter {
     display: flex;
@@ -1319,6 +1320,7 @@ pre .copy-to-clipboard:hover {
   }
   #body-inner {
    margin-bottom: 0px;
+   max-width: 80rem;
   }
   #footer, .footline{
         margin-top: 1px;
