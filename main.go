@@ -7,7 +7,7 @@ import (
 )
 
 //go:generate go get github.com/natefinch/gocog
-//go:generate gocog ./site/content/code/gnorm.md
+//go:generate gocog ./site/content/gnorm.md
 
 func main() {
 	os.Exit(cli.Run())
