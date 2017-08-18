@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8"> {{ partial "meta.html" . }} 
-  <link rel="shortcut icon" href="{{"images/favicon.png" | relURL}}" type="image/x-icon" />
+  <link rel="shortcut icon" href="{{"images/favicon.ico" | relURL}}" type="image/x-icon" />
   {{ .Scratch.Add "title" "" }}{{ if eq .Site.Data.titles .Title }}{{ .Scratch.Set "title" (index .Site.Data.titles .Title).title }}{{ else }}{{ .Scratch.Set "title" .Title}}{{end}}
   <title>{{ .Scratch.Get "title" }}</title>
   <link href="{{"css/nucleus.css" | relURL}}" rel="stylesheet">
