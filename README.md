@@ -15,7 +15,7 @@ RPC API that exposes the data in your database.
 
 ## Documentation
 
-[https://gnorm.org/gnorm](https://gnorm.org/gnorm)
+[https://gnorm.org](https://gnorm.org)
 
 ## Building
 

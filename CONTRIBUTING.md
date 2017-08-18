@@ -16,6 +16,13 @@ If you add a dependency to the binary, make sure to update the vendor directory 
 - All code *must* pass go-lint and go-vet.
 - Comments *should* be wrapped at column 80.
 
+## Documentation
+
+If you change the behavior of gnorm, you must update the documentation.  The
+docs are a hugo site under the ./site/ directory.  They are automatically
+deployed when your code is committed, so that your updates and the docs are
+always in sync.
+
 ## Testing
 
 Tests must use the normal go testing package and call t.Parallel() at the start
