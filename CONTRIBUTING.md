@@ -1,0 +1,54 @@
+# Contributing
+
+Of course, contributions are more than welcome. Please read these guidelines for making the process as painless as possible.
+
+## Dependency Management
+
+gnorm uses the official dep tool for managing dependencies.
+
+`go get -u github.com/golang/dep/cmd/dep`
+
+If you add a dependency to the binary, make sure to update the vendor directory by running `dep ensure` and adding the resulting files to the repo.
+
+## Formatting
+
+- All code *must* be go-formatted.
+- All code *must* pass go-lint and go-vet.
+- Comments *should* be wrapped at column 80.
+
+## Testing
+
+Tests must use the normal go testing package and call t.Parallel() at the start
+of the test.  This makes it more likely that we catch race conditions during
+tests, and don't rely on the order of tests running.
+
+Tests must pass the race detector (run `go test -race ./...`).
+
+## Git-fu
+
+Please rebase your PR onto the current master before submitting:
+
+`git rebase origin/master`
+
+Please make PRs a single commit to start.  If changes are needed, add these as additional commits to the PR (they'll be squashed when the commit is accepted).
+
+To squash a bunch of commits on a dev branch into one, do the following:
+
+use `git log` and count the number of commits you want to squash.
+
+run `git reset HEAD~N --soft` where N is __ONE LESS THAN__ the number of commits.
+
+rerun `git log` and ensure your first commit is still in the log.  
+
+If it is, add the rest of the changes to it with `git commit -a --amend` (optionally add `--no-edit` to keep the previous commit message, or `-m foo` to change the commit message).
+
+If you accidentally reset all your changes, just commit as normal with `git
+commit -a`.
+
+## Commit and PR messages
+
+Please be verbose when explaining changes in commit messages and PRs.  When writing commit messages, the first line is the title.  Make it up to ~100 characters, with a description that explains what the commit does. e.g. "adds a new foo to bar" or "converts X to use Y".
+
+Put two line returns after the title and then add the body of the commit.  Explain both the high level of what has been done, and more importantly, *why* this change is being written.
+
+Both of these apply to commits as well as PRs.

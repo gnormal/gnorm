@@ -5,14 +5,27 @@
 
 ## About
 
-Gnorm is a datebase-first code generator that generates boilerplate that matches your database's schema.  This allows for faster, type-safe queries than you get from a traditional ORM, without losing any of the development speed.
+Gnorm is a database-first code generator that generates boilerplate that matches
+your database's schema.  
 
-## Templates
+Gnorm uses templates you control, so that you can make the output look exactly
+how you want it to look.  It can be used to generate type-safe database queries
+that are faster than a traditional ORM.  It can also be used to create a REST or
+RPC API that exposes the data in your database.
 
-Gnorm reads your database schema, then runs the resulting data through templates you can customize in any way you like.  A default set of templates produces Go structs and functions using the stdlib's database/sql package as a thorough example and usable database layer for most go projects.
+## Documentation
 
-However, your templates may generate whatever code or text files you wish, based on your templates.
+[https://gnorm.org/gnorm](https://gnorm.org/gnorm)
 
-## Configuration
+## Building
 
-Configuring gnorm is as easy as creating a simple [TOML](https://github.com/toml-lang/toml) file with a few configuration values.  Gnorm takes care of the rest.
+Gnorm uses a build script called make.go.  To install gnorm, just run 
+
+`go run make.go`
+
+You can also just run `go get` or `go install`, but the output of gnorm -version
+will not reflect the build environment.
+
+## Contributing
+
+See CONTRIBUTING.md
