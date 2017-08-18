@@ -19,3 +19,7 @@ However, your templates may generate whatever code or text files you wish, based
 ## Configuration
 
 Configuring gnorm is as easy as creating a simple [TOML](https://github.com/toml-lang/toml) file with a few configuration values.  Gnorm takes care of the rest.
+
+## Code
+
+https://github.com/gnormal/gnorm

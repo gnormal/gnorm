@@ -1,4 +1,4 @@
-package database
+package database // import "gnorm.org/gnorm/database"
 
 import (
 	"database/sql"
@@ -6,7 +6,7 @@ import (
 	// import here for now
 	_ "github.com/lib/pq"
 
-	"github.com/gnormal/gnorm/database/pg"
+	"gnorm.org/gnorm/database/pg"
 )
 
 //go:generate go get github.com/xoxo-go/xoxo

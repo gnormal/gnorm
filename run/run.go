@@ -1,4 +1,4 @@
-package run
+package run // import "gnorm.org/gnorm/run"
 
 // Config holds the schema that is expected to exist in the gnorm.toml file.
 type Config struct {

@@ -9,5 +9,5 @@ draft= false
 
 <h1 align="center">GNORM</h1>
 
-<p align="center"><img src="img/gnorm.png" /></p>
+<p align="center"><img src="images/gnorm.png" /></p>
 <p align="center">GNORM is Not an ORM.</p>

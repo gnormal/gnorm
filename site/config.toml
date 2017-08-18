@@ -3,5 +3,9 @@ languageCode = "en-us"
 title = "GNORM is Not an ORM"
 theme = "docdock"
 
+
+[Permalinks]
+	code = "/:filename/"
+
 [params]
-themeVariant = "gray"
+    themeVariant = "gray"

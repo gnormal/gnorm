@@ -1,4 +1,5 @@
-package pg
+package pg // import "gnorm.org/gnorm/database/pg"
+
 
 // Note that this file is *NOT* generated. :)
 

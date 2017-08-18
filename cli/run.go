@@ -1,4 +1,4 @@
-package cli
+package cli // import "gnorm.org/gnorm/cli"
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 
-	"github.com/gnormal/gnorm/run"
+	"gnorm.org/gnorm/run"
 )
 
 // OSEnv encapsulates the environment.
