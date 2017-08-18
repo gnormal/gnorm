@@ -1,5 +1,5 @@
 +++
-title= "GNORM"
+title= "Home"
 date= 2017-08-17T13:16:04-04:00
 description = ""
 draft= false
@@ -8,7 +8,7 @@ draft= false
 
 ## About
 
-Gnorm is a datebase-first code generator that generates boilerplate that matches your database's schema.  
+Gnorm is a database-first code generator that generates boilerplate that matches your database's schema.
 
 Gnorm uses templates you control, so that you can make the output look exactly
 how you want it to look.  It can be used to generate type-safe database queries
