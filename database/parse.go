@@ -106,9 +106,9 @@ func Parse(typeMap, nullableTypeMap map[string]string, env environ.Values, conn 
 		var gotype string
 		if !userDefined {
 			if c.IsNullable {
-				gotype = typeMap[origtyp]
-			} else {
 				gotype = nullableTypeMap[origtyp]
+			} else {
+				gotype = typeMap[origtyp]
 			}
 		}
 		col := Column{
