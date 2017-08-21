@@ -49,7 +49,7 @@ func Parse{{$type}}(s string) ({{$type}}, error) {
 		return {{ if $reverseNames }}{{ .Name }}{{ $type }}{{ else }}{{ $type }}{{ .Name }}{{ end }}, nil
 {{- end }}
 	default:
-		return Unknown{{$type}}, errors.New("invalid {{ $type }}")
+		return Unknown{{$type}}, errors.New("invalid {{ $type }}: "+ s)
 	}
 }
 

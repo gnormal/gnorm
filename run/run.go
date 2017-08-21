@@ -1,9 +1,19 @@
 package run // import "gnorm.org/gnorm/run"
+import (
+	"os"
+	"text/template"
+
+	"gnorm.org/gnorm/database"
+	"gnorm.org/gnorm/environ"
+)
 
 // Config holds the schema that is expected to exist in the gnorm.toml file.
 type Config struct {
 	// ConnStr is the connection string for the database.
 	ConnStr string
+
+	NullableTypeMap map[string]string
+	TypeMap         map[string]string
 
 	// Schemas holds the names of schemas to generate code for.
 	Schemas []string
@@ -34,6 +44,26 @@ type Config struct {
 	SchemaPath string
 }
 
-func Run(cfg Config) error {
-	return nil
+func Run(env environ.Values, cfg Config) error {
+	expand := func(s string) string {
+		return env.Env[s]
+	}
+	conn := os.Expand(cfg.ConnStr, expand)
+	info, err := database.Parse(cfg.TypeMap, cfg.NullableTypeMap, env, conn, cfg.Schemas)
+	if err != nil {
+		return err
+	}
+	return summaryTpl.Execute(env.Stdout, info)
 }
+
+var summaryTpl = template.Must(template.New("summary").Parse(`
+{{- range .Schemas -}}
+{{.Name}}
+  {{range .Tables -}}
+  {{.Name}}
+    {{range .Columns -}}
+    {{.Name}}      {{.Type}}
+    {{end}}
+  {{end}}
+{{end}}
+`))

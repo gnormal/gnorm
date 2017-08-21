@@ -5,6 +5,8 @@ package pg
 
 import (
 	"database/sql"
+
+	"github.com/pkg/errors"
 )
 
 // PgUserMappingTable is the database name for the table.
@@ -55,7 +57,7 @@ func QueryOnePgUserMapping(db XODB, where WhereClause, order OrderBy) (*PgUserMa
 	pum := &PgUserMapping{}
 	err := db.QueryRow(sqlstr, where.Values()...).Scan(&pum.Oid, &pum.Umoptions, &pum.Umuser, &pum.AuthorizationIdentifier, &pum.ForeignServerCatalog, &pum.ForeignServerName, &pum.Srvowner)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	return pum, nil
 }
@@ -72,14 +74,40 @@ func QueryPgUserMapping(db XODB, where WhereClause, order OrderBy) ([]*PgUserMap
 	var vals []*PgUserMapping
 	q, err := db.Query(sqlstr, where.Values()...)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	for q.Next() {
 		pum := PgUserMapping{}
 
 		err = q.Scan(&pum.Oid, &pum.Umoptions, &pum.Umuser, &pum.AuthorizationIdentifier, &pum.ForeignServerCatalog, &pum.ForeignServerName, &pum.Srvowner)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
+		}
+
+		vals = append(vals, &pum)
+	}
+	return vals, nil
+}
+
+// AllPgUserMapping retrieves all rows from 'information_schema._pg_user_mappings' as a slice of PgUserMapping.
+func AllPgUserMapping(db XODB, order OrderBy) ([]*PgUserMapping, error) {
+	const origsqlstr = `SELECT ` +
+		`oid, umoptions, umuser, authorization_identifier, foreign_server_catalog, foreign_server_name, srvowner ` +
+		`FROM information_schema._pg_user_mappings`
+
+	sqlstr := origsqlstr + order.String()
+
+	var vals []*PgUserMapping
+	q, err := db.Query(sqlstr)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	for q.Next() {
+		pum := PgUserMapping{}
+
+		err = q.Scan(&pum.Oid, &pum.Umoptions, &pum.Umuser, &pum.AuthorizationIdentifier, &pum.ForeignServerCatalog, &pum.ForeignServerName, &pum.Srvowner)
+		if err != nil {
+			return nil, errors.WithStack(err)
 		}
 
 		vals = append(vals, &pum)

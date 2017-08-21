@@ -46,7 +46,7 @@ func QueryOne{{ .Name }}(db XODB, where WhereClause, order OrderBy) (*{{ .Name }
 	{{ $short }} := &{{ .Name }}{}
 	err := db.QueryRow(sqlstr, where.Values()...).Scan({{ fieldnames .Fields (print "&" $short) }})
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	return {{ $short }}, nil
 }
@@ -63,17 +63,44 @@ func Query{{ .Name }}(db XODB, where WhereClause, order OrderBy) ([]*{{ .Name }}
 	var vals []*{{ .Name }}
 	q, err := db.Query(sqlstr, where.Values()...)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	for q.Next() {
 		{{ $short }} := {{ .Name }}{}
 
 		err = q.Scan({{ fieldnames .Fields (print "&" $short) }})
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 
 		vals = append(vals, &{{ $short }})
 	}
 	return vals, nil
 }
+
+// All{{ .Name }} retrieves all rows from '{{ $table }}' as a slice of {{ .Name }}.
+func All{{ .Name }}(db XODB, order OrderBy) ([]*{{ .Name }}, error) {
+	const origsqlstr = `SELECT ` +
+		`{{ colnames .Fields }} ` +
+		`FROM {{ $table }}`
+
+	sqlstr := origsqlstr + order.String()
+
+	var vals []*{{ .Name }}
+	q, err := db.Query(sqlstr)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	for q.Next() {
+		{{ $short }} := {{ .Name }}{}
+
+		err = q.Scan({{ fieldnames .Fields (print "&" $short) }})
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+
+		vals = append(vals, &{{ $short }})
+	}
+	return vals, nil
+}
+

@@ -22,16 +22,17 @@ func main() {
 gocog}}} -->
 ```
 
-usage: gnorm [options]
+usage: gnorm [command]
 
 gnorm parses the gnorm.toml configuration file in the current directory and uses
 that to connect to a database. Gnorm reads the schema from the database and
 generates code according to your own templates.
 
-options:
+commands
 
-  -version 	print version info and exit
-
+  version 	print version info and exit
+  run 		generate code according to config in gnorm.toml
+  
 
 ```
 <!-- {{{end}}} -->

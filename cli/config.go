@@ -5,6 +5,9 @@ type Config struct {
 	// ConnStr is the connection string for the database.
 	ConnStr string
 
+	NullableTypeMap map[string]string
+	TypeMap         map[string]string
+
 	// Schemas holds the names of schemas to generate code for.
 	Schemas []string
 

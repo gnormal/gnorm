@@ -5,6 +5,8 @@ package pg
 
 import (
 	"database/sql"
+
+	"github.com/pkg/errors"
 )
 
 // PgForeignTableColumnTable is the database name for the table.
@@ -46,7 +48,7 @@ func QueryOnePgForeignTableColumn(db XODB, where WhereClause, order OrderBy) (*P
 	pftc := &PgForeignTableColumn{}
 	err := db.QueryRow(sqlstr, where.Values()...).Scan(&pftc.Nspname, &pftc.Relname, &pftc.Attname, &pftc.Attfdwoptions)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	return pftc, nil
 }
@@ -63,14 +65,40 @@ func QueryPgForeignTableColumn(db XODB, where WhereClause, order OrderBy) ([]*Pg
 	var vals []*PgForeignTableColumn
 	q, err := db.Query(sqlstr, where.Values()...)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	for q.Next() {
 		pftc := PgForeignTableColumn{}
 
 		err = q.Scan(&pftc.Nspname, &pftc.Relname, &pftc.Attname, &pftc.Attfdwoptions)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
+		}
+
+		vals = append(vals, &pftc)
+	}
+	return vals, nil
+}
+
+// AllPgForeignTableColumn retrieves all rows from 'information_schema._pg_foreign_table_columns' as a slice of PgForeignTableColumn.
+func AllPgForeignTableColumn(db XODB, order OrderBy) ([]*PgForeignTableColumn, error) {
+	const origsqlstr = `SELECT ` +
+		`nspname, relname, attname, attfdwoptions ` +
+		`FROM information_schema._pg_foreign_table_columns`
+
+	sqlstr := origsqlstr + order.String()
+
+	var vals []*PgForeignTableColumn
+	q, err := db.Query(sqlstr)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	for q.Next() {
+		pftc := PgForeignTableColumn{}
+
+		err = q.Scan(&pftc.Nspname, &pftc.Relname, &pftc.Attname, &pftc.Attfdwoptions)
+		if err != nil {
+			return nil, errors.WithStack(err)
 		}
 
 		vals = append(vals, &pftc)

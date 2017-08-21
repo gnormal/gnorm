@@ -5,6 +5,8 @@ package pg
 
 import (
 	"database/sql"
+
+	"github.com/pkg/errors"
 )
 
 // PgForeignServerTable is the database name for the table.
@@ -61,7 +63,7 @@ func QueryOnePgForeignServer(db XODB, where WhereClause, order OrderBy) (*PgFore
 	pfs := &PgForeignServer{}
 	err := db.QueryRow(sqlstr, where.Values()...).Scan(&pfs.Oid, &pfs.Srvoptions, &pfs.ForeignServerCatalog, &pfs.ForeignServerName, &pfs.ForeignDataWrapperCatalog, &pfs.ForeignDataWrapperName, &pfs.ForeignServerType, &pfs.ForeignServerVersion, &pfs.AuthorizationIdentifier)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	return pfs, nil
 }
@@ -78,14 +80,40 @@ func QueryPgForeignServer(db XODB, where WhereClause, order OrderBy) ([]*PgForei
 	var vals []*PgForeignServer
 	q, err := db.Query(sqlstr, where.Values()...)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	for q.Next() {
 		pfs := PgForeignServer{}
 
 		err = q.Scan(&pfs.Oid, &pfs.Srvoptions, &pfs.ForeignServerCatalog, &pfs.ForeignServerName, &pfs.ForeignDataWrapperCatalog, &pfs.ForeignDataWrapperName, &pfs.ForeignServerType, &pfs.ForeignServerVersion, &pfs.AuthorizationIdentifier)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
+		}
+
+		vals = append(vals, &pfs)
+	}
+	return vals, nil
+}
+
+// AllPgForeignServer retrieves all rows from 'information_schema._pg_foreign_servers' as a slice of PgForeignServer.
+func AllPgForeignServer(db XODB, order OrderBy) ([]*PgForeignServer, error) {
+	const origsqlstr = `SELECT ` +
+		`oid, srvoptions, foreign_server_catalog, foreign_server_name, foreign_data_wrapper_catalog, foreign_data_wrapper_name, foreign_server_type, foreign_server_version, authorization_identifier ` +
+		`FROM information_schema._pg_foreign_servers`
+
+	sqlstr := origsqlstr + order.String()
+
+	var vals []*PgForeignServer
+	q, err := db.Query(sqlstr)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	for q.Next() {
+		pfs := PgForeignServer{}
+
+		err = q.Scan(&pfs.Oid, &pfs.Srvoptions, &pfs.ForeignServerCatalog, &pfs.ForeignServerName, &pfs.ForeignDataWrapperCatalog, &pfs.ForeignDataWrapperName, &pfs.ForeignServerType, &pfs.ForeignServerVersion, &pfs.AuthorizationIdentifier)
+		if err != nil {
+			return nil, errors.WithStack(err)
 		}
 
 		vals = append(vals, &pfs)

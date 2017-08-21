@@ -14,14 +14,14 @@ func {{ .FuncName }}(db XODB{{ goparamlist .Fields true true }}) ({{ if not .Ind
 
 	err := db.QueryRow(sqlstr{{ goparamlist .Fields true false }}).Scan({{ fieldnames .Type.Fields (print "&" $short) }})
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	return &{{ $short }}, nil
 {{- else }}
 	q, err := db.Query(sqlstr{{ goparamlist .Fields true false }})
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	defer q.Close()
 
@@ -31,7 +31,7 @@ func {{ .FuncName }}(db XODB{{ goparamlist .Fields true true }}) ({{ if not .Ind
 
 		err := q.Scan({{ fieldnames .Type.Fields (print "&" $short) }})
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 
 		res = append(res, &{{ $short }})

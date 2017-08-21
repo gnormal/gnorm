@@ -36,6 +36,7 @@ aliases = [
 "/gnorm/database",
 "/gnorm/database/pg",
 "/gnorm/database/templates",
+"/gnorm/environ",
 "/gnorm/run",
 # [[[end]]]
 ]

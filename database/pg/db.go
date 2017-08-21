@@ -7,23 +7,24 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
-	"errors"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
-type SQLIdentifier = string
-type SQLIdentifierField = StringField
+type SQLIdentifier = sql.NullString
+type SQLIdentifierField = NullStringField
 
-type CardinalNumber = int
-type CardinalNumberField = IntField
+type CardinalNumber = sql.NullInt64
+type CardinalNumberField = NullInt64Field
 
-type CharacterData = string
-type CharacterDataField = StringField
+type CharacterData = sql.NullString
+type CharacterDataField = NullStringField
 
-type Oid = uint32
-type OidField = Uint32Field
+type Oid = sql.NullInt64
+type OidField = NullInt64Field
 
 type Name = string
 type NameField = StringField
@@ -43,9 +44,12 @@ func (y YesOrNo) Value() (driver.Value, error) {
 
 // Scan Unmarshalls the bytes[] back into a YesOrNo object
 func (y *YesOrNo) Scan(src interface{}) error {
+	if src == nil {
+		return nil
+	}
 	s, ok := src.(string)
 	if !ok {
-		return errors.New("expected YesOrNo to be a string")
+		return errors.Errorf("expected YesOrNo to be a string, but was %T", src)
 	}
 	switch s {
 		case "YES":

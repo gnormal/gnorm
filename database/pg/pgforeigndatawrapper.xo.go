@@ -5,6 +5,8 @@ package pg
 
 import (
 	"database/sql"
+
+	"github.com/pkg/errors"
 )
 
 // PgForeignDataWrapperTable is the database name for the table.
@@ -55,7 +57,7 @@ func QueryOnePgForeignDataWrapper(db XODB, where WhereClause, order OrderBy) (*P
 	pfdw := &PgForeignDataWrapper{}
 	err := db.QueryRow(sqlstr, where.Values()...).Scan(&pfdw.Oid, &pfdw.Fdwowner, &pfdw.Fdwoptions, &pfdw.ForeignDataWrapperCatalog, &pfdw.ForeignDataWrapperName, &pfdw.AuthorizationIdentifier, &pfdw.ForeignDataWrapperLanguage)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	return pfdw, nil
 }
@@ -72,14 +74,40 @@ func QueryPgForeignDataWrapper(db XODB, where WhereClause, order OrderBy) ([]*Pg
 	var vals []*PgForeignDataWrapper
 	q, err := db.Query(sqlstr, where.Values()...)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	for q.Next() {
 		pfdw := PgForeignDataWrapper{}
 
 		err = q.Scan(&pfdw.Oid, &pfdw.Fdwowner, &pfdw.Fdwoptions, &pfdw.ForeignDataWrapperCatalog, &pfdw.ForeignDataWrapperName, &pfdw.AuthorizationIdentifier, &pfdw.ForeignDataWrapperLanguage)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
+		}
+
+		vals = append(vals, &pfdw)
+	}
+	return vals, nil
+}
+
+// AllPgForeignDataWrapper retrieves all rows from 'information_schema._pg_foreign_data_wrappers' as a slice of PgForeignDataWrapper.
+func AllPgForeignDataWrapper(db XODB, order OrderBy) ([]*PgForeignDataWrapper, error) {
+	const origsqlstr = `SELECT ` +
+		`oid, fdwowner, fdwoptions, foreign_data_wrapper_catalog, foreign_data_wrapper_name, authorization_identifier, foreign_data_wrapper_language ` +
+		`FROM information_schema._pg_foreign_data_wrappers`
+
+	sqlstr := origsqlstr + order.String()
+
+	var vals []*PgForeignDataWrapper
+	q, err := db.Query(sqlstr)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	for q.Next() {
+		pfdw := PgForeignDataWrapper{}
+
+		err = q.Scan(&pfdw.Oid, &pfdw.Fdwowner, &pfdw.Fdwoptions, &pfdw.ForeignDataWrapperCatalog, &pfdw.ForeignDataWrapperName, &pfdw.AuthorizationIdentifier, &pfdw.ForeignDataWrapperLanguage)
+		if err != nil {
+			return nil, errors.WithStack(err)
 		}
 
 		vals = append(vals, &pfdw)

@@ -10,7 +10,6 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding/csv"
-	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -18,5 +17,6 @@ import (
 
 	"github.com/lib/pq"
 	"github.com/lib/pq/hstore"
+	"github.com/pkg/errors"
 )
 

@@ -13,14 +13,14 @@ func {{ .Name }} (db XODB{{ range .QueryParams }}, {{ .Name }} {{ .Type }}{{ end
 	var {{ $short }} {{ .Type.Name }}
 	err := db.QueryRow(sqlstr{{ range .QueryParams }}, {{ .Name }}{{ end }}).Scan({{ fieldnames .Type.Fields (print "&" $short) }})
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	return &{{ $short }}, nil
 {{- else }}
 	q, err := db.Query(sqlstr{{ range .QueryParams }}, {{ .Name }}{{ end }})
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	defer q.Close()
 
@@ -30,7 +30,7 @@ func {{ .Name }} (db XODB{{ range .QueryParams }}, {{ .Name }} {{ .Type }}{{ end
 
 		err = q.Scan({{ fieldnames .Type.Fields (print "&" $short) }})
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
 		}
 
 		res = append(res, &{{ $short }})

@@ -5,6 +5,8 @@ package pg
 
 import (
 	"database/sql"
+
+	"github.com/pkg/errors"
 )
 
 // PgForeignTableTable is the database name for the table.
@@ -55,7 +57,7 @@ func QueryOnePgForeignTable(db XODB, where WhereClause, order OrderBy) (*PgForei
 	pft := &PgForeignTable{}
 	err := db.QueryRow(sqlstr, where.Values()...).Scan(&pft.ForeignTableCatalog, &pft.ForeignTableSchema, &pft.ForeignTableName, &pft.Ftoptions, &pft.ForeignServerCatalog, &pft.ForeignServerName, &pft.AuthorizationIdentifier)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	return pft, nil
 }
@@ -72,14 +74,40 @@ func QueryPgForeignTable(db XODB, where WhereClause, order OrderBy) ([]*PgForeig
 	var vals []*PgForeignTable
 	q, err := db.Query(sqlstr, where.Values()...)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 	for q.Next() {
 		pft := PgForeignTable{}
 
 		err = q.Scan(&pft.ForeignTableCatalog, &pft.ForeignTableSchema, &pft.ForeignTableName, &pft.Ftoptions, &pft.ForeignServerCatalog, &pft.ForeignServerName, &pft.AuthorizationIdentifier)
 		if err != nil {
-			return nil, err
+			return nil, errors.WithStack(err)
+		}
+
+		vals = append(vals, &pft)
+	}
+	return vals, nil
+}
+
+// AllPgForeignTable retrieves all rows from 'information_schema._pg_foreign_tables' as a slice of PgForeignTable.
+func AllPgForeignTable(db XODB, order OrderBy) ([]*PgForeignTable, error) {
+	const origsqlstr = `SELECT ` +
+		`foreign_table_catalog, foreign_table_schema, foreign_table_name, ftoptions, foreign_server_catalog, foreign_server_name, authorization_identifier ` +
+		`FROM information_schema._pg_foreign_tables`
+
+	sqlstr := origsqlstr + order.String()
+
+	var vals []*PgForeignTable
+	q, err := db.Query(sqlstr)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	for q.Next() {
+		pft := PgForeignTable{}
+
+		err = q.Scan(&pft.ForeignTableCatalog, &pft.ForeignTableSchema, &pft.ForeignTableName, &pft.Ftoptions, &pft.ForeignServerCatalog, &pft.ForeignServerName, &pft.AuthorizationIdentifier)
+		if err != nil {
+			return nil, errors.WithStack(err)
 		}
 
 		vals = append(vals, &pft)
