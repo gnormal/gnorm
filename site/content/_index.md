@@ -4,9 +4,7 @@ date= 2017-08-17T13:16:04-04:00
 description = ""
 draft= false
 +++
-
-
-## About
+# GNORM is Not an ORM
 
 Gnorm is a database-first code generator that generates boilerplate that matches
 your database's schema.

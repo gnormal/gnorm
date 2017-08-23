@@ -167,7 +167,6 @@ h2 {
   font-size: 2.5rem;
   line-height: 110% !important;
   margin: 2.5rem 0 1.5rem 0;
-  text-transform: capitalize;
 }
 
 h3 {
@@ -245,6 +244,21 @@ font-size:smaller;
 }
 
 @font-face{font-family:"Lato";font-style:normal;font-weight:400;src:local("Lato Regular"),local("Lato-Regular"),url(../fonts/Lato-Regular.ttf) format("truetype")}@font-face{font-family:"Lato";font-style:normal;font-weight:700;src:local("Lato Bold"),local("Lato-Bold"),url(../fonts/Lato-Bold.ttf) format("truetype")}
+
+
+@font-face {
+	font-family: 'Fira Sans';
+	src: url('../fonts/FiraSans-Light.eot');
+	src: url('../fonts/FiraSans-Light.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/FiraSans-Light.woff') format('woff'),
+		url('../fonts/FiraSans-Light.ttf') format('truetype'),
+		url('../fonts/FiraSans-Light.svg#FiraSans-Light') format('svg');
+	font-weight: 300;
+	font-style: normal;
+}
+
+@font-face{font-family:"Lato";font-style:normal;font-weight:400;src:local("Lato Regular"),local("Lato-Regular"),url(../fonts/Lato-Regular.ttf) format("truetype")}@font-face{font-family:"Lato";font-style:normal;font-weight:700;src:local("Lato Bold"),local("Lato-Bold"),url(../fonts/Lato-Bold.ttf) format("truetype")}
+
 
 body {
     background: #fff;
@@ -469,7 +483,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
 #sidebar ul.topics label{
     margin-top: 10px;
     /*margin-bottom: 5px;*/
-    font-family: 'Novacento Sans Wide', 'Helvetica', 'Tahoma', 'Geneva', 'Arial', sans-serif;
+    font-family: "Fira Sans", 'Novacento Sans Wide', 'Helvetica', 'Tahoma', 'Geneva', 'Arial', sans-serif;
     font-weight:100;
     color:white;
 }
@@ -652,7 +666,7 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
     max-width: 80%;
 }
 #chapter h3 {
-    font-family: "Lato", "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+    font-family: "Fira Sans", "Lato", "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
     font-weight: 300;
     text-align: center;
 }
@@ -673,22 +687,21 @@ textarea:focus, input[type="email"]:focus, input[type="number"]:focus, input[typ
     margin: 0;
 }
 body {
-    font-family: "Lato", "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+    font-family: "Fira Sans", "Lato", "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
     font-weight: normal;
     line-height: 1.6;
     font-size: 18px !important;
 }
 h2, h3, h4, h5, h6 {
-    font-family: "Lato", "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+    font-family: "Fira Sans", "Lato", "Work Sans", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
     text-rendering: optimizeLegibility;
     color: #5e5e5e;
     font-weight: 400;
     letter-spacing: -1px;
 }
 h1 {
-    font-family: "Novacento Sans Wide", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+    font-family: "Fira Sans", "Novacento Sans Wide", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
     text-align: center;
-    text-transform: uppercase;
     color: #222;
     font-weight: 200;
 }
@@ -1273,7 +1286,7 @@ pre .copy-to-clipboard:hover {
 }
 
 #sidebar #shortcuts h3 {
-    font-family: 'Novacento Sans Wide', 'Helvetica', 'Tahoma', 'Geneva', 'Arial', sans-serif;
+    font-family: "Fira Sans", 'Novacento Sans Wide', 'Helvetica', 'Tahoma', 'Geneva', 'Arial', sans-serif;
     color: white ;   
 }
 
