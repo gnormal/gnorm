@@ -8,6 +8,12 @@
   version = "v0.3.0"
 
 [[projects]]
+  name = "github.com/inconshreveable/mousetrap"
+  packages = ["."]
+  revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
+  version = "v1.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/lib/pq"
   packages = [".","hstore","oid"]
@@ -27,19 +33,19 @@
 
 [[projects]]
   branch = "master"
-  name = "golang.org/x/tools"
-  packages = ["go/ast/astutil","go/buildutil","go/loader"]
-  revision = "84a35ef54dff3c5596983e180ec10919fc432242"
+  name = "github.com/spf13/cobra"
+  packages = ["."]
+  revision = "2df9a531813370438a4d79bfc33e21f58063ed87"
 
 [[projects]]
-  name = "npf.io/gorram"
-  packages = ["run"]
-  revision = "1c66b5c143f8c49020ef98938c4f214372e8f6c9"
-  version = "v1.0"
+  name = "github.com/spf13/pflag"
+  packages = ["."]
+  revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
+  version = "v1.0.0"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "aef12b9c25f193593f3300375622e8fdf69b2b91caf05874c2295ddfc1c801eb"
+  inputs-digest = "41f495e802e3688d968815def00737484551675ef2e03839124634da0bc9fe98"
   solver-name = "gps-cdcl"
   solver-version = 1

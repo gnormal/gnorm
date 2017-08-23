@@ -133,3 +133,21 @@ func Parse(typeMap, nullableTypeMap map[string]string, env environ.Values, conn 
 
 	return res, nil
 }
+
+/*
+
+SELECT
+DISTINCT column_name AS enum_name
+FROM information_schema.columns
+WHERE data_type = 'enum' AND table_schema = `public`
+
+
+SELECT
+e.enumlabel,
+e.enumsortorder
+FROM pg_type t
+JOIN ONLY pg_namespace n ON n.oid = t.typnamespace
+LEFT JOIN pg_enum e ON t.oid = e.enumtypid
+WHERE n.nspname = 'public' AND t.typname = 'user_role';
+
+*/

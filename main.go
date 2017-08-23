@@ -9,6 +9,8 @@ import (
 //go:generate go get github.com/natefinch/gocog
 //go:generate gocog ./site/content/gnorm.md
 //go:generate gocog ./site/content/cli/_index.md --startmark={{{ --endmark=}}}
+//go:generate gocog ./site/content/cli/commands/preview.md --startmark={{{ --endmark=}}}
+//go:generate gocog ./site/content/cli/commands/version.md --startmark={{{ --endmark=}}}
 
 func main() {
 	os.Exit(cli.Run())

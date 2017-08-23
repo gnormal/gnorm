@@ -12,9 +12,6 @@ type Config struct {
 	// ConnStr is the connection string for the database.
 	ConnStr string
 
-	NullableTypeMap map[string]string
-	TypeMap         map[string]string
-
 	// Schemas holds the names of schemas to generate code for.
 	Schemas []string
 
@@ -42,18 +39,29 @@ type Config struct {
 	// example, "schemas/{{.Schema}}/{{.Schema}}.go" would render the "public"
 	// schema to ./schemas/public/public.go
 	SchemaPath string
+
+	TypeMap map[string]string
+
+	NullableTypeMap map[string]string
 }
 
-func Run(env environ.Values, cfg Config) error {
-	expand := func(s string) string {
-		return env.Env[s]
-	}
-	conn := os.Expand(cfg.ConnStr, expand)
-	info, err := database.Parse(cfg.TypeMap, cfg.NullableTypeMap, env, conn, cfg.Schemas)
+// Preview displays the database info that woudl be passed to your template
+// based on your configuration.
+func Preview(env environ.Values, cfg Config) error {
+	info, err := dbInfo(env, cfg)
 	if err != nil {
 		return err
 	}
 	return summaryTpl.Execute(env.Stdout, info)
+}
+
+func dbInfo(env environ.Values, cfg Config) (*database.SchemaInfo, error) {
+	expand := func(s string) string {
+		return env.Env[s]
+	}
+	conn := os.Expand(cfg.ConnStr, expand)
+	return database.Parse(cfg.TypeMap, cfg.NullableTypeMap, env, conn, cfg.Schemas)
+
 }
 
 var summaryTpl = template.Must(template.New("summary").Parse(`

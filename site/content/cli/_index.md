@@ -1,8 +1,7 @@
 +++
 title= "Command Line"
 date= 2017-08-17T13:16:04-04:00
-description = ""
-draft= false
+alwaysopen=true
 +++
 
 <!-- {{{gocog
@@ -21,18 +20,20 @@ func main() {
 }
 gocog}}} -->
 ```
+A flexible code generator that turns your DB schema into
+runnable code.  See full docs at https://gnorm.org
 
-usage: gnorm [command]
+Usage:
+  gnorm [command]
 
-gnorm parses the gnorm.toml configuration file in the current directory and uses
-that to connect to a database. Gnorm reads the schema from the database and
-generates code according to your own templates.
+Available Commands:
+  help        Help about any command
+  preview     Preview the data that will be sent to your templates
+  version     Displays the version of GNORM.
 
-commands
+Flags:
+  -h, --help   help for gnorm
 
-  version 	print version info and exit
-  run 		generate code according to config in gnorm.toml
-  
-
+Use "gnorm [command] --help" for more information about a command.
 ```
 <!-- {{{end}}} -->

@@ -5,9 +5,6 @@ type Config struct {
 	// ConnStr is the connection string for the database.
 	ConnStr string
 
-	NullableTypeMap map[string]string
-	TypeMap         map[string]string
-
 	// Schemas holds the names of schemas to generate code for.
 	Schemas []string
 
@@ -35,4 +32,23 @@ type Config struct {
 	// example, "schemas/{{.Schema}}/{{.Schema}}.go" would render the "public"
 	// schema to ./schemas/public/public.go
 	SchemaPath string
+
+	// TypeMap is a mapping of database type names to replacement type names
+	// (generally types from your language for deserialization).  Types not in
+	// this list will remain in their database form.  In the data sent to your
+	// template, this is the Column.Type, and the original type is in
+	// Column.OrigType.  Note that because of the way tables in TOML work,
+	// TypeMap and NullableTypeMap must be at the end of your configuration
+	// file.
+	TypeMap map[string]string
+
+	// NullableTypeMap is a mapping of database type names to replacement type
+	// names (generally types from your language for deserialization)
+	// specifically for database columns that are nullable.  Types not in this
+	// list will remain in their database form.  In the data sent to your
+	// template, this is the Column.Type, and the original type is in
+	// Column.OrigType.   Note that because of the way tables in TOML work,
+	// TypeMap and NullableTypeMap must be at the end of your configuration
+	// file.
+	NullableTypeMap map[string]string
 }
