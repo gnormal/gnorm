@@ -1,7 +1,14 @@
 package run // import "gnorm.org/gnorm/run"
 import (
+	"bytes"
 	"os"
+	"strings"
+	"text/tabwriter"
 	"text/template"
+
+	"github.com/pkg/errors"
+
+	yaml "gopkg.in/yaml.v2"
 
 	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/environ"
@@ -47,12 +54,31 @@ type Config struct {
 
 // Preview displays the database info that woudl be passed to your template
 // based on your configuration.
-func Preview(env environ.Values, cfg Config) error {
+func Preview(env environ.Values, cfg Config, verbose bool) error {
 	info, err := dbInfo(env, cfg)
 	if err != nil {
 		return err
 	}
-	return summaryTpl.Execute(env.Stdout, info)
+	if verbose {
+		b, err := yaml.Marshal(info)
+		if err != nil {
+			return errors.WithMessage(err, "couldn't convert data to yaml")
+		}
+		_, err = env.Stdout.Write(b)
+		return err
+	}
+	t := template.Must(template.New("summary").Funcs(map[string]interface{}{
+		"makeTable": makeTable,
+	}).Parse(`
+{{- range .Schemas -}}
+{{.Name}}
+  {{range .Tables -}}
+  {{.Name}}
+{{makeTable .Columns "    " "{{.Name}}\t{{.Type}}" "ColName" "Type"}}
+  {{end}}
+{{end}}
+`))
+	return t.Execute(env.Stdout, info)
 }
 
 func dbInfo(env environ.Values, cfg Config) (*database.SchemaInfo, error) {
@@ -64,14 +90,25 @@ func dbInfo(env environ.Values, cfg Config) (*database.SchemaInfo, error) {
 
 }
 
-var summaryTpl = template.Must(template.New("summary").Parse(`
-{{- range .Schemas -}}
-{{.Name}}
-  {{range .Tables -}}
-  {{.Name}}
-    {{range .Columns -}}
-    {{.Name}}      {{.Type}}
-    {{end}}
-  {{end}}
-{{end}}
-`))
+func makeTable(data interface{}, prefix, templateStr string, columnTitles ...string) (string, error) {
+	t, err := template.New("table").Parse("{{range .}}" + prefix + templateStr + "\n{{end}}")
+	if err != nil {
+		return "", errors.WithMessage(err, "failed to parse table template")
+	}
+	buf := &bytes.Buffer{}
+	w := tabwriter.NewWriter(buf, 0, 4, 1, byte(' '), 0)
+	if len(columnTitles) > 0 {
+		columnTitles[0] = prefix + columnTitles[0]
+	}
+	_, err = w.Write([]byte(strings.Join(columnTitles, "\t") + "\n"))
+	if err != nil {
+		return "", err
+	}
+	if err := t.Execute(w, data); err != nil {
+		return "", errors.WithMessage(err, "failed to run table template")
+	}
+	if err := w.Flush(); err != nil {
+		return "", err
+	}
+	return buf.String(), nil
+}

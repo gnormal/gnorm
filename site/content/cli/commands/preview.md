@@ -33,6 +33,8 @@ Usage:
   gnorm preview [flags]
 
 Flags:
-  -h, --help   help for preview
+      --config string   relative path to gnorm config file (default "gnorm.toml")
+  -h, --help            help for preview
+      --verbose         show a complete version of the output
 ```
 <!-- {{{end}}} -->

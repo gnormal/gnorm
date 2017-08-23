@@ -27,7 +27,10 @@ runnable code.  See full docs at https://gnorm.org`[1:],
 	}
 	rootCmd.SetArgs(env.Args)
 	rootCmd.SetOutput(env.Stderr)
-	rootCmd.AddCommand(&cobra.Command{
+
+	var cfgFile string
+	var verbose bool
+	preview := &cobra.Command{
 		Use:   "preview",
 		Short: "Preview the data that will be sent to your templates",
 		Long: `
@@ -35,18 +38,22 @@ Reads your gnorm.toml file and connects to your database, translating the schema
 just as it would be during a full run.  It is then printed out in an
 easy-to-read format.`[1:],
 		Run: func(cmd *cobra.Command, args []string) {
-			cfg, err := parse(env)
+			cfg, err := parse(env, cfgFile)
 			if err != nil {
 				env.Log.Println(err)
 				code = 2
 				return
 			}
-			if err := run.Preview(env, run.Config(cfg)); err != nil {
+			if err := run.Preview(env, run.Config(cfg), verbose); err != nil {
 				env.Log.Println(err)
 				code = 1
 			}
 		},
-	})
+	}
+	preview.Flags().StringVar(&cfgFile, "config", "gnorm.toml", "relative path to gnorm config file")
+	preview.Flags().BoolVar(&verbose, "verbose", false, "show a complete version of the output")
+
+	rootCmd.AddCommand(preview)
 	rootCmd.AddCommand(&cobra.Command{
 		Use:   "version",
 		Short: "Displays the version of GNORM.",
@@ -64,9 +71,9 @@ Shows the build date and commit hash used to build this binary.`[1:],
 }
 
 // parse reads the configuration file and returns a gnorm config value.
-func parse(env environ.Values) (Config, error) {
+func parse(env environ.Values, file string) (Config, error) {
 	c := Config{}
-	m, err := toml.DecodeFile("gnorm.toml", &c)
+	m, err := toml.DecodeFile(file, &c)
 	if err != nil {
 		return Config{}, errors.WithMessage(err, "error parsing config file")
 	}
