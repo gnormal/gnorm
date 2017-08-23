@@ -30,7 +30,8 @@ on your templates.
 
 Configuring gnorm is as easy as creating a simple
 [TOML](https://github.com/toml-lang/toml) file with a few configuration values.
-Gnorm takes care of the rest.  See details about configuration [here]("https://gnorm.org/cli/configuration").
+Gnorm takes care of the rest.  See details about configuration
+[here](https://gnorm.org/cli/configuration).
 
 ## Code
 
