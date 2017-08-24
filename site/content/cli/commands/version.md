@@ -34,3 +34,11 @@ Flags:
   -h, --help   help for version
 ```
 <!-- {{{end}}} -->
+
+Example output:
+
+```
+$ gnorm version
+built at: 2017-08-23T21:55:35-04:00
+commit hash: 14b58c2e4904b13e8526d95486450617c5e0c4f6
+```

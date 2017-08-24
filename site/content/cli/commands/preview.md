@@ -39,3 +39,56 @@ Flags:
       --yaml            show output in yaml instead of tabular
 ```
 <!-- {{{end}}} -->
+
+Example output:
+
+<!-- {{{gocog
+package main
+import (
+    "fmt"
+    "os"
+    "gnorm.org/gnorm/cli"
+    "gnorm.org/gnorm/environ"
+)
+func main() {
+    fmt.Println("```")
+    fmt.Println("$ gnorm preview")
+    os.Stderr = os.Stdout
+    x := cli.ParseAndRun(environ.Values{
+        Stderr: os.Stdout,
+        Stdout: os.Stdout,
+        Args: []string{"preview"},
+    })
+    fmt.Println("```")
+    os.Exit(x)
+}
+gocog}}} -->
+```
+$ gnorm preview
+Schema: public
+
+Table: public.authors
++--------+-----------+
+| COLUMN |   TYPE    |
++--------+-----------+
+| id     | uuid.UUID |
+| name   | string    |
++--------+-----------+
+
+
+Table: public.books
++-----------+-----------+
+|  COLUMN   |   TYPE    |
++-----------+-----------+
+| id        | int       |
+| author_id | uuid.UUID |
+| isbn      | string    |
+| booktype  |           |
+| title     | string    |
+| year      | int       |
+| available | time.Time |
+| tags      |           |
++-----------+-----------+
+
+```
+<!-- {{{end}}} -->

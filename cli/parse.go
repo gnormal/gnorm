@@ -1,6 +1,7 @@
 package cli // import "gnorm.org/gnorm/cli"
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 
@@ -65,7 +66,7 @@ easy-to-read format.`[1:],
 		Long: `
 Shows the build date and commit hash used to build this binary.`[1:],
 		Run: func(cmd *cobra.Command, args []string) {
-			env.Log.Printf("built at: %s\ncommit hash: %s", timestamp, commitHash)
+			fmt.Fprintf(env.Stdout, "built at: %s\ncommit hash: %s", timestamp, commitHash)
 		},
 	})
 	if verbose {
