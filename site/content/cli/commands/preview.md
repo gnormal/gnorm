@@ -35,6 +35,7 @@ Usage:
 Flags:
       --config string   relative path to gnorm config file (default "gnorm.toml")
   -h, --help            help for preview
-      --verbose         show a complete version of the output
+      --verbose         show debugging output
+      --yaml            show output in yaml instead of tabular
 ```
 <!-- {{{end}}} -->

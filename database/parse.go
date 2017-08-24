@@ -122,7 +122,7 @@ func Parse(typeMap, nullableTypeMap map[string]string, env environ.Values, conn 
 		schema[c.TableName.String] = append(schema[c.TableName.String], col)
 	}
 
-	res := &SchemaInfo{Schemas: make([]Schema, len(schemas))}
+	res := &SchemaInfo{Schemas: make([]Schema, 0, len(schemas))}
 	for name, tables := range schemas {
 		s := Schema{Name: name}
 		for tname, columns := range tables {

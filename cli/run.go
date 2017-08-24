@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"log"
 	"os"
 	"strings"
 
@@ -17,7 +16,6 @@ func Run() int {
 		Stdout: os.Stdout,
 		Stdin:  os.Stdin,
 		Env:    getenv(os.Environ()),
-		Log:    log.New(os.Stderr, "", 0),
 	}
 	copy(env.Args, os.Args[1:])
 	return ParseAndRun(env)

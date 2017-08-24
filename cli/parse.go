@@ -1,6 +1,9 @@
 package cli // import "gnorm.org/gnorm/cli"
 
 import (
+	"io/ioutil"
+	"log"
+
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -29,6 +32,7 @@ runnable code.  See full docs at https://gnorm.org`[1:],
 	rootCmd.SetOutput(env.Stderr)
 
 	var cfgFile string
+	var useYaml bool
 	var verbose bool
 	preview := &cobra.Command{
 		Use:   "preview",
@@ -44,14 +48,15 @@ easy-to-read format.`[1:],
 				code = 2
 				return
 			}
-			if err := run.Preview(env, run.Config(cfg), verbose); err != nil {
+			if err := run.Preview(env, run.Config(cfg), useYaml, verbose); err != nil {
 				env.Log.Println(err)
 				code = 1
 			}
 		},
 	}
 	preview.Flags().StringVar(&cfgFile, "config", "gnorm.toml", "relative path to gnorm config file")
-	preview.Flags().BoolVar(&verbose, "verbose", false, "show a complete version of the output")
+	preview.Flags().BoolVar(&useYaml, "yaml", false, "show output in yaml instead of tabular")
+	preview.Flags().BoolVar(&verbose, "verbose", false, "show debugging output")
 
 	rootCmd.AddCommand(preview)
 	rootCmd.AddCommand(&cobra.Command{
@@ -63,6 +68,11 @@ Shows the build date and commit hash used to build this binary.`[1:],
 			env.Log.Printf("built at: %s\ncommit hash: %s", timestamp, commitHash)
 		},
 	})
+	if verbose {
+		env.Log = log.New(env.Stderr, "", 0)
+	} else {
+		env.Log = log.New(ioutil.Discard, "", 0)
+	}
 	if err := rootCmd.Execute(); err != nil {
 		// cobra outputs the error itself.
 		return 2
