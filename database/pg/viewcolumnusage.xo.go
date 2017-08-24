@@ -12,13 +12,13 @@ const ViewColumnUsageTable = "information_schema.view_column_usage"
 
 // ViewColumnUsage represents a row from 'information_schema.view_column_usage'.
 type ViewColumnUsage struct {
-	ViewCatalog  SQLIdentifier `json:"view_catalog"`  // view_catalog
-	ViewSchema   SQLIdentifier `json:"view_schema"`   // view_schema
-	ViewName     SQLIdentifier `json:"view_name"`     // view_name
-	TableCatalog SQLIdentifier `json:"table_catalog"` // table_catalog
-	TableSchema  SQLIdentifier `json:"table_schema"`  // table_schema
-	TableName    SQLIdentifier `json:"table_name"`    // table_name
-	ColumnName   SQLIdentifier `json:"column_name"`   // column_name
+	ViewCatalog  SQLIdentifier `yaml:"view_catalog,omitempty"`  // view_catalog
+	ViewSchema   SQLIdentifier `yaml:"view_schema,omitempty"`   // view_schema
+	ViewName     SQLIdentifier `yaml:"view_name,omitempty"`     // view_name
+	TableCatalog SQLIdentifier `yaml:"table_catalog,omitempty"` // table_catalog
+	TableSchema  SQLIdentifier `yaml:"table_schema,omitempty"`  // table_schema
+	TableName    SQLIdentifier `yaml:"table_name,omitempty"`    // table_name
+	ColumnName   SQLIdentifier `yaml:"column_name,omitempty"`   // column_name
 }
 
 // Constants defining each column in the table.

@@ -12,13 +12,13 @@ const TriggeredUpdateColumnTable = "information_schema.triggered_update_columns"
 
 // TriggeredUpdateColumn represents a row from 'information_schema.triggered_update_columns'.
 type TriggeredUpdateColumn struct {
-	TriggerCatalog     SQLIdentifier `json:"trigger_catalog"`      // trigger_catalog
-	TriggerSchema      SQLIdentifier `json:"trigger_schema"`       // trigger_schema
-	TriggerName        SQLIdentifier `json:"trigger_name"`         // trigger_name
-	EventObjectCatalog SQLIdentifier `json:"event_object_catalog"` // event_object_catalog
-	EventObjectSchema  SQLIdentifier `json:"event_object_schema"`  // event_object_schema
-	EventObjectTable   SQLIdentifier `json:"event_object_table"`   // event_object_table
-	EventObjectColumn  SQLIdentifier `json:"event_object_column"`  // event_object_column
+	TriggerCatalog     SQLIdentifier `yaml:"trigger_catalog,omitempty"`      // trigger_catalog
+	TriggerSchema      SQLIdentifier `yaml:"trigger_schema,omitempty"`       // trigger_schema
+	TriggerName        SQLIdentifier `yaml:"trigger_name,omitempty"`         // trigger_name
+	EventObjectCatalog SQLIdentifier `yaml:"event_object_catalog,omitempty"` // event_object_catalog
+	EventObjectSchema  SQLIdentifier `yaml:"event_object_schema,omitempty"`  // event_object_schema
+	EventObjectTable   SQLIdentifier `yaml:"event_object_table,omitempty"`   // event_object_table
+	EventObjectColumn  SQLIdentifier `yaml:"event_object_column,omitempty"`  // event_object_column
 }
 
 // Constants defining each column in the table.

@@ -12,11 +12,11 @@ const ForeignTableTable = "information_schema.foreign_tables"
 
 // ForeignTable represents a row from 'information_schema.foreign_tables'.
 type ForeignTable struct {
-	ForeignTableCatalog  SQLIdentifier `json:"foreign_table_catalog"`  // foreign_table_catalog
-	ForeignTableSchema   SQLIdentifier `json:"foreign_table_schema"`   // foreign_table_schema
-	ForeignTableName     SQLIdentifier `json:"foreign_table_name"`     // foreign_table_name
-	ForeignServerCatalog SQLIdentifier `json:"foreign_server_catalog"` // foreign_server_catalog
-	ForeignServerName    SQLIdentifier `json:"foreign_server_name"`    // foreign_server_name
+	ForeignTableCatalog  SQLIdentifier `yaml:"foreign_table_catalog,omitempty"`  // foreign_table_catalog
+	ForeignTableSchema   SQLIdentifier `yaml:"foreign_table_schema,omitempty"`   // foreign_table_schema
+	ForeignTableName     SQLIdentifier `yaml:"foreign_table_name,omitempty"`     // foreign_table_name
+	ForeignServerCatalog SQLIdentifier `yaml:"foreign_server_catalog,omitempty"` // foreign_server_catalog
+	ForeignServerName    SQLIdentifier `yaml:"foreign_server_name,omitempty"`    // foreign_server_name
 }
 
 // Constants defining each column in the table.

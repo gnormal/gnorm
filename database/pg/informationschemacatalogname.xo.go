@@ -12,7 +12,7 @@ const InformationSchemaCatalogNameTable = "information_schema.information_schema
 
 // InformationSchemaCatalogName represents a row from 'information_schema.information_schema_catalog_name'.
 type InformationSchemaCatalogName struct {
-	CatalogName SQLIdentifier `json:"catalog_name"` // catalog_name
+	CatalogName SQLIdentifier `yaml:"catalog_name,omitempty"` // catalog_name
 }
 
 // Constants defining each column in the table.

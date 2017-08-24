@@ -12,23 +12,23 @@ const TriggerTable = "information_schema.triggers"
 
 // Trigger represents a row from 'information_schema.triggers'.
 type Trigger struct {
-	TriggerCatalog          SQLIdentifier  `json:"trigger_catalog"`            // trigger_catalog
-	TriggerSchema           SQLIdentifier  `json:"trigger_schema"`             // trigger_schema
-	TriggerName             SQLIdentifier  `json:"trigger_name"`               // trigger_name
-	EventManipulation       CharacterData  `json:"event_manipulation"`         // event_manipulation
-	EventObjectCatalog      SQLIdentifier  `json:"event_object_catalog"`       // event_object_catalog
-	EventObjectSchema       SQLIdentifier  `json:"event_object_schema"`        // event_object_schema
-	EventObjectTable        SQLIdentifier  `json:"event_object_table"`         // event_object_table
-	ActionOrder             CardinalNumber `json:"action_order"`               // action_order
-	ActionCondition         CharacterData  `json:"action_condition"`           // action_condition
-	ActionStatement         CharacterData  `json:"action_statement"`           // action_statement
-	ActionOrientation       CharacterData  `json:"action_orientation"`         // action_orientation
-	ActionTiming            CharacterData  `json:"action_timing"`              // action_timing
-	ActionReferenceOldTable SQLIdentifier  `json:"action_reference_old_table"` // action_reference_old_table
-	ActionReferenceNewTable SQLIdentifier  `json:"action_reference_new_table"` // action_reference_new_table
-	ActionReferenceOldRow   SQLIdentifier  `json:"action_reference_old_row"`   // action_reference_old_row
-	ActionReferenceNewRow   SQLIdentifier  `json:"action_reference_new_row"`   // action_reference_new_row
-	Created                 TimeStamp      `json:"created"`                    // created
+	TriggerCatalog          SQLIdentifier  `yaml:"trigger_catalog,omitempty"`            // trigger_catalog
+	TriggerSchema           SQLIdentifier  `yaml:"trigger_schema,omitempty"`             // trigger_schema
+	TriggerName             SQLIdentifier  `yaml:"trigger_name,omitempty"`               // trigger_name
+	EventManipulation       CharacterData  `yaml:"event_manipulation,omitempty"`         // event_manipulation
+	EventObjectCatalog      SQLIdentifier  `yaml:"event_object_catalog,omitempty"`       // event_object_catalog
+	EventObjectSchema       SQLIdentifier  `yaml:"event_object_schema,omitempty"`        // event_object_schema
+	EventObjectTable        SQLIdentifier  `yaml:"event_object_table,omitempty"`         // event_object_table
+	ActionOrder             CardinalNumber `yaml:"action_order,omitempty"`               // action_order
+	ActionCondition         CharacterData  `yaml:"action_condition,omitempty"`           // action_condition
+	ActionStatement         CharacterData  `yaml:"action_statement,omitempty"`           // action_statement
+	ActionOrientation       CharacterData  `yaml:"action_orientation,omitempty"`         // action_orientation
+	ActionTiming            CharacterData  `yaml:"action_timing,omitempty"`              // action_timing
+	ActionReferenceOldTable SQLIdentifier  `yaml:"action_reference_old_table,omitempty"` // action_reference_old_table
+	ActionReferenceNewTable SQLIdentifier  `yaml:"action_reference_new_table,omitempty"` // action_reference_new_table
+	ActionReferenceOldRow   SQLIdentifier  `yaml:"action_reference_old_row,omitempty"`   // action_reference_old_row
+	ActionReferenceNewRow   SQLIdentifier  `yaml:"action_reference_new_row,omitempty"`   // action_reference_new_row
+	Created                 TimeStamp      `yaml:"created,omitempty"`                    // created
 }
 
 // Constants defining each column in the table.

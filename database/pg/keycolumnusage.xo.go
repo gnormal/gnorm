@@ -12,15 +12,15 @@ const KeyColumnUsageTable = "information_schema.key_column_usage"
 
 // KeyColumnUsage represents a row from 'information_schema.key_column_usage'.
 type KeyColumnUsage struct {
-	ConstraintCatalog          SQLIdentifier  `json:"constraint_catalog"`            // constraint_catalog
-	ConstraintSchema           SQLIdentifier  `json:"constraint_schema"`             // constraint_schema
-	ConstraintName             SQLIdentifier  `json:"constraint_name"`               // constraint_name
-	TableCatalog               SQLIdentifier  `json:"table_catalog"`                 // table_catalog
-	TableSchema                SQLIdentifier  `json:"table_schema"`                  // table_schema
-	TableName                  SQLIdentifier  `json:"table_name"`                    // table_name
-	ColumnName                 SQLIdentifier  `json:"column_name"`                   // column_name
-	OrdinalPosition            CardinalNumber `json:"ordinal_position"`              // ordinal_position
-	PositionInUniqueConstraint CardinalNumber `json:"position_in_unique_constraint"` // position_in_unique_constraint
+	ConstraintCatalog          SQLIdentifier  `yaml:"constraint_catalog,omitempty"`            // constraint_catalog
+	ConstraintSchema           SQLIdentifier  `yaml:"constraint_schema,omitempty"`             // constraint_schema
+	ConstraintName             SQLIdentifier  `yaml:"constraint_name,omitempty"`               // constraint_name
+	TableCatalog               SQLIdentifier  `yaml:"table_catalog,omitempty"`                 // table_catalog
+	TableSchema                SQLIdentifier  `yaml:"table_schema,omitempty"`                  // table_schema
+	TableName                  SQLIdentifier  `yaml:"table_name,omitempty"`                    // table_name
+	ColumnName                 SQLIdentifier  `yaml:"column_name,omitempty"`                   // column_name
+	OrdinalPosition            CardinalNumber `yaml:"ordinal_position,omitempty"`              // ordinal_position
+	PositionInUniqueConstraint CardinalNumber `yaml:"position_in_unique_constraint,omitempty"` // position_in_unique_constraint
 }
 
 // Constants defining each column in the table.

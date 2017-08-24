@@ -12,13 +12,13 @@ const UdtPrivilegeTable = "information_schema.udt_privileges"
 
 // UdtPrivilege represents a row from 'information_schema.udt_privileges'.
 type UdtPrivilege struct {
-	Grantor       SQLIdentifier `json:"grantor"`        // grantor
-	Grantee       SQLIdentifier `json:"grantee"`        // grantee
-	UdtCatalog    SQLIdentifier `json:"udt_catalog"`    // udt_catalog
-	UdtSchema     SQLIdentifier `json:"udt_schema"`     // udt_schema
-	UdtName       SQLIdentifier `json:"udt_name"`       // udt_name
-	PrivilegeType CharacterData `json:"privilege_type"` // privilege_type
-	IsGrantable   YesOrNo       `json:"is_grantable"`   // is_grantable
+	Grantor       SQLIdentifier `yaml:"grantor,omitempty"`        // grantor
+	Grantee       SQLIdentifier `yaml:"grantee,omitempty"`        // grantee
+	UdtCatalog    SQLIdentifier `yaml:"udt_catalog,omitempty"`    // udt_catalog
+	UdtSchema     SQLIdentifier `yaml:"udt_schema,omitempty"`     // udt_schema
+	UdtName       SQLIdentifier `yaml:"udt_name,omitempty"`       // udt_name
+	PrivilegeType CharacterData `yaml:"privilege_type,omitempty"` // privilege_type
+	IsGrantable   YesOrNo       `yaml:"is_grantable,omitempty"`   // is_grantable
 }
 
 // Constants defining each column in the table.

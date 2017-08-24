@@ -12,12 +12,12 @@ const ColumnOptionTable = "information_schema.column_options"
 
 // ColumnOption represents a row from 'information_schema.column_options'.
 type ColumnOption struct {
-	TableCatalog SQLIdentifier `json:"table_catalog"` // table_catalog
-	TableSchema  SQLIdentifier `json:"table_schema"`  // table_schema
-	TableName    SQLIdentifier `json:"table_name"`    // table_name
-	ColumnName   SQLIdentifier `json:"column_name"`   // column_name
-	OptionName   SQLIdentifier `json:"option_name"`   // option_name
-	OptionValue  CharacterData `json:"option_value"`  // option_value
+	TableCatalog SQLIdentifier `yaml:"table_catalog,omitempty"` // table_catalog
+	TableSchema  SQLIdentifier `yaml:"table_schema,omitempty"`  // table_schema
+	TableName    SQLIdentifier `yaml:"table_name,omitempty"`    // table_name
+	ColumnName   SQLIdentifier `yaml:"column_name,omitempty"`   // column_name
+	OptionName   SQLIdentifier `yaml:"option_name,omitempty"`   // option_name
+	OptionValue  CharacterData `yaml:"option_value,omitempty"`  // option_value
 }
 
 // Constants defining each column in the table.

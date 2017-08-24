@@ -12,35 +12,35 @@ const ElementTypeTable = "information_schema.element_types"
 
 // ElementType represents a row from 'information_schema.element_types'.
 type ElementType struct {
-	ObjectCatalog            SQLIdentifier  `json:"object_catalog"`             // object_catalog
-	ObjectSchema             SQLIdentifier  `json:"object_schema"`              // object_schema
-	ObjectName               SQLIdentifier  `json:"object_name"`                // object_name
-	ObjectType               CharacterData  `json:"object_type"`                // object_type
-	CollectionTypeIdentifier SQLIdentifier  `json:"collection_type_identifier"` // collection_type_identifier
-	DataType                 CharacterData  `json:"data_type"`                  // data_type
-	CharacterMaximumLength   CardinalNumber `json:"character_maximum_length"`   // character_maximum_length
-	CharacterOctetLength     CardinalNumber `json:"character_octet_length"`     // character_octet_length
-	CharacterSetCatalog      SQLIdentifier  `json:"character_set_catalog"`      // character_set_catalog
-	CharacterSetSchema       SQLIdentifier  `json:"character_set_schema"`       // character_set_schema
-	CharacterSetName         SQLIdentifier  `json:"character_set_name"`         // character_set_name
-	CollationCatalog         SQLIdentifier  `json:"collation_catalog"`          // collation_catalog
-	CollationSchema          SQLIdentifier  `json:"collation_schema"`           // collation_schema
-	CollationName            SQLIdentifier  `json:"collation_name"`             // collation_name
-	NumericPrecision         CardinalNumber `json:"numeric_precision"`          // numeric_precision
-	NumericPrecisionRadix    CardinalNumber `json:"numeric_precision_radix"`    // numeric_precision_radix
-	NumericScale             CardinalNumber `json:"numeric_scale"`              // numeric_scale
-	DatetimePrecision        CardinalNumber `json:"datetime_precision"`         // datetime_precision
-	IntervalType             CharacterData  `json:"interval_type"`              // interval_type
-	IntervalPrecision        CardinalNumber `json:"interval_precision"`         // interval_precision
-	DomainDefault            CharacterData  `json:"domain_default"`             // domain_default
-	UdtCatalog               SQLIdentifier  `json:"udt_catalog"`                // udt_catalog
-	UdtSchema                SQLIdentifier  `json:"udt_schema"`                 // udt_schema
-	UdtName                  SQLIdentifier  `json:"udt_name"`                   // udt_name
-	ScopeCatalog             SQLIdentifier  `json:"scope_catalog"`              // scope_catalog
-	ScopeSchema              SQLIdentifier  `json:"scope_schema"`               // scope_schema
-	ScopeName                SQLIdentifier  `json:"scope_name"`                 // scope_name
-	MaximumCardinality       CardinalNumber `json:"maximum_cardinality"`        // maximum_cardinality
-	DtdIdentifier            SQLIdentifier  `json:"dtd_identifier"`             // dtd_identifier
+	ObjectCatalog            SQLIdentifier  `yaml:"object_catalog,omitempty"`             // object_catalog
+	ObjectSchema             SQLIdentifier  `yaml:"object_schema,omitempty"`              // object_schema
+	ObjectName               SQLIdentifier  `yaml:"object_name,omitempty"`                // object_name
+	ObjectType               CharacterData  `yaml:"object_type,omitempty"`                // object_type
+	CollectionTypeIdentifier SQLIdentifier  `yaml:"collection_type_identifier,omitempty"` // collection_type_identifier
+	DataType                 CharacterData  `yaml:"data_type,omitempty"`                  // data_type
+	CharacterMaximumLength   CardinalNumber `yaml:"character_maximum_length,omitempty"`   // character_maximum_length
+	CharacterOctetLength     CardinalNumber `yaml:"character_octet_length,omitempty"`     // character_octet_length
+	CharacterSetCatalog      SQLIdentifier  `yaml:"character_set_catalog,omitempty"`      // character_set_catalog
+	CharacterSetSchema       SQLIdentifier  `yaml:"character_set_schema,omitempty"`       // character_set_schema
+	CharacterSetName         SQLIdentifier  `yaml:"character_set_name,omitempty"`         // character_set_name
+	CollationCatalog         SQLIdentifier  `yaml:"collation_catalog,omitempty"`          // collation_catalog
+	CollationSchema          SQLIdentifier  `yaml:"collation_schema,omitempty"`           // collation_schema
+	CollationName            SQLIdentifier  `yaml:"collation_name,omitempty"`             // collation_name
+	NumericPrecision         CardinalNumber `yaml:"numeric_precision,omitempty"`          // numeric_precision
+	NumericPrecisionRadix    CardinalNumber `yaml:"numeric_precision_radix,omitempty"`    // numeric_precision_radix
+	NumericScale             CardinalNumber `yaml:"numeric_scale,omitempty"`              // numeric_scale
+	DatetimePrecision        CardinalNumber `yaml:"datetime_precision,omitempty"`         // datetime_precision
+	IntervalType             CharacterData  `yaml:"interval_type,omitempty"`              // interval_type
+	IntervalPrecision        CardinalNumber `yaml:"interval_precision,omitempty"`         // interval_precision
+	DomainDefault            CharacterData  `yaml:"domain_default,omitempty"`             // domain_default
+	UdtCatalog               SQLIdentifier  `yaml:"udt_catalog,omitempty"`                // udt_catalog
+	UdtSchema                SQLIdentifier  `yaml:"udt_schema,omitempty"`                 // udt_schema
+	UdtName                  SQLIdentifier  `yaml:"udt_name,omitempty"`                   // udt_name
+	ScopeCatalog             SQLIdentifier  `yaml:"scope_catalog,omitempty"`              // scope_catalog
+	ScopeSchema              SQLIdentifier  `yaml:"scope_schema,omitempty"`               // scope_schema
+	ScopeName                SQLIdentifier  `yaml:"scope_name,omitempty"`                 // scope_name
+	MaximumCardinality       CardinalNumber `yaml:"maximum_cardinality,omitempty"`        // maximum_cardinality
+	DtdIdentifier            SQLIdentifier  `yaml:"dtd_identifier,omitempty"`             // dtd_identifier
 }
 
 // Constants defining each column in the table.

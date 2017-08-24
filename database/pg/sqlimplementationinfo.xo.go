@@ -12,11 +12,11 @@ const SQLImplementationInfoTable = "information_schema.sql_implementation_info"
 
 // SQLImplementationInfo represents a row from 'information_schema.sql_implementation_info'.
 type SQLImplementationInfo struct {
-	ImplementationInfoID   CharacterData  `json:"implementation_info_id"`   // implementation_info_id
-	ImplementationInfoName CharacterData  `json:"implementation_info_name"` // implementation_info_name
-	IntegerValue           CardinalNumber `json:"integer_value"`            // integer_value
-	CharacterValue         CharacterData  `json:"character_value"`          // character_value
-	Comments               CharacterData  `json:"comments"`                 // comments
+	ImplementationInfoID   CharacterData  `yaml:"implementation_info_id,omitempty"`   // implementation_info_id
+	ImplementationInfoName CharacterData  `yaml:"implementation_info_name,omitempty"` // implementation_info_name
+	IntegerValue           CardinalNumber `yaml:"integer_value,omitempty"`            // integer_value
+	CharacterValue         CharacterData  `yaml:"character_value,omitempty"`          // character_value
+	Comments               CharacterData  `yaml:"comments,omitempty"`                 // comments
 }
 
 // Constants defining each column in the table.

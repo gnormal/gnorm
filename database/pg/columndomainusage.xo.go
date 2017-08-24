@@ -12,13 +12,13 @@ const ColumnDomainUsageTable = "information_schema.column_domain_usage"
 
 // ColumnDomainUsage represents a row from 'information_schema.column_domain_usage'.
 type ColumnDomainUsage struct {
-	DomainCatalog SQLIdentifier `json:"domain_catalog"` // domain_catalog
-	DomainSchema  SQLIdentifier `json:"domain_schema"`  // domain_schema
-	DomainName    SQLIdentifier `json:"domain_name"`    // domain_name
-	TableCatalog  SQLIdentifier `json:"table_catalog"`  // table_catalog
-	TableSchema   SQLIdentifier `json:"table_schema"`   // table_schema
-	TableName     SQLIdentifier `json:"table_name"`     // table_name
-	ColumnName    SQLIdentifier `json:"column_name"`    // column_name
+	DomainCatalog SQLIdentifier `yaml:"domain_catalog,omitempty"` // domain_catalog
+	DomainSchema  SQLIdentifier `yaml:"domain_schema,omitempty"`  // domain_schema
+	DomainName    SQLIdentifier `yaml:"domain_name,omitempty"`    // domain_name
+	TableCatalog  SQLIdentifier `yaml:"table_catalog,omitempty"`  // table_catalog
+	TableSchema   SQLIdentifier `yaml:"table_schema,omitempty"`   // table_schema
+	TableName     SQLIdentifier `yaml:"table_name,omitempty"`     // table_name
+	ColumnName    SQLIdentifier `yaml:"column_name,omitempty"`    // column_name
 }
 
 // Constants defining each column in the table.

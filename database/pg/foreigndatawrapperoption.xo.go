@@ -12,10 +12,10 @@ const ForeignDataWrapperOptionTable = "information_schema.foreign_data_wrapper_o
 
 // ForeignDataWrapperOption represents a row from 'information_schema.foreign_data_wrapper_options'.
 type ForeignDataWrapperOption struct {
-	ForeignDataWrapperCatalog SQLIdentifier `json:"foreign_data_wrapper_catalog"` // foreign_data_wrapper_catalog
-	ForeignDataWrapperName    SQLIdentifier `json:"foreign_data_wrapper_name"`    // foreign_data_wrapper_name
-	OptionName                SQLIdentifier `json:"option_name"`                  // option_name
-	OptionValue               CharacterData `json:"option_value"`                 // option_value
+	ForeignDataWrapperCatalog SQLIdentifier `yaml:"foreign_data_wrapper_catalog,omitempty"` // foreign_data_wrapper_catalog
+	ForeignDataWrapperName    SQLIdentifier `yaml:"foreign_data_wrapper_name,omitempty"`    // foreign_data_wrapper_name
+	OptionName                SQLIdentifier `yaml:"option_name,omitempty"`                  // option_name
+	OptionValue               CharacterData `yaml:"option_value,omitempty"`                 // option_value
 }
 
 // Constants defining each column in the table.

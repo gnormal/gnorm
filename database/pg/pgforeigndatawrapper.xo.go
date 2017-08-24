@@ -14,13 +14,13 @@ const PgForeignDataWrapperTable = "information_schema._pg_foreign_data_wrappers"
 
 // PgForeignDataWrapper represents a row from 'information_schema._pg_foreign_data_wrappers'.
 type PgForeignDataWrapper struct {
-	Oid                        Oid              `json:"oid"`                           // oid
-	Fdwowner                   Oid              `json:"fdwowner"`                      // fdwowner
-	Fdwoptions                 []sql.NullString `json:"fdwoptions"`                    // fdwoptions
-	ForeignDataWrapperCatalog  SQLIdentifier    `json:"foreign_data_wrapper_catalog"`  // foreign_data_wrapper_catalog
-	ForeignDataWrapperName     SQLIdentifier    `json:"foreign_data_wrapper_name"`     // foreign_data_wrapper_name
-	AuthorizationIdentifier    SQLIdentifier    `json:"authorization_identifier"`      // authorization_identifier
-	ForeignDataWrapperLanguage CharacterData    `json:"foreign_data_wrapper_language"` // foreign_data_wrapper_language
+	Oid                        Oid              `yaml:"oid,omitempty"`                           // oid
+	Fdwowner                   Oid              `yaml:"fdwowner,omitempty"`                      // fdwowner
+	Fdwoptions                 []sql.NullString `yaml:"fdwoptions,omitempty"`                    // fdwoptions
+	ForeignDataWrapperCatalog  SQLIdentifier    `yaml:"foreign_data_wrapper_catalog,omitempty"`  // foreign_data_wrapper_catalog
+	ForeignDataWrapperName     SQLIdentifier    `yaml:"foreign_data_wrapper_name,omitempty"`     // foreign_data_wrapper_name
+	AuthorizationIdentifier    SQLIdentifier    `yaml:"authorization_identifier,omitempty"`      // authorization_identifier
+	ForeignDataWrapperLanguage CharacterData    `yaml:"foreign_data_wrapper_language,omitempty"` // foreign_data_wrapper_language
 }
 
 // Constants defining each column in the table.

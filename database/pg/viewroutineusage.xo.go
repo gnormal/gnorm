@@ -12,12 +12,12 @@ const ViewRoutineUsageTable = "information_schema.view_routine_usage"
 
 // ViewRoutineUsage represents a row from 'information_schema.view_routine_usage'.
 type ViewRoutineUsage struct {
-	TableCatalog    SQLIdentifier `json:"table_catalog"`    // table_catalog
-	TableSchema     SQLIdentifier `json:"table_schema"`     // table_schema
-	TableName       SQLIdentifier `json:"table_name"`       // table_name
-	SpecificCatalog SQLIdentifier `json:"specific_catalog"` // specific_catalog
-	SpecificSchema  SQLIdentifier `json:"specific_schema"`  // specific_schema
-	SpecificName    SQLIdentifier `json:"specific_name"`    // specific_name
+	TableCatalog    SQLIdentifier `yaml:"table_catalog,omitempty"`    // table_catalog
+	TableSchema     SQLIdentifier `yaml:"table_schema,omitempty"`     // table_schema
+	TableName       SQLIdentifier `yaml:"table_name,omitempty"`       // table_name
+	SpecificCatalog SQLIdentifier `yaml:"specific_catalog,omitempty"` // specific_catalog
+	SpecificSchema  SQLIdentifier `yaml:"specific_schema,omitempty"`  // specific_schema
+	SpecificName    SQLIdentifier `yaml:"specific_name,omitempty"`    // specific_name
 }
 
 // Constants defining each column in the table.

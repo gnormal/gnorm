@@ -12,13 +12,13 @@ const ForeignServerTable = "information_schema.foreign_servers"
 
 // ForeignServer represents a row from 'information_schema.foreign_servers'.
 type ForeignServer struct {
-	ForeignServerCatalog      SQLIdentifier `json:"foreign_server_catalog"`       // foreign_server_catalog
-	ForeignServerName         SQLIdentifier `json:"foreign_server_name"`          // foreign_server_name
-	ForeignDataWrapperCatalog SQLIdentifier `json:"foreign_data_wrapper_catalog"` // foreign_data_wrapper_catalog
-	ForeignDataWrapperName    SQLIdentifier `json:"foreign_data_wrapper_name"`    // foreign_data_wrapper_name
-	ForeignServerType         CharacterData `json:"foreign_server_type"`          // foreign_server_type
-	ForeignServerVersion      CharacterData `json:"foreign_server_version"`       // foreign_server_version
-	AuthorizationIdentifier   SQLIdentifier `json:"authorization_identifier"`     // authorization_identifier
+	ForeignServerCatalog      SQLIdentifier `yaml:"foreign_server_catalog,omitempty"`       // foreign_server_catalog
+	ForeignServerName         SQLIdentifier `yaml:"foreign_server_name,omitempty"`          // foreign_server_name
+	ForeignDataWrapperCatalog SQLIdentifier `yaml:"foreign_data_wrapper_catalog,omitempty"` // foreign_data_wrapper_catalog
+	ForeignDataWrapperName    SQLIdentifier `yaml:"foreign_data_wrapper_name,omitempty"`    // foreign_data_wrapper_name
+	ForeignServerType         CharacterData `yaml:"foreign_server_type,omitempty"`          // foreign_server_type
+	ForeignServerVersion      CharacterData `yaml:"foreign_server_version,omitempty"`       // foreign_server_version
+	AuthorizationIdentifier   SQLIdentifier `yaml:"authorization_identifier,omitempty"`     // authorization_identifier
 }
 
 // Constants defining each column in the table.

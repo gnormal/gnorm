@@ -12,18 +12,18 @@ const TableTable = "information_schema.tables"
 
 // Table represents a row from 'information_schema.tables'.
 type Table struct {
-	TableCatalog              SQLIdentifier `json:"table_catalog"`                // table_catalog
-	TableSchema               SQLIdentifier `json:"table_schema"`                 // table_schema
-	TableName                 SQLIdentifier `json:"table_name"`                   // table_name
-	TableType                 CharacterData `json:"table_type"`                   // table_type
-	SelfReferencingColumnName SQLIdentifier `json:"self_referencing_column_name"` // self_referencing_column_name
-	ReferenceGeneration       CharacterData `json:"reference_generation"`         // reference_generation
-	UserDefinedTypeCatalog    SQLIdentifier `json:"user_defined_type_catalog"`    // user_defined_type_catalog
-	UserDefinedTypeSchema     SQLIdentifier `json:"user_defined_type_schema"`     // user_defined_type_schema
-	UserDefinedTypeName       SQLIdentifier `json:"user_defined_type_name"`       // user_defined_type_name
-	IsInsertableInto          YesOrNo       `json:"is_insertable_into"`           // is_insertable_into
-	IsTyped                   YesOrNo       `json:"is_typed"`                     // is_typed
-	CommitAction              CharacterData `json:"commit_action"`                // commit_action
+	TableCatalog              SQLIdentifier `yaml:"table_catalog,omitempty"`                // table_catalog
+	TableSchema               SQLIdentifier `yaml:"table_schema,omitempty"`                 // table_schema
+	TableName                 SQLIdentifier `yaml:"table_name,omitempty"`                   // table_name
+	TableType                 CharacterData `yaml:"table_type,omitempty"`                   // table_type
+	SelfReferencingColumnName SQLIdentifier `yaml:"self_referencing_column_name,omitempty"` // self_referencing_column_name
+	ReferenceGeneration       CharacterData `yaml:"reference_generation,omitempty"`         // reference_generation
+	UserDefinedTypeCatalog    SQLIdentifier `yaml:"user_defined_type_catalog,omitempty"`    // user_defined_type_catalog
+	UserDefinedTypeSchema     SQLIdentifier `yaml:"user_defined_type_schema,omitempty"`     // user_defined_type_schema
+	UserDefinedTypeName       SQLIdentifier `yaml:"user_defined_type_name,omitempty"`       // user_defined_type_name
+	IsInsertableInto          YesOrNo       `yaml:"is_insertable_into,omitempty"`           // is_insertable_into
+	IsTyped                   YesOrNo       `yaml:"is_typed,omitempty"`                     // is_typed
+	CommitAction              CharacterData `yaml:"commit_action,omitempty"`                // commit_action
 }
 
 // Constants defining each column in the table.

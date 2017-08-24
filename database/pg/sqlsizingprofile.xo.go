@@ -12,11 +12,11 @@ const SQLSizingProfileTable = "information_schema.sql_sizing_profiles"
 
 // SQLSizingProfile represents a row from 'information_schema.sql_sizing_profiles'.
 type SQLSizingProfile struct {
-	SizingID      CardinalNumber `json:"sizing_id"`      // sizing_id
-	SizingName    CharacterData  `json:"sizing_name"`    // sizing_name
-	ProfileID     CharacterData  `json:"profile_id"`     // profile_id
-	RequiredValue CardinalNumber `json:"required_value"` // required_value
-	Comments      CharacterData  `json:"comments"`       // comments
+	SizingID      CardinalNumber `yaml:"sizing_id,omitempty"`      // sizing_id
+	SizingName    CharacterData  `yaml:"sizing_name,omitempty"`    // sizing_name
+	ProfileID     CharacterData  `yaml:"profile_id,omitempty"`     // profile_id
+	RequiredValue CardinalNumber `yaml:"required_value,omitempty"` // required_value
+	Comments      CharacterData  `yaml:"comments,omitempty"`       // comments
 }
 
 // Constants defining each column in the table.

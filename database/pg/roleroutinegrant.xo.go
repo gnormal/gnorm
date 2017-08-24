@@ -12,16 +12,16 @@ const RoleRoutineGrantTable = "information_schema.role_routine_grants"
 
 // RoleRoutineGrant represents a row from 'information_schema.role_routine_grants'.
 type RoleRoutineGrant struct {
-	Grantor         SQLIdentifier `json:"grantor"`          // grantor
-	Grantee         SQLIdentifier `json:"grantee"`          // grantee
-	SpecificCatalog SQLIdentifier `json:"specific_catalog"` // specific_catalog
-	SpecificSchema  SQLIdentifier `json:"specific_schema"`  // specific_schema
-	SpecificName    SQLIdentifier `json:"specific_name"`    // specific_name
-	RoutineCatalog  SQLIdentifier `json:"routine_catalog"`  // routine_catalog
-	RoutineSchema   SQLIdentifier `json:"routine_schema"`   // routine_schema
-	RoutineName     SQLIdentifier `json:"routine_name"`     // routine_name
-	PrivilegeType   CharacterData `json:"privilege_type"`   // privilege_type
-	IsGrantable     YesOrNo       `json:"is_grantable"`     // is_grantable
+	Grantor         SQLIdentifier `yaml:"grantor,omitempty"`          // grantor
+	Grantee         SQLIdentifier `yaml:"grantee,omitempty"`          // grantee
+	SpecificCatalog SQLIdentifier `yaml:"specific_catalog,omitempty"` // specific_catalog
+	SpecificSchema  SQLIdentifier `yaml:"specific_schema,omitempty"`  // specific_schema
+	SpecificName    SQLIdentifier `yaml:"specific_name,omitempty"`    // specific_name
+	RoutineCatalog  SQLIdentifier `yaml:"routine_catalog,omitempty"`  // routine_catalog
+	RoutineSchema   SQLIdentifier `yaml:"routine_schema,omitempty"`   // routine_schema
+	RoutineName     SQLIdentifier `yaml:"routine_name,omitempty"`     // routine_name
+	PrivilegeType   CharacterData `yaml:"privilege_type,omitempty"`   // privilege_type
+	IsGrantable     YesOrNo       `yaml:"is_grantable,omitempty"`     // is_grantable
 }
 
 // Constants defining each column in the table.

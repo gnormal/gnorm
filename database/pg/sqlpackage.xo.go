@@ -12,11 +12,11 @@ const SQLPackageTable = "information_schema.sql_packages"
 
 // SQLPackage represents a row from 'information_schema.sql_packages'.
 type SQLPackage struct {
-	FeatureID    CharacterData `json:"feature_id"`     // feature_id
-	FeatureName  CharacterData `json:"feature_name"`   // feature_name
-	IsSupported  YesOrNo       `json:"is_supported"`   // is_supported
-	IsVerifiedBy CharacterData `json:"is_verified_by"` // is_verified_by
-	Comments     CharacterData `json:"comments"`       // comments
+	FeatureID    CharacterData `yaml:"feature_id,omitempty"`     // feature_id
+	FeatureName  CharacterData `yaml:"feature_name,omitempty"`   // feature_name
+	IsSupported  YesOrNo       `yaml:"is_supported,omitempty"`   // is_supported
+	IsVerifiedBy CharacterData `yaml:"is_verified_by,omitempty"` // is_verified_by
+	Comments     CharacterData `yaml:"comments,omitempty"`       // comments
 }
 
 // Constants defining each column in the table.

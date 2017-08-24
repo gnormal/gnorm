@@ -14,13 +14,13 @@ const PgForeignTableTable = "information_schema._pg_foreign_tables"
 
 // PgForeignTable represents a row from 'information_schema._pg_foreign_tables'.
 type PgForeignTable struct {
-	ForeignTableCatalog     SQLIdentifier    `json:"foreign_table_catalog"`    // foreign_table_catalog
-	ForeignTableSchema      SQLIdentifier    `json:"foreign_table_schema"`     // foreign_table_schema
-	ForeignTableName        SQLIdentifier    `json:"foreign_table_name"`       // foreign_table_name
-	Ftoptions               []sql.NullString `json:"ftoptions"`                // ftoptions
-	ForeignServerCatalog    SQLIdentifier    `json:"foreign_server_catalog"`   // foreign_server_catalog
-	ForeignServerName       SQLIdentifier    `json:"foreign_server_name"`      // foreign_server_name
-	AuthorizationIdentifier SQLIdentifier    `json:"authorization_identifier"` // authorization_identifier
+	ForeignTableCatalog     SQLIdentifier    `yaml:"foreign_table_catalog,omitempty"`    // foreign_table_catalog
+	ForeignTableSchema      SQLIdentifier    `yaml:"foreign_table_schema,omitempty"`     // foreign_table_schema
+	ForeignTableName        SQLIdentifier    `yaml:"foreign_table_name,omitempty"`       // foreign_table_name
+	Ftoptions               []sql.NullString `yaml:"ftoptions,omitempty"`                // ftoptions
+	ForeignServerCatalog    SQLIdentifier    `yaml:"foreign_server_catalog,omitempty"`   // foreign_server_catalog
+	ForeignServerName       SQLIdentifier    `yaml:"foreign_server_name,omitempty"`      // foreign_server_name
+	AuthorizationIdentifier SQLIdentifier    `yaml:"authorization_identifier,omitempty"` // authorization_identifier
 }
 
 // Constants defining each column in the table.

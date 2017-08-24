@@ -12,38 +12,38 @@ const ParameterTable = "information_schema.parameters"
 
 // Parameter represents a row from 'information_schema.parameters'.
 type Parameter struct {
-	SpecificCatalog        SQLIdentifier  `json:"specific_catalog"`         // specific_catalog
-	SpecificSchema         SQLIdentifier  `json:"specific_schema"`          // specific_schema
-	SpecificName           SQLIdentifier  `json:"specific_name"`            // specific_name
-	OrdinalPosition        CardinalNumber `json:"ordinal_position"`         // ordinal_position
-	ParameterMode          CharacterData  `json:"parameter_mode"`           // parameter_mode
-	IsResult               YesOrNo        `json:"is_result"`                // is_result
-	AsLocator              YesOrNo        `json:"as_locator"`               // as_locator
-	ParameterName          SQLIdentifier  `json:"parameter_name"`           // parameter_name
-	DataType               CharacterData  `json:"data_type"`                // data_type
-	CharacterMaximumLength CardinalNumber `json:"character_maximum_length"` // character_maximum_length
-	CharacterOctetLength   CardinalNumber `json:"character_octet_length"`   // character_octet_length
-	CharacterSetCatalog    SQLIdentifier  `json:"character_set_catalog"`    // character_set_catalog
-	CharacterSetSchema     SQLIdentifier  `json:"character_set_schema"`     // character_set_schema
-	CharacterSetName       SQLIdentifier  `json:"character_set_name"`       // character_set_name
-	CollationCatalog       SQLIdentifier  `json:"collation_catalog"`        // collation_catalog
-	CollationSchema        SQLIdentifier  `json:"collation_schema"`         // collation_schema
-	CollationName          SQLIdentifier  `json:"collation_name"`           // collation_name
-	NumericPrecision       CardinalNumber `json:"numeric_precision"`        // numeric_precision
-	NumericPrecisionRadix  CardinalNumber `json:"numeric_precision_radix"`  // numeric_precision_radix
-	NumericScale           CardinalNumber `json:"numeric_scale"`            // numeric_scale
-	DatetimePrecision      CardinalNumber `json:"datetime_precision"`       // datetime_precision
-	IntervalType           CharacterData  `json:"interval_type"`            // interval_type
-	IntervalPrecision      CardinalNumber `json:"interval_precision"`       // interval_precision
-	UdtCatalog             SQLIdentifier  `json:"udt_catalog"`              // udt_catalog
-	UdtSchema              SQLIdentifier  `json:"udt_schema"`               // udt_schema
-	UdtName                SQLIdentifier  `json:"udt_name"`                 // udt_name
-	ScopeCatalog           SQLIdentifier  `json:"scope_catalog"`            // scope_catalog
-	ScopeSchema            SQLIdentifier  `json:"scope_schema"`             // scope_schema
-	ScopeName              SQLIdentifier  `json:"scope_name"`               // scope_name
-	MaximumCardinality     CardinalNumber `json:"maximum_cardinality"`      // maximum_cardinality
-	DtdIdentifier          SQLIdentifier  `json:"dtd_identifier"`           // dtd_identifier
-	ParameterDefault       CharacterData  `json:"parameter_default"`        // parameter_default
+	SpecificCatalog        SQLIdentifier  `yaml:"specific_catalog,omitempty"`         // specific_catalog
+	SpecificSchema         SQLIdentifier  `yaml:"specific_schema,omitempty"`          // specific_schema
+	SpecificName           SQLIdentifier  `yaml:"specific_name,omitempty"`            // specific_name
+	OrdinalPosition        CardinalNumber `yaml:"ordinal_position,omitempty"`         // ordinal_position
+	ParameterMode          CharacterData  `yaml:"parameter_mode,omitempty"`           // parameter_mode
+	IsResult               YesOrNo        `yaml:"is_result,omitempty"`                // is_result
+	AsLocator              YesOrNo        `yaml:"as_locator,omitempty"`               // as_locator
+	ParameterName          SQLIdentifier  `yaml:"parameter_name,omitempty"`           // parameter_name
+	DataType               CharacterData  `yaml:"data_type,omitempty"`                // data_type
+	CharacterMaximumLength CardinalNumber `yaml:"character_maximum_length,omitempty"` // character_maximum_length
+	CharacterOctetLength   CardinalNumber `yaml:"character_octet_length,omitempty"`   // character_octet_length
+	CharacterSetCatalog    SQLIdentifier  `yaml:"character_set_catalog,omitempty"`    // character_set_catalog
+	CharacterSetSchema     SQLIdentifier  `yaml:"character_set_schema,omitempty"`     // character_set_schema
+	CharacterSetName       SQLIdentifier  `yaml:"character_set_name,omitempty"`       // character_set_name
+	CollationCatalog       SQLIdentifier  `yaml:"collation_catalog,omitempty"`        // collation_catalog
+	CollationSchema        SQLIdentifier  `yaml:"collation_schema,omitempty"`         // collation_schema
+	CollationName          SQLIdentifier  `yaml:"collation_name,omitempty"`           // collation_name
+	NumericPrecision       CardinalNumber `yaml:"numeric_precision,omitempty"`        // numeric_precision
+	NumericPrecisionRadix  CardinalNumber `yaml:"numeric_precision_radix,omitempty"`  // numeric_precision_radix
+	NumericScale           CardinalNumber `yaml:"numeric_scale,omitempty"`            // numeric_scale
+	DatetimePrecision      CardinalNumber `yaml:"datetime_precision,omitempty"`       // datetime_precision
+	IntervalType           CharacterData  `yaml:"interval_type,omitempty"`            // interval_type
+	IntervalPrecision      CardinalNumber `yaml:"interval_precision,omitempty"`       // interval_precision
+	UdtCatalog             SQLIdentifier  `yaml:"udt_catalog,omitempty"`              // udt_catalog
+	UdtSchema              SQLIdentifier  `yaml:"udt_schema,omitempty"`               // udt_schema
+	UdtName                SQLIdentifier  `yaml:"udt_name,omitempty"`                 // udt_name
+	ScopeCatalog           SQLIdentifier  `yaml:"scope_catalog,omitempty"`            // scope_catalog
+	ScopeSchema            SQLIdentifier  `yaml:"scope_schema,omitempty"`             // scope_schema
+	ScopeName              SQLIdentifier  `yaml:"scope_name,omitempty"`               // scope_name
+	MaximumCardinality     CardinalNumber `yaml:"maximum_cardinality,omitempty"`      // maximum_cardinality
+	DtdIdentifier          SQLIdentifier  `yaml:"dtd_identifier,omitempty"`           // dtd_identifier
+	ParameterDefault       CharacterData  `yaml:"parameter_default,omitempty"`        // parameter_default
 }
 
 // Constants defining each column in the table.

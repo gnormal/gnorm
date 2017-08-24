@@ -12,7 +12,7 @@ const EnabledRoleTable = "information_schema.enabled_roles"
 
 // EnabledRole represents a row from 'information_schema.enabled_roles'.
 type EnabledRole struct {
-	RoleName SQLIdentifier `json:"role_name"` // role_name
+	RoleName SQLIdentifier `yaml:"role_name,omitempty"` // role_name
 }
 
 // Constants defining each column in the table.

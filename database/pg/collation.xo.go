@@ -12,10 +12,10 @@ const CollationTable = "information_schema.collations"
 
 // Collation represents a row from 'information_schema.collations'.
 type Collation struct {
-	CollationCatalog SQLIdentifier `json:"collation_catalog"` // collation_catalog
-	CollationSchema  SQLIdentifier `json:"collation_schema"`  // collation_schema
-	CollationName    SQLIdentifier `json:"collation_name"`    // collation_name
-	PadAttribute     CharacterData `json:"pad_attribute"`     // pad_attribute
+	CollationCatalog SQLIdentifier `yaml:"collation_catalog,omitempty"` // collation_catalog
+	CollationSchema  SQLIdentifier `yaml:"collation_schema,omitempty"`  // collation_schema
+	CollationName    SQLIdentifier `yaml:"collation_name,omitempty"`    // collation_name
+	PadAttribute     CharacterData `yaml:"pad_attribute,omitempty"`     // pad_attribute
 }
 
 // Constants defining each column in the table.

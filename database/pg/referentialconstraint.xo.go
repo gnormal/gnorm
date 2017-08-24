@@ -12,15 +12,15 @@ const ReferentialConstraintTable = "information_schema.referential_constraints"
 
 // ReferentialConstraint represents a row from 'information_schema.referential_constraints'.
 type ReferentialConstraint struct {
-	ConstraintCatalog       SQLIdentifier `json:"constraint_catalog"`        // constraint_catalog
-	ConstraintSchema        SQLIdentifier `json:"constraint_schema"`         // constraint_schema
-	ConstraintName          SQLIdentifier `json:"constraint_name"`           // constraint_name
-	UniqueConstraintCatalog SQLIdentifier `json:"unique_constraint_catalog"` // unique_constraint_catalog
-	UniqueConstraintSchema  SQLIdentifier `json:"unique_constraint_schema"`  // unique_constraint_schema
-	UniqueConstraintName    SQLIdentifier `json:"unique_constraint_name"`    // unique_constraint_name
-	MatchOption             CharacterData `json:"match_option"`              // match_option
-	UpdateRule              CharacterData `json:"update_rule"`               // update_rule
-	DeleteRule              CharacterData `json:"delete_rule"`               // delete_rule
+	ConstraintCatalog       SQLIdentifier `yaml:"constraint_catalog,omitempty"`        // constraint_catalog
+	ConstraintSchema        SQLIdentifier `yaml:"constraint_schema,omitempty"`         // constraint_schema
+	ConstraintName          SQLIdentifier `yaml:"constraint_name,omitempty"`           // constraint_name
+	UniqueConstraintCatalog SQLIdentifier `yaml:"unique_constraint_catalog,omitempty"` // unique_constraint_catalog
+	UniqueConstraintSchema  SQLIdentifier `yaml:"unique_constraint_schema,omitempty"`  // unique_constraint_schema
+	UniqueConstraintName    SQLIdentifier `yaml:"unique_constraint_name,omitempty"`    // unique_constraint_name
+	MatchOption             CharacterData `yaml:"match_option,omitempty"`              // match_option
+	UpdateRule              CharacterData `yaml:"update_rule,omitempty"`               // update_rule
+	DeleteRule              CharacterData `yaml:"delete_rule,omitempty"`               // delete_rule
 }
 
 // Constants defining each column in the table.

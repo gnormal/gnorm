@@ -12,12 +12,12 @@ const CollationCharacterSetApplicabilityTable = "information_schema.collation_ch
 
 // CollationCharacterSetApplicability represents a row from 'information_schema.collation_character_set_applicability'.
 type CollationCharacterSetApplicability struct {
-	CollationCatalog    SQLIdentifier `json:"collation_catalog"`     // collation_catalog
-	CollationSchema     SQLIdentifier `json:"collation_schema"`      // collation_schema
-	CollationName       SQLIdentifier `json:"collation_name"`        // collation_name
-	CharacterSetCatalog SQLIdentifier `json:"character_set_catalog"` // character_set_catalog
-	CharacterSetSchema  SQLIdentifier `json:"character_set_schema"`  // character_set_schema
-	CharacterSetName    SQLIdentifier `json:"character_set_name"`    // character_set_name
+	CollationCatalog    SQLIdentifier `yaml:"collation_catalog,omitempty"`     // collation_catalog
+	CollationSchema     SQLIdentifier `yaml:"collation_schema,omitempty"`      // collation_schema
+	CollationName       SQLIdentifier `yaml:"collation_name,omitempty"`        // collation_name
+	CharacterSetCatalog SQLIdentifier `yaml:"character_set_catalog,omitempty"` // character_set_catalog
+	CharacterSetSchema  SQLIdentifier `yaml:"character_set_schema,omitempty"`  // character_set_schema
+	CharacterSetName    SQLIdentifier `yaml:"character_set_name,omitempty"`    // character_set_name
 }
 
 // Constants defining each column in the table.

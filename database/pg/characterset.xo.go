@@ -12,14 +12,14 @@ const CharacterSetTable = "information_schema.character_sets"
 
 // CharacterSet represents a row from 'information_schema.character_sets'.
 type CharacterSet struct {
-	CharacterSetCatalog   SQLIdentifier `json:"character_set_catalog"`   // character_set_catalog
-	CharacterSetSchema    SQLIdentifier `json:"character_set_schema"`    // character_set_schema
-	CharacterSetName      SQLIdentifier `json:"character_set_name"`      // character_set_name
-	CharacterRepertoire   SQLIdentifier `json:"character_repertoire"`    // character_repertoire
-	FormOfUse             SQLIdentifier `json:"form_of_use"`             // form_of_use
-	DefaultCollateCatalog SQLIdentifier `json:"default_collate_catalog"` // default_collate_catalog
-	DefaultCollateSchema  SQLIdentifier `json:"default_collate_schema"`  // default_collate_schema
-	DefaultCollateName    SQLIdentifier `json:"default_collate_name"`    // default_collate_name
+	CharacterSetCatalog   SQLIdentifier `yaml:"character_set_catalog,omitempty"`   // character_set_catalog
+	CharacterSetSchema    SQLIdentifier `yaml:"character_set_schema,omitempty"`    // character_set_schema
+	CharacterSetName      SQLIdentifier `yaml:"character_set_name,omitempty"`      // character_set_name
+	CharacterRepertoire   SQLIdentifier `yaml:"character_repertoire,omitempty"`    // character_repertoire
+	FormOfUse             SQLIdentifier `yaml:"form_of_use,omitempty"`             // form_of_use
+	DefaultCollateCatalog SQLIdentifier `yaml:"default_collate_catalog,omitempty"` // default_collate_catalog
+	DefaultCollateSchema  SQLIdentifier `yaml:"default_collate_schema,omitempty"`  // default_collate_schema
+	DefaultCollateName    SQLIdentifier `yaml:"default_collate_name,omitempty"`    // default_collate_name
 }
 
 // Constants defining each column in the table.

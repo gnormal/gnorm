@@ -12,14 +12,14 @@ const RoleUsageGrantTable = "information_schema.role_usage_grants"
 
 // RoleUsageGrant represents a row from 'information_schema.role_usage_grants'.
 type RoleUsageGrant struct {
-	Grantor       SQLIdentifier `json:"grantor"`        // grantor
-	Grantee       SQLIdentifier `json:"grantee"`        // grantee
-	ObjectCatalog SQLIdentifier `json:"object_catalog"` // object_catalog
-	ObjectSchema  SQLIdentifier `json:"object_schema"`  // object_schema
-	ObjectName    SQLIdentifier `json:"object_name"`    // object_name
-	ObjectType    CharacterData `json:"object_type"`    // object_type
-	PrivilegeType CharacterData `json:"privilege_type"` // privilege_type
-	IsGrantable   YesOrNo       `json:"is_grantable"`   // is_grantable
+	Grantor       SQLIdentifier `yaml:"grantor,omitempty"`        // grantor
+	Grantee       SQLIdentifier `yaml:"grantee,omitempty"`        // grantee
+	ObjectCatalog SQLIdentifier `yaml:"object_catalog,omitempty"` // object_catalog
+	ObjectSchema  SQLIdentifier `yaml:"object_schema,omitempty"`  // object_schema
+	ObjectName    SQLIdentifier `yaml:"object_name,omitempty"`    // object_name
+	ObjectType    CharacterData `yaml:"object_type,omitempty"`    // object_type
+	PrivilegeType CharacterData `yaml:"privilege_type,omitempty"` // privilege_type
+	IsGrantable   YesOrNo       `yaml:"is_grantable,omitempty"`   // is_grantable
 }
 
 // Constants defining each column in the table.

@@ -14,10 +14,10 @@ const PgForeignTableColumnTable = "information_schema._pg_foreign_table_columns"
 
 // PgForeignTableColumn represents a row from 'information_schema._pg_foreign_table_columns'.
 type PgForeignTableColumn struct {
-	Nspname       Name             `json:"nspname"`       // nspname
-	Relname       Name             `json:"relname"`       // relname
-	Attname       Name             `json:"attname"`       // attname
-	Attfdwoptions []sql.NullString `json:"attfdwoptions"` // attfdwoptions
+	Nspname       Name             `yaml:"nspname,omitempty"`       // nspname
+	Relname       Name             `yaml:"relname,omitempty"`       // relname
+	Attname       Name             `yaml:"attname,omitempty"`       // attname
+	Attfdwoptions []sql.NullString `yaml:"attfdwoptions,omitempty"` // attfdwoptions
 }
 
 // Constants defining each column in the table.

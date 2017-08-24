@@ -12,13 +12,13 @@ const SQLLanguageTable = "information_schema.sql_languages"
 
 // SQLLanguage represents a row from 'information_schema.sql_languages'.
 type SQLLanguage struct {
-	SQLLanguageSource              CharacterData `json:"sql_language_source"`               // sql_language_source
-	SQLLanguageYear                CharacterData `json:"sql_language_year"`                 // sql_language_year
-	SQLLanguageConformance         CharacterData `json:"sql_language_conformance"`          // sql_language_conformance
-	SQLLanguageIntegrity           CharacterData `json:"sql_language_integrity"`            // sql_language_integrity
-	SQLLanguageImplementation      CharacterData `json:"sql_language_implementation"`       // sql_language_implementation
-	SQLLanguageBindingStyle        CharacterData `json:"sql_language_binding_style"`        // sql_language_binding_style
-	SQLLanguageProgrammingLanguage CharacterData `json:"sql_language_programming_language"` // sql_language_programming_language
+	SQLLanguageSource              CharacterData `yaml:"sql_language_source,omitempty"`               // sql_language_source
+	SQLLanguageYear                CharacterData `yaml:"sql_language_year,omitempty"`                 // sql_language_year
+	SQLLanguageConformance         CharacterData `yaml:"sql_language_conformance,omitempty"`          // sql_language_conformance
+	SQLLanguageIntegrity           CharacterData `yaml:"sql_language_integrity,omitempty"`            // sql_language_integrity
+	SQLLanguageImplementation      CharacterData `yaml:"sql_language_implementation,omitempty"`       // sql_language_implementation
+	SQLLanguageBindingStyle        CharacterData `yaml:"sql_language_binding_style,omitempty"`        // sql_language_binding_style
+	SQLLanguageProgrammingLanguage CharacterData `yaml:"sql_language_programming_language,omitempty"` // sql_language_programming_language
 }
 
 // Constants defining each column in the table.

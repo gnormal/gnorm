@@ -12,35 +12,35 @@ const UserDefinedTypeTable = "information_schema.user_defined_types"
 
 // UserDefinedType represents a row from 'information_schema.user_defined_types'.
 type UserDefinedType struct {
-	UserDefinedTypeCatalog  SQLIdentifier  `json:"user_defined_type_catalog"`  // user_defined_type_catalog
-	UserDefinedTypeSchema   SQLIdentifier  `json:"user_defined_type_schema"`   // user_defined_type_schema
-	UserDefinedTypeName     SQLIdentifier  `json:"user_defined_type_name"`     // user_defined_type_name
-	UserDefinedTypeCategory CharacterData  `json:"user_defined_type_category"` // user_defined_type_category
-	IsInstantiable          YesOrNo        `json:"is_instantiable"`            // is_instantiable
-	IsFinal                 YesOrNo        `json:"is_final"`                   // is_final
-	OrderingForm            CharacterData  `json:"ordering_form"`              // ordering_form
-	OrderingCategory        CharacterData  `json:"ordering_category"`          // ordering_category
-	OrderingRoutineCatalog  SQLIdentifier  `json:"ordering_routine_catalog"`   // ordering_routine_catalog
-	OrderingRoutineSchema   SQLIdentifier  `json:"ordering_routine_schema"`    // ordering_routine_schema
-	OrderingRoutineName     SQLIdentifier  `json:"ordering_routine_name"`      // ordering_routine_name
-	ReferenceType           CharacterData  `json:"reference_type"`             // reference_type
-	DataType                CharacterData  `json:"data_type"`                  // data_type
-	CharacterMaximumLength  CardinalNumber `json:"character_maximum_length"`   // character_maximum_length
-	CharacterOctetLength    CardinalNumber `json:"character_octet_length"`     // character_octet_length
-	CharacterSetCatalog     SQLIdentifier  `json:"character_set_catalog"`      // character_set_catalog
-	CharacterSetSchema      SQLIdentifier  `json:"character_set_schema"`       // character_set_schema
-	CharacterSetName        SQLIdentifier  `json:"character_set_name"`         // character_set_name
-	CollationCatalog        SQLIdentifier  `json:"collation_catalog"`          // collation_catalog
-	CollationSchema         SQLIdentifier  `json:"collation_schema"`           // collation_schema
-	CollationName           SQLIdentifier  `json:"collation_name"`             // collation_name
-	NumericPrecision        CardinalNumber `json:"numeric_precision"`          // numeric_precision
-	NumericPrecisionRadix   CardinalNumber `json:"numeric_precision_radix"`    // numeric_precision_radix
-	NumericScale            CardinalNumber `json:"numeric_scale"`              // numeric_scale
-	DatetimePrecision       CardinalNumber `json:"datetime_precision"`         // datetime_precision
-	IntervalType            CharacterData  `json:"interval_type"`              // interval_type
-	IntervalPrecision       CardinalNumber `json:"interval_precision"`         // interval_precision
-	SourceDtdIdentifier     SQLIdentifier  `json:"source_dtd_identifier"`      // source_dtd_identifier
-	RefDtdIdentifier        SQLIdentifier  `json:"ref_dtd_identifier"`         // ref_dtd_identifier
+	UserDefinedTypeCatalog  SQLIdentifier  `yaml:"user_defined_type_catalog,omitempty"`  // user_defined_type_catalog
+	UserDefinedTypeSchema   SQLIdentifier  `yaml:"user_defined_type_schema,omitempty"`   // user_defined_type_schema
+	UserDefinedTypeName     SQLIdentifier  `yaml:"user_defined_type_name,omitempty"`     // user_defined_type_name
+	UserDefinedTypeCategory CharacterData  `yaml:"user_defined_type_category,omitempty"` // user_defined_type_category
+	IsInstantiable          YesOrNo        `yaml:"is_instantiable,omitempty"`            // is_instantiable
+	IsFinal                 YesOrNo        `yaml:"is_final,omitempty"`                   // is_final
+	OrderingForm            CharacterData  `yaml:"ordering_form,omitempty"`              // ordering_form
+	OrderingCategory        CharacterData  `yaml:"ordering_category,omitempty"`          // ordering_category
+	OrderingRoutineCatalog  SQLIdentifier  `yaml:"ordering_routine_catalog,omitempty"`   // ordering_routine_catalog
+	OrderingRoutineSchema   SQLIdentifier  `yaml:"ordering_routine_schema,omitempty"`    // ordering_routine_schema
+	OrderingRoutineName     SQLIdentifier  `yaml:"ordering_routine_name,omitempty"`      // ordering_routine_name
+	ReferenceType           CharacterData  `yaml:"reference_type,omitempty"`             // reference_type
+	DataType                CharacterData  `yaml:"data_type,omitempty"`                  // data_type
+	CharacterMaximumLength  CardinalNumber `yaml:"character_maximum_length,omitempty"`   // character_maximum_length
+	CharacterOctetLength    CardinalNumber `yaml:"character_octet_length,omitempty"`     // character_octet_length
+	CharacterSetCatalog     SQLIdentifier  `yaml:"character_set_catalog,omitempty"`      // character_set_catalog
+	CharacterSetSchema      SQLIdentifier  `yaml:"character_set_schema,omitempty"`       // character_set_schema
+	CharacterSetName        SQLIdentifier  `yaml:"character_set_name,omitempty"`         // character_set_name
+	CollationCatalog        SQLIdentifier  `yaml:"collation_catalog,omitempty"`          // collation_catalog
+	CollationSchema         SQLIdentifier  `yaml:"collation_schema,omitempty"`           // collation_schema
+	CollationName           SQLIdentifier  `yaml:"collation_name,omitempty"`             // collation_name
+	NumericPrecision        CardinalNumber `yaml:"numeric_precision,omitempty"`          // numeric_precision
+	NumericPrecisionRadix   CardinalNumber `yaml:"numeric_precision_radix,omitempty"`    // numeric_precision_radix
+	NumericScale            CardinalNumber `yaml:"numeric_scale,omitempty"`              // numeric_scale
+	DatetimePrecision       CardinalNumber `yaml:"datetime_precision,omitempty"`         // datetime_precision
+	IntervalType            CharacterData  `yaml:"interval_type,omitempty"`              // interval_type
+	IntervalPrecision       CardinalNumber `yaml:"interval_precision,omitempty"`         // interval_precision
+	SourceDtdIdentifier     SQLIdentifier  `yaml:"source_dtd_identifier,omitempty"`      // source_dtd_identifier
+	RefDtdIdentifier        SQLIdentifier  `yaml:"ref_dtd_identifier,omitempty"`         // ref_dtd_identifier
 }
 
 // Constants defining each column in the table.

@@ -12,16 +12,16 @@ const ViewTable = "information_schema.views"
 
 // View represents a row from 'information_schema.views'.
 type View struct {
-	TableCatalog            SQLIdentifier `json:"table_catalog"`              // table_catalog
-	TableSchema             SQLIdentifier `json:"table_schema"`               // table_schema
-	TableName               SQLIdentifier `json:"table_name"`                 // table_name
-	ViewDefinition          CharacterData `json:"view_definition"`            // view_definition
-	CheckOption             CharacterData `json:"check_option"`               // check_option
-	IsUpdatable             YesOrNo       `json:"is_updatable"`               // is_updatable
-	IsInsertableInto        YesOrNo       `json:"is_insertable_into"`         // is_insertable_into
-	IsTriggerUpdatable      YesOrNo       `json:"is_trigger_updatable"`       // is_trigger_updatable
-	IsTriggerDeletable      YesOrNo       `json:"is_trigger_deletable"`       // is_trigger_deletable
-	IsTriggerInsertableInto YesOrNo       `json:"is_trigger_insertable_into"` // is_trigger_insertable_into
+	TableCatalog            SQLIdentifier `yaml:"table_catalog,omitempty"`              // table_catalog
+	TableSchema             SQLIdentifier `yaml:"table_schema,omitempty"`               // table_schema
+	TableName               SQLIdentifier `yaml:"table_name,omitempty"`                 // table_name
+	ViewDefinition          CharacterData `yaml:"view_definition,omitempty"`            // view_definition
+	CheckOption             CharacterData `yaml:"check_option,omitempty"`               // check_option
+	IsUpdatable             YesOrNo       `yaml:"is_updatable,omitempty"`               // is_updatable
+	IsInsertableInto        YesOrNo       `yaml:"is_insertable_into,omitempty"`         // is_insertable_into
+	IsTriggerUpdatable      YesOrNo       `yaml:"is_trigger_updatable,omitempty"`       // is_trigger_updatable
+	IsTriggerDeletable      YesOrNo       `yaml:"is_trigger_deletable,omitempty"`       // is_trigger_deletable
+	IsTriggerInsertableInto YesOrNo       `yaml:"is_trigger_insertable_into,omitempty"` // is_trigger_insertable_into
 }
 
 // Constants defining each column in the table.

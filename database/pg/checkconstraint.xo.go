@@ -12,10 +12,10 @@ const CheckConstraintTable = "information_schema.check_constraints"
 
 // CheckConstraint represents a row from 'information_schema.check_constraints'.
 type CheckConstraint struct {
-	ConstraintCatalog SQLIdentifier `json:"constraint_catalog"` // constraint_catalog
-	ConstraintSchema  SQLIdentifier `json:"constraint_schema"`  // constraint_schema
-	ConstraintName    SQLIdentifier `json:"constraint_name"`    // constraint_name
-	CheckClause       CharacterData `json:"check_clause"`       // check_clause
+	ConstraintCatalog SQLIdentifier `yaml:"constraint_catalog,omitempty"` // constraint_catalog
+	ConstraintSchema  SQLIdentifier `yaml:"constraint_schema,omitempty"`  // constraint_schema
+	ConstraintName    SQLIdentifier `yaml:"constraint_name,omitempty"`    // constraint_name
+	CheckClause       CharacterData `yaml:"check_clause,omitempty"`       // check_clause
 }
 
 // Constants defining each column in the table.

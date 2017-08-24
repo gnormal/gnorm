@@ -12,11 +12,11 @@ const ForeignTableOptionTable = "information_schema.foreign_table_options"
 
 // ForeignTableOption represents a row from 'information_schema.foreign_table_options'.
 type ForeignTableOption struct {
-	ForeignTableCatalog SQLIdentifier `json:"foreign_table_catalog"` // foreign_table_catalog
-	ForeignTableSchema  SQLIdentifier `json:"foreign_table_schema"`  // foreign_table_schema
-	ForeignTableName    SQLIdentifier `json:"foreign_table_name"`    // foreign_table_name
-	OptionName          SQLIdentifier `json:"option_name"`           // option_name
-	OptionValue         CharacterData `json:"option_value"`          // option_value
+	ForeignTableCatalog SQLIdentifier `yaml:"foreign_table_catalog,omitempty"` // foreign_table_catalog
+	ForeignTableSchema  SQLIdentifier `yaml:"foreign_table_schema,omitempty"`  // foreign_table_schema
+	ForeignTableName    SQLIdentifier `yaml:"foreign_table_name,omitempty"`    // foreign_table_name
+	OptionName          SQLIdentifier `yaml:"option_name,omitempty"`           // option_name
+	OptionValue         CharacterData `yaml:"option_value,omitempty"`          // option_value
 }
 
 // Constants defining each column in the table.

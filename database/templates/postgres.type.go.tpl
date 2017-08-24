@@ -11,7 +11,7 @@ const {{ .Name }}Table = "{{$table}}"
 {{- end }}
 type {{ .Name }} struct {
 {{- range .Fields }}
-	{{ .Name }} {{ retype .Type }} `json:"{{ .Col.ColumnName }}"` // {{ .Col.ColumnName }}
+	{{ .Name }} {{ retype .Type }} `yaml:"{{ .Col.ColumnName }},omitempty"` // {{ .Col.ColumnName }}
 {{- end }}
 }
 

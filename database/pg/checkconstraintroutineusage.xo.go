@@ -12,12 +12,12 @@ const CheckConstraintRoutineUsageTable = "information_schema.check_constraint_ro
 
 // CheckConstraintRoutineUsage represents a row from 'information_schema.check_constraint_routine_usage'.
 type CheckConstraintRoutineUsage struct {
-	ConstraintCatalog SQLIdentifier `json:"constraint_catalog"` // constraint_catalog
-	ConstraintSchema  SQLIdentifier `json:"constraint_schema"`  // constraint_schema
-	ConstraintName    SQLIdentifier `json:"constraint_name"`    // constraint_name
-	SpecificCatalog   SQLIdentifier `json:"specific_catalog"`   // specific_catalog
-	SpecificSchema    SQLIdentifier `json:"specific_schema"`    // specific_schema
-	SpecificName      SQLIdentifier `json:"specific_name"`      // specific_name
+	ConstraintCatalog SQLIdentifier `yaml:"constraint_catalog,omitempty"` // constraint_catalog
+	ConstraintSchema  SQLIdentifier `yaml:"constraint_schema,omitempty"`  // constraint_schema
+	ConstraintName    SQLIdentifier `yaml:"constraint_name,omitempty"`    // constraint_name
+	SpecificCatalog   SQLIdentifier `yaml:"specific_catalog,omitempty"`   // specific_catalog
+	SpecificSchema    SQLIdentifier `yaml:"specific_schema,omitempty"`    // specific_schema
+	SpecificName      SQLIdentifier `yaml:"specific_name,omitempty"`      // specific_name
 }
 
 // Constants defining each column in the table.

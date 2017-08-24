@@ -12,12 +12,12 @@ const DomainUdtUsageTable = "information_schema.domain_udt_usage"
 
 // DomainUdtUsage represents a row from 'information_schema.domain_udt_usage'.
 type DomainUdtUsage struct {
-	UdtCatalog    SQLIdentifier `json:"udt_catalog"`    // udt_catalog
-	UdtSchema     SQLIdentifier `json:"udt_schema"`     // udt_schema
-	UdtName       SQLIdentifier `json:"udt_name"`       // udt_name
-	DomainCatalog SQLIdentifier `json:"domain_catalog"` // domain_catalog
-	DomainSchema  SQLIdentifier `json:"domain_schema"`  // domain_schema
-	DomainName    SQLIdentifier `json:"domain_name"`    // domain_name
+	UdtCatalog    SQLIdentifier `yaml:"udt_catalog,omitempty"`    // udt_catalog
+	UdtSchema     SQLIdentifier `yaml:"udt_schema,omitempty"`     // udt_schema
+	UdtName       SQLIdentifier `yaml:"udt_name,omitempty"`       // udt_name
+	DomainCatalog SQLIdentifier `yaml:"domain_catalog,omitempty"` // domain_catalog
+	DomainSchema  SQLIdentifier `yaml:"domain_schema,omitempty"`  // domain_schema
+	DomainName    SQLIdentifier `yaml:"domain_name,omitempty"`    // domain_name
 }
 
 // Constants defining each column in the table.

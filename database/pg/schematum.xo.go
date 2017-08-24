@@ -12,13 +12,13 @@ const SchematumTable = "information_schema.schemata"
 
 // Schematum represents a row from 'information_schema.schemata'.
 type Schematum struct {
-	CatalogName                SQLIdentifier `json:"catalog_name"`                  // catalog_name
-	SchemaName                 SQLIdentifier `json:"schema_name"`                   // schema_name
-	SchemaOwner                SQLIdentifier `json:"schema_owner"`                  // schema_owner
-	DefaultCharacterSetCatalog SQLIdentifier `json:"default_character_set_catalog"` // default_character_set_catalog
-	DefaultCharacterSetSchema  SQLIdentifier `json:"default_character_set_schema"`  // default_character_set_schema
-	DefaultCharacterSetName    SQLIdentifier `json:"default_character_set_name"`    // default_character_set_name
-	SQLPath                    CharacterData `json:"sql_path"`                      // sql_path
+	CatalogName                SQLIdentifier `yaml:"catalog_name,omitempty"`                  // catalog_name
+	SchemaName                 SQLIdentifier `yaml:"schema_name,omitempty"`                   // schema_name
+	SchemaOwner                SQLIdentifier `yaml:"schema_owner,omitempty"`                  // schema_owner
+	DefaultCharacterSetCatalog SQLIdentifier `yaml:"default_character_set_catalog,omitempty"` // default_character_set_catalog
+	DefaultCharacterSetSchema  SQLIdentifier `yaml:"default_character_set_schema,omitempty"`  // default_character_set_schema
+	DefaultCharacterSetName    SQLIdentifier `yaml:"default_character_set_name,omitempty"`    // default_character_set_name
+	SQLPath                    CharacterData `yaml:"sql_path,omitempty"`                      // sql_path
 }
 
 // Constants defining each column in the table.

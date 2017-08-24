@@ -12,13 +12,13 @@ const ConstraintColumnUsageTable = "information_schema.constraint_column_usage"
 
 // ConstraintColumnUsage represents a row from 'information_schema.constraint_column_usage'.
 type ConstraintColumnUsage struct {
-	TableCatalog      SQLIdentifier `json:"table_catalog"`      // table_catalog
-	TableSchema       SQLIdentifier `json:"table_schema"`       // table_schema
-	TableName         SQLIdentifier `json:"table_name"`         // table_name
-	ColumnName        SQLIdentifier `json:"column_name"`        // column_name
-	ConstraintCatalog SQLIdentifier `json:"constraint_catalog"` // constraint_catalog
-	ConstraintSchema  SQLIdentifier `json:"constraint_schema"`  // constraint_schema
-	ConstraintName    SQLIdentifier `json:"constraint_name"`    // constraint_name
+	TableCatalog      SQLIdentifier `yaml:"table_catalog,omitempty"`      // table_catalog
+	TableSchema       SQLIdentifier `yaml:"table_schema,omitempty"`       // table_schema
+	TableName         SQLIdentifier `yaml:"table_name,omitempty"`         // table_name
+	ColumnName        SQLIdentifier `yaml:"column_name,omitempty"`        // column_name
+	ConstraintCatalog SQLIdentifier `yaml:"constraint_catalog,omitempty"` // constraint_catalog
+	ConstraintSchema  SQLIdentifier `yaml:"constraint_schema,omitempty"`  // constraint_schema
+	ConstraintName    SQLIdentifier `yaml:"constraint_name,omitempty"`    // constraint_name
 }
 
 // Constants defining each column in the table.

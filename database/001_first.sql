@@ -27,4 +27,12 @@ CREATE TABLE books (
   tags varchar[] NOT NULL DEFAULT '{}'
 );
 
-CREATE INDEX books_title_idx ON books(title, year);
+CREATE INDEX books_title_idx ON books(author_id, title);
+
+---- create above / drop below ----
+
+DROP TABLE IF EXISTS books CASCADE;
+DROP TYPE IF EXISTS book_type CASCADE;
+DROP TABLE IF EXISTS authors CASCADE;
+
+

@@ -12,14 +12,14 @@ const TransformTable = "information_schema.transforms"
 
 // Transform represents a row from 'information_schema.transforms'.
 type Transform struct {
-	UdtCatalog      SQLIdentifier `json:"udt_catalog"`      // udt_catalog
-	UdtSchema       SQLIdentifier `json:"udt_schema"`       // udt_schema
-	UdtName         SQLIdentifier `json:"udt_name"`         // udt_name
-	SpecificCatalog SQLIdentifier `json:"specific_catalog"` // specific_catalog
-	SpecificSchema  SQLIdentifier `json:"specific_schema"`  // specific_schema
-	SpecificName    SQLIdentifier `json:"specific_name"`    // specific_name
-	GroupName       SQLIdentifier `json:"group_name"`       // group_name
-	TransformType   CharacterData `json:"transform_type"`   // transform_type
+	UdtCatalog      SQLIdentifier `yaml:"udt_catalog,omitempty"`      // udt_catalog
+	UdtSchema       SQLIdentifier `yaml:"udt_schema,omitempty"`       // udt_schema
+	UdtName         SQLIdentifier `yaml:"udt_name,omitempty"`         // udt_name
+	SpecificCatalog SQLIdentifier `yaml:"specific_catalog,omitempty"` // specific_catalog
+	SpecificSchema  SQLIdentifier `yaml:"specific_schema,omitempty"`  // specific_schema
+	SpecificName    SQLIdentifier `yaml:"specific_name,omitempty"`    // specific_name
+	GroupName       SQLIdentifier `yaml:"group_name,omitempty"`       // group_name
+	TransformType   CharacterData `yaml:"transform_type,omitempty"`   // transform_type
 }
 
 // Constants defining each column in the table.

@@ -14,13 +14,13 @@ const PgUserMappingTable = "information_schema._pg_user_mappings"
 
 // PgUserMapping represents a row from 'information_schema._pg_user_mappings'.
 type PgUserMapping struct {
-	Oid                     Oid              `json:"oid"`                      // oid
-	Umoptions               []sql.NullString `json:"umoptions"`                // umoptions
-	Umuser                  Oid              `json:"umuser"`                   // umuser
-	AuthorizationIdentifier SQLIdentifier    `json:"authorization_identifier"` // authorization_identifier
-	ForeignServerCatalog    SQLIdentifier    `json:"foreign_server_catalog"`   // foreign_server_catalog
-	ForeignServerName       SQLIdentifier    `json:"foreign_server_name"`      // foreign_server_name
-	Srvowner                SQLIdentifier    `json:"srvowner"`                 // srvowner
+	Oid                     Oid              `yaml:"oid,omitempty"`                      // oid
+	Umoptions               []sql.NullString `yaml:"umoptions,omitempty"`                // umoptions
+	Umuser                  Oid              `yaml:"umuser,omitempty"`                   // umuser
+	AuthorizationIdentifier SQLIdentifier    `yaml:"authorization_identifier,omitempty"` // authorization_identifier
+	ForeignServerCatalog    SQLIdentifier    `yaml:"foreign_server_catalog,omitempty"`   // foreign_server_catalog
+	ForeignServerName       SQLIdentifier    `yaml:"foreign_server_name,omitempty"`      // foreign_server_name
+	Srvowner                SQLIdentifier    `yaml:"srvowner,omitempty"`                 // srvowner
 }
 
 // Constants defining each column in the table.

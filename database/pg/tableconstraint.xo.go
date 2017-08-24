@@ -12,15 +12,15 @@ const TableConstraintTable = "information_schema.table_constraints"
 
 // TableConstraint represents a row from 'information_schema.table_constraints'.
 type TableConstraint struct {
-	ConstraintCatalog SQLIdentifier `json:"constraint_catalog"` // constraint_catalog
-	ConstraintSchema  SQLIdentifier `json:"constraint_schema"`  // constraint_schema
-	ConstraintName    SQLIdentifier `json:"constraint_name"`    // constraint_name
-	TableCatalog      SQLIdentifier `json:"table_catalog"`      // table_catalog
-	TableSchema       SQLIdentifier `json:"table_schema"`       // table_schema
-	TableName         SQLIdentifier `json:"table_name"`         // table_name
-	ConstraintType    CharacterData `json:"constraint_type"`    // constraint_type
-	IsDeferrable      YesOrNo       `json:"is_deferrable"`      // is_deferrable
-	InitiallyDeferred YesOrNo       `json:"initially_deferred"` // initially_deferred
+	ConstraintCatalog SQLIdentifier `yaml:"constraint_catalog,omitempty"` // constraint_catalog
+	ConstraintSchema  SQLIdentifier `yaml:"constraint_schema,omitempty"`  // constraint_schema
+	ConstraintName    SQLIdentifier `yaml:"constraint_name,omitempty"`    // constraint_name
+	TableCatalog      SQLIdentifier `yaml:"table_catalog,omitempty"`      // table_catalog
+	TableSchema       SQLIdentifier `yaml:"table_schema,omitempty"`       // table_schema
+	TableName         SQLIdentifier `yaml:"table_name,omitempty"`         // table_name
+	ConstraintType    CharacterData `yaml:"constraint_type,omitempty"`    // constraint_type
+	IsDeferrable      YesOrNo       `yaml:"is_deferrable,omitempty"`      // is_deferrable
+	InitiallyDeferred YesOrNo       `yaml:"initially_deferred,omitempty"` // initially_deferred
 }
 
 // Constants defining each column in the table.

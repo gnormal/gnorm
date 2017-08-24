@@ -12,10 +12,10 @@ const ForeignServerOptionTable = "information_schema.foreign_server_options"
 
 // ForeignServerOption represents a row from 'information_schema.foreign_server_options'.
 type ForeignServerOption struct {
-	ForeignServerCatalog SQLIdentifier `json:"foreign_server_catalog"` // foreign_server_catalog
-	ForeignServerName    SQLIdentifier `json:"foreign_server_name"`    // foreign_server_name
-	OptionName           SQLIdentifier `json:"option_name"`            // option_name
-	OptionValue          CharacterData `json:"option_value"`           // option_value
+	ForeignServerCatalog SQLIdentifier `yaml:"foreign_server_catalog,omitempty"` // foreign_server_catalog
+	ForeignServerName    SQLIdentifier `yaml:"foreign_server_name,omitempty"`    // foreign_server_name
+	OptionName           SQLIdentifier `yaml:"option_name,omitempty"`            // option_name
+	OptionValue          CharacterData `yaml:"option_value,omitempty"`           // option_value
 }
 
 // Constants defining each column in the table.

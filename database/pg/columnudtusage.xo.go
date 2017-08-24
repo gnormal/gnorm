@@ -12,13 +12,13 @@ const ColumnUdtUsageTable = "information_schema.column_udt_usage"
 
 // ColumnUdtUsage represents a row from 'information_schema.column_udt_usage'.
 type ColumnUdtUsage struct {
-	UdtCatalog   SQLIdentifier `json:"udt_catalog"`   // udt_catalog
-	UdtSchema    SQLIdentifier `json:"udt_schema"`    // udt_schema
-	UdtName      SQLIdentifier `json:"udt_name"`      // udt_name
-	TableCatalog SQLIdentifier `json:"table_catalog"` // table_catalog
-	TableSchema  SQLIdentifier `json:"table_schema"`  // table_schema
-	TableName    SQLIdentifier `json:"table_name"`    // table_name
-	ColumnName   SQLIdentifier `json:"column_name"`   // column_name
+	UdtCatalog   SQLIdentifier `yaml:"udt_catalog,omitempty"`   // udt_catalog
+	UdtSchema    SQLIdentifier `yaml:"udt_schema,omitempty"`    // udt_schema
+	UdtName      SQLIdentifier `yaml:"udt_name,omitempty"`      // udt_name
+	TableCatalog SQLIdentifier `yaml:"table_catalog,omitempty"` // table_catalog
+	TableSchema  SQLIdentifier `yaml:"table_schema,omitempty"`  // table_schema
+	TableName    SQLIdentifier `yaml:"table_name,omitempty"`    // table_name
+	ColumnName   SQLIdentifier `yaml:"column_name,omitempty"`   // column_name
 }
 
 // Constants defining each column in the table.

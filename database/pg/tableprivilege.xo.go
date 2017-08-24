@@ -12,14 +12,14 @@ const TablePrivilegeTable = "information_schema.table_privileges"
 
 // TablePrivilege represents a row from 'information_schema.table_privileges'.
 type TablePrivilege struct {
-	Grantor       SQLIdentifier `json:"grantor"`        // grantor
-	Grantee       SQLIdentifier `json:"grantee"`        // grantee
-	TableCatalog  SQLIdentifier `json:"table_catalog"`  // table_catalog
-	TableSchema   SQLIdentifier `json:"table_schema"`   // table_schema
-	TableName     SQLIdentifier `json:"table_name"`     // table_name
-	PrivilegeType CharacterData `json:"privilege_type"` // privilege_type
-	IsGrantable   YesOrNo       `json:"is_grantable"`   // is_grantable
-	WithHierarchy YesOrNo       `json:"with_hierarchy"` // with_hierarchy
+	Grantor       SQLIdentifier `yaml:"grantor,omitempty"`        // grantor
+	Grantee       SQLIdentifier `yaml:"grantee,omitempty"`        // grantee
+	TableCatalog  SQLIdentifier `yaml:"table_catalog,omitempty"`  // table_catalog
+	TableSchema   SQLIdentifier `yaml:"table_schema,omitempty"`   // table_schema
+	TableName     SQLIdentifier `yaml:"table_name,omitempty"`     // table_name
+	PrivilegeType CharacterData `yaml:"privilege_type,omitempty"` // privilege_type
+	IsGrantable   YesOrNo       `yaml:"is_grantable,omitempty"`   // is_grantable
+	WithHierarchy YesOrNo       `yaml:"with_hierarchy,omitempty"` // with_hierarchy
 }
 
 // Constants defining each column in the table.

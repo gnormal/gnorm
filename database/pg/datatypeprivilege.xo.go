@@ -12,11 +12,11 @@ const DataTypePrivilegeTable = "information_schema.data_type_privileges"
 
 // DataTypePrivilege represents a row from 'information_schema.data_type_privileges'.
 type DataTypePrivilege struct {
-	ObjectCatalog SQLIdentifier `json:"object_catalog"` // object_catalog
-	ObjectSchema  SQLIdentifier `json:"object_schema"`  // object_schema
-	ObjectName    SQLIdentifier `json:"object_name"`    // object_name
-	ObjectType    CharacterData `json:"object_type"`    // object_type
-	DtdIdentifier SQLIdentifier `json:"dtd_identifier"` // dtd_identifier
+	ObjectCatalog SQLIdentifier `yaml:"object_catalog,omitempty"` // object_catalog
+	ObjectSchema  SQLIdentifier `yaml:"object_schema,omitempty"`  // object_schema
+	ObjectName    SQLIdentifier `yaml:"object_name,omitempty"`    // object_name
+	ObjectType    CharacterData `yaml:"object_type,omitempty"`    // object_type
+	DtdIdentifier SQLIdentifier `yaml:"dtd_identifier,omitempty"` // dtd_identifier
 }
 
 // Constants defining each column in the table.

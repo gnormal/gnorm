@@ -12,11 +12,11 @@ const ForeignDataWrapperTable = "information_schema.foreign_data_wrappers"
 
 // ForeignDataWrapper represents a row from 'information_schema.foreign_data_wrappers'.
 type ForeignDataWrapper struct {
-	ForeignDataWrapperCatalog  SQLIdentifier `json:"foreign_data_wrapper_catalog"`  // foreign_data_wrapper_catalog
-	ForeignDataWrapperName     SQLIdentifier `json:"foreign_data_wrapper_name"`     // foreign_data_wrapper_name
-	AuthorizationIdentifier    SQLIdentifier `json:"authorization_identifier"`      // authorization_identifier
-	LibraryName                CharacterData `json:"library_name"`                  // library_name
-	ForeignDataWrapperLanguage CharacterData `json:"foreign_data_wrapper_language"` // foreign_data_wrapper_language
+	ForeignDataWrapperCatalog  SQLIdentifier `yaml:"foreign_data_wrapper_catalog,omitempty"`  // foreign_data_wrapper_catalog
+	ForeignDataWrapperName     SQLIdentifier `yaml:"foreign_data_wrapper_name,omitempty"`     // foreign_data_wrapper_name
+	AuthorizationIdentifier    SQLIdentifier `yaml:"authorization_identifier,omitempty"`      // authorization_identifier
+	LibraryName                CharacterData `yaml:"library_name,omitempty"`                  // library_name
+	ForeignDataWrapperLanguage CharacterData `yaml:"foreign_data_wrapper_language,omitempty"` // foreign_data_wrapper_language
 }
 
 // Constants defining each column in the table.

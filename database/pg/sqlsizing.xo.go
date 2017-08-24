@@ -12,10 +12,10 @@ const SQLSizingTable = "information_schema.sql_sizing"
 
 // SQLSizing represents a row from 'information_schema.sql_sizing'.
 type SQLSizing struct {
-	SizingID       CardinalNumber `json:"sizing_id"`       // sizing_id
-	SizingName     CharacterData  `json:"sizing_name"`     // sizing_name
-	SupportedValue CardinalNumber `json:"supported_value"` // supported_value
-	Comments       CharacterData  `json:"comments"`        // comments
+	SizingID       CardinalNumber `yaml:"sizing_id,omitempty"`       // sizing_id
+	SizingName     CharacterData  `yaml:"sizing_name,omitempty"`     // sizing_name
+	SupportedValue CardinalNumber `yaml:"supported_value,omitempty"` // supported_value
+	Comments       CharacterData  `yaml:"comments,omitempty"`        // comments
 }
 
 // Constants defining each column in the table.

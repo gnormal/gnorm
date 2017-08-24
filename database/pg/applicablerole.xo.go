@@ -12,9 +12,9 @@ const ApplicableRoleTable = "information_schema.applicable_roles"
 
 // ApplicableRole represents a row from 'information_schema.applicable_roles'.
 type ApplicableRole struct {
-	Grantee     SQLIdentifier `json:"grantee"`      // grantee
-	RoleName    SQLIdentifier `json:"role_name"`    // role_name
-	IsGrantable YesOrNo       `json:"is_grantable"` // is_grantable
+	Grantee     SQLIdentifier `yaml:"grantee,omitempty"`      // grantee
+	RoleName    SQLIdentifier `yaml:"role_name,omitempty"`    // role_name
+	IsGrantable YesOrNo       `yaml:"is_grantable,omitempty"` // is_grantable
 }
 
 // Constants defining each column in the table.

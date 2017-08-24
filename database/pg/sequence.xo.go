@@ -12,18 +12,18 @@ const SequenceTable = "information_schema.sequences"
 
 // Sequence represents a row from 'information_schema.sequences'.
 type Sequence struct {
-	SequenceCatalog       SQLIdentifier  `json:"sequence_catalog"`        // sequence_catalog
-	SequenceSchema        SQLIdentifier  `json:"sequence_schema"`         // sequence_schema
-	SequenceName          SQLIdentifier  `json:"sequence_name"`           // sequence_name
-	DataType              CharacterData  `json:"data_type"`               // data_type
-	NumericPrecision      CardinalNumber `json:"numeric_precision"`       // numeric_precision
-	NumericPrecisionRadix CardinalNumber `json:"numeric_precision_radix"` // numeric_precision_radix
-	NumericScale          CardinalNumber `json:"numeric_scale"`           // numeric_scale
-	StartValue            CharacterData  `json:"start_value"`             // start_value
-	MinimumValue          CharacterData  `json:"minimum_value"`           // minimum_value
-	MaximumValue          CharacterData  `json:"maximum_value"`           // maximum_value
-	Increment             CharacterData  `json:"increment"`               // increment
-	CycleOption           YesOrNo        `json:"cycle_option"`            // cycle_option
+	SequenceCatalog       SQLIdentifier  `yaml:"sequence_catalog,omitempty"`        // sequence_catalog
+	SequenceSchema        SQLIdentifier  `yaml:"sequence_schema,omitempty"`         // sequence_schema
+	SequenceName          SQLIdentifier  `yaml:"sequence_name,omitempty"`           // sequence_name
+	DataType              CharacterData  `yaml:"data_type,omitempty"`               // data_type
+	NumericPrecision      CardinalNumber `yaml:"numeric_precision,omitempty"`       // numeric_precision
+	NumericPrecisionRadix CardinalNumber `yaml:"numeric_precision_radix,omitempty"` // numeric_precision_radix
+	NumericScale          CardinalNumber `yaml:"numeric_scale,omitempty"`           // numeric_scale
+	StartValue            CharacterData  `yaml:"start_value,omitempty"`             // start_value
+	MinimumValue          CharacterData  `yaml:"minimum_value,omitempty"`           // minimum_value
+	MaximumValue          CharacterData  `yaml:"maximum_value,omitempty"`           // maximum_value
+	Increment             CharacterData  `yaml:"increment,omitempty"`               // increment
+	CycleOption           YesOrNo        `yaml:"cycle_option,omitempty"`            // cycle_option
 }
 
 // Constants defining each column in the table.

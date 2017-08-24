@@ -45,7 +45,7 @@ type Column struct {
 	OrigType    string
 	UserDefined bool
 	Nullable    bool
-	Orig        pg.Column `yaml:"-"`
+	Orig        pg.Column //`yaml:"-"`
 }
 
 func Parse(typeMap, nullableTypeMap map[string]string, env environ.Values, conn string, schemaNames []string) (*SchemaInfo, error) {
