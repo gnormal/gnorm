@@ -34,8 +34,10 @@ aliases = [
 # gocog]]]
 "/gnorm/cli",
 "/gnorm/database",
-"/gnorm/database/pg",
-"/gnorm/database/templates",
+"/gnorm/database/drivers",
+"/gnorm/database/drivers/postgres",
+"/gnorm/database/drivers/postgres/pg",
+"/gnorm/database/drivers/postgres/templates",
 "/gnorm/environ",
 "/gnorm/run",
 # [[[end]]]

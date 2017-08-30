@@ -48,7 +48,7 @@ func main() {
 	timestamp := time.Now().Format(time.RFC3339)
 	hash := run("git", "rev-parse", "HEAD")
 	flags := fmt.Sprintf(`-X "gnorm.org/gnorm/cli.timestamp=%s" -X "gnorm.org/gnorm/cli.commitHash=%s"`, timestamp, hash)
-	fmt.Print(run("go", cmd, "--ldflags="+flags))
+	fmt.Print(run("go", cmd, "--ldflags="+flags, "gnorm.org/gnorm"))
 }
 
 func run(cmd string, args ...string) string {

@@ -1,5 +1,4 @@
-package pg // import "gnorm.org/gnorm/database/pg"
-
+package pg // import "gnorm.org/gnorm/database/drivers/postgres/pg"
 
 // Note that this file is *NOT* generated. :)
 
@@ -32,7 +31,7 @@ type NameField = StringField
 type TimeStamp = time.Time
 type TimeStampField = TimeField
 
-type YesOrNo bool 
+type YesOrNo bool
 
 // Value marshals the value into the database
 func (y YesOrNo) Value() (driver.Value, error) {
@@ -52,14 +51,14 @@ func (y *YesOrNo) Scan(src interface{}) error {
 		return errors.Errorf("expected YesOrNo to be a string, but was %T", src)
 	}
 	switch s {
-		case "YES":
+	case "YES":
 		*y = true
 		return nil
-		case "NO":
-		*y = false 
+	case "NO":
+		*y = false
 		return nil
-		default:
-		return errors.New("unexpected value for YesOrNo: "+ s)
+	default:
+		return errors.New("unexpected value for YesOrNo: " + s)
 	}
 }
 

@@ -68,27 +68,37 @@ $ gnorm preview
 Schema: public
 
 Table: public.authors
-+--------+-----------+
-| COLUMN |   TYPE    |
-+--------+-----------+
-| id     | uuid.UUID |
-| name   | string    |
-+--------+-----------+
++--------+-----------+--------+---------+--------+-------------+----------+
+| COLUMN |   TYPE    | DBTYPE | ISARRAY | LENGTH | USERDEFINED | NULLABLE |
++--------+-----------+--------+---------+--------+-------------+----------+
+| id     | uuid.UUID | uuid   | false   |      0 | false       | false    |
+| name   | string    | text   | false   |      0 | false       | false    |
++--------+-----------+--------+---------+--------+-------------+----------+
 
 
 Table: public.books
-+-----------+-----------+
-|  COLUMN   |   TYPE    |
-+-----------+-----------+
-| id        | int       |
-| author_id | uuid.UUID |
-| isbn      | string    |
-| booktype  |           |
-| title     | string    |
-| year      | int       |
-| available | time.Time |
-| tags      |           |
-+-----------+-----------+
++-----------+-----------+--------------------------+---------+--------+-------------+----------+
+|  COLUMN   |   TYPE    |          DBTYPE          | ISARRAY | LENGTH | USERDEFINED | NULLABLE |
++-----------+-----------+--------------------------+---------+--------+-------------+----------+
+| id        | int       | integer                  | false   |      0 | false       | false    |
+| author_id | uuid.UUID | uuid                     | false   |      0 | false       | false    |
+| isbn      | string    | text                     | false   |      0 | false       | false    |
+| booktype  | BookType  | book_type                | false   |      0 | true        | false    |
+| title     | string    | text                     | false   |      0 | false       | false    |
+| published | time.Time | timestamptz              | true    |      0 | false       | false    |
+| years     | int32     | int4                     | true    |      0 | false       | false    |
+| pages     | int       | integer                  | false   |      0 | false       | false    |
+| available | time.Time | timestamp with time zone | false   |      0 | false       | false    |
+| tags      | string    | varchar                  | true    |      0 | false       | false    |
++-----------+-----------+--------------------------+---------+--------+-------------+----------+
+
+
+Table: public.schema_version
++---------+------+---------+---------+--------+-------------+----------+
+| COLUMN  | TYPE | DBTYPE  | ISARRAY | LENGTH | USERDEFINED | NULLABLE |
++---------+------+---------+---------+--------+-------------+----------+
+| version | int  | integer | false   |      0 | false       | false    |
++---------+------+---------+---------+--------+-------------+----------+
 
 ```
 <!-- {{{end}}} -->

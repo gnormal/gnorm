@@ -8,10 +8,10 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
-
 	yaml "gopkg.in/yaml.v2"
 
 	"gnorm.org/gnorm/database"
+	"gnorm.org/gnorm/database/drivers/postgres"
 	"gnorm.org/gnorm/environ"
 )
 
@@ -75,19 +75,19 @@ func Preview(env environ.Values, cfg Config, useYaml, verbose bool) error {
 Schema: {{.Name}}
 {{range .Tables}}
 Table: {{$schema}}.{{.Name}}
-{{makeTable .Columns "{{.Name}}|{{.Type}}" "Column" "Type"}}
+{{makeTable .Columns "{{.Name}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}" "Column" "Type" "DBType" "IsArray" "Length" "UserDefined" "Nullable"}}
 {{end -}}
 {{end -}}
 `))
 	return t.Execute(env.Stdout, info)
 }
 
-func dbInfo(env environ.Values, cfg Config) (*database.SchemaInfo, error) {
+func dbInfo(env environ.Values, cfg Config) (*database.Info, error) {
 	expand := func(s string) string {
 		return env.Env[s]
 	}
 	conn := os.Expand(cfg.ConnStr, expand)
-	return database.Parse(cfg.TypeMap, cfg.NullableTypeMap, env, conn, cfg.Schemas)
+	return postgres.Parse(cfg.TypeMap, cfg.NullableTypeMap, env.Log, conn, cfg.Schemas)
 
 }
 

@@ -32,6 +32,30 @@ runnable code.  See full docs at https://gnorm.org`[1:],
 	rootCmd.SetArgs(env.Args)
 	rootCmd.SetOutput(env.Stderr)
 
+	rootCmd.AddCommand(previewCmd(env, &code))
+	rootCmd.AddCommand(versionCmd(env))
+	if err := rootCmd.Execute(); err != nil {
+		// cobra outputs the error itself.
+		return 2
+	}
+	return code
+}
+
+// parse reads the configuration file and returns a gnorm config value.
+func parse(log *log.Logger, file string) (Config, error) {
+	c := Config{}
+	m, err := toml.DecodeFile(file, &c)
+	if err != nil {
+		return Config{}, errors.WithMessage(err, "error parsing config file")
+	}
+	undec := m.Undecoded()
+	if len(undec) > 0 {
+		log.Println("Warning: unknown values present in config file:", undec)
+	}
+	return c, nil
+}
+
+func previewCmd(env environ.Values, code *int) *cobra.Command {
 	var cfgFile string
 	var useYaml bool
 	var verbose bool
@@ -43,24 +67,32 @@ Reads your gnorm.toml file and connects to your database, translating the schema
 just as it would be during a full run.  It is then printed out in an
 easy-to-read format.`[1:],
 		Run: func(cmd *cobra.Command, args []string) {
-			cfg, err := parse(env, cfgFile)
+			if verbose {
+				env.Log = log.New(env.Stderr, "", 0)
+			} else {
+				env.Log = log.New(ioutil.Discard, "", 0)
+			}
+
+			cfg, err := parse(env.Log, cfgFile)
 			if err != nil {
-				env.Log.Println(err)
-				code = 2
+				fmt.Fprintln(env.Stderr, err)
+				*code = 2
 				return
 			}
 			if err := run.Preview(env, run.Config(cfg), useYaml, verbose); err != nil {
 				env.Log.Println(err)
-				code = 1
+				*code = 1
 			}
 		},
 	}
 	preview.Flags().StringVar(&cfgFile, "config", "gnorm.toml", "relative path to gnorm config file")
 	preview.Flags().BoolVar(&useYaml, "yaml", false, "show output in yaml instead of tabular")
 	preview.Flags().BoolVar(&verbose, "verbose", false, "show debugging output")
+	return preview
+}
 
-	rootCmd.AddCommand(preview)
-	rootCmd.AddCommand(&cobra.Command{
+func versionCmd(env environ.Values) *cobra.Command {
+	return &cobra.Command{
 		Use:   "version",
 		Short: "Displays the version of GNORM.",
 		Long: `
@@ -68,29 +100,5 @@ Shows the build date and commit hash used to build this binary.`[1:],
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Fprintf(env.Stdout, "built at: %s\ncommit hash: %s", timestamp, commitHash)
 		},
-	})
-	if verbose {
-		env.Log = log.New(env.Stderr, "", 0)
-	} else {
-		env.Log = log.New(ioutil.Discard, "", 0)
 	}
-	if err := rootCmd.Execute(); err != nil {
-		// cobra outputs the error itself.
-		return 2
-	}
-	return code
-}
-
-// parse reads the configuration file and returns a gnorm config value.
-func parse(env environ.Values, file string) (Config, error) {
-	c := Config{}
-	m, err := toml.DecodeFile(file, &c)
-	if err != nil {
-		return Config{}, errors.WithMessage(err, "error parsing config file")
-	}
-	undec := m.Undecoded()
-	if len(undec) > 0 {
-		env.Log.Println("Warning: unknown values present in config file:", undec)
-	}
-	return c, nil
 }

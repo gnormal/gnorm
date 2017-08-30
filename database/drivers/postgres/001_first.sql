@@ -22,8 +22,10 @@ CREATE TABLE books (
   isbn text NOT NULL UNIQUE,
   booktype book_type NOT NULL,
   title text NOT NULL,
+  published timestamptz[] NOT NULL,
   years integer[] NOT NULL,
-  available timestamp with time zone NOT NULL DEFAULT 'NOW()',
+  pages integer NOT NULL,
+  available timestamptz NOT NULL DEFAULT 'NOW()',
   tags varchar[] NOT NULL DEFAULT '{}'
 );
 
