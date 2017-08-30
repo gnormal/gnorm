@@ -1,8 +1,9 @@
 package run
 
 import (
-	"fmt"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestMakeTable(t *testing.T) {
@@ -24,5 +25,15 @@ func TestMakeTable(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	fmt.Println(s)
+	expected := `
++----------+-----+
+|   NAME   | AGE |
++----------+-----+
+| Bob      |  30 |
+| Samantha |   3 |
++----------+-----+
+`[1:]
+	if s != expected {
+		t.Fatal(cmp.Diff(s, expected))
+	}
 }

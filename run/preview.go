@@ -1,4 +1,5 @@
-package run // import "gnorm.org/gnorm/run"
+package run
+
 import (
 	"bytes"
 	"encoding/csv"
@@ -8,50 +9,11 @@ import (
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
-	yaml "gopkg.in/yaml.v2"
-
 	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/database/drivers/postgres"
 	"gnorm.org/gnorm/environ"
+	yaml "gopkg.in/yaml.v2"
 )
-
-// Config holds the schema that is expected to exist in the gnorm.toml file.
-type Config struct {
-	// ConnStr is the connection string for the database.
-	ConnStr string
-
-	// Schemas holds the names of schemas to generate code for.
-	Schemas []string
-
-	// TemplateDir contains the relative path to the directory where gnorm
-	// expects to find templates to render.  The default is the current
-	// directory where gnorm is running.
-	TemplateDir string
-
-	// TablePath is a relative path for tables to be rendered.  The table
-	// template will be rendered with each table in turn. If the path is empty,
-	// tables will not be rendered.
-	//
-	// The table path may be a template, in which case the values .Schema and
-	// .Table may be referenced, containing the name of the current schema and
-	// table being rendered.  For example, "{{.Schema}}/{{.Table}}/{{.Table}}.go" would render
-	// the "public.users" table to ./public/users/users.go.
-	TablePath string
-
-	// SchemaPath is a relative path for schemas to be rendered.  The schema
-	// template will be rendered with each schema in turn. If the path is empty,
-	// schema will not be rendered.
-	//
-	// The schema path may be a template, in which case the value .Schema may be
-	// referenced, containing the name of the current schema being rendered. For
-	// example, "schemas/{{.Schema}}/{{.Schema}}.go" would render the "public"
-	// schema to ./schemas/public/public.go
-	SchemaPath string
-
-	TypeMap map[string]string
-
-	NullableTypeMap map[string]string
-}
 
 // Preview displays the database info that woudl be passed to your template
 // based on your configuration.
@@ -73,9 +35,13 @@ func Preview(env environ.Values, cfg Config, useYaml, verbose bool) error {
 	}).Parse(`
 {{- range .Schemas }}{{$schema := .Name -}}
 Schema: {{.Name}}
+{{range .Enums}}
+Enum: {{$schema}}.{{.Name}}
+{{makeTable .Values "{{.Name}}|{{.Value}}" "Name" "Value" }}
+{{end -}}
 {{range .Tables}}
 Table: {{$schema}}.{{.Name}}
-{{makeTable .Columns "{{.Name}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}" "Column" "Type" "DBType" "IsArray" "Length" "UserDefined" "Nullable"}}
+{{makeTable .Columns "{{.Name}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}" "Column" "Type" "DBType" "IsArray" "Length" "UserDefined" "Nullable" "HasDefault"}}
 {{end -}}
 {{end -}}
 `))

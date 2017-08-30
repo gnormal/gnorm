@@ -50,5 +50,6 @@ type Column struct {
 	Length      int
 	UserDefined bool
 	Nullable    bool
+	HasDefault  bool
 	Orig        interface{}
 }

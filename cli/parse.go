@@ -80,7 +80,7 @@ easy-to-read format.`[1:],
 				return
 			}
 			if err := run.Preview(env, run.Config(cfg), useYaml, verbose); err != nil {
-				env.Log.Println(err)
+				fmt.Fprintln(env.Stderr, err)
 				*code = 1
 			}
 		},
