@@ -1,6 +1,6 @@
 <h1 align="center">GNORM (WIP do not use)</h1>
 
-<p align="center"><img src="https://user-images.githubusercontent.com/3185864/29083720-a7644ba2-7c37-11e7-8e3f-a9a73b7f83c5.png" /></p>
+<p align="center"><img src="https://user-images.githubusercontent.com/3185864/29906052-5fd530a2-8de0-11e7-964e-1112fb152ee1.png" /></p>
 <p align="center">GNORM is Not an ORM.</p>
 
 ## About

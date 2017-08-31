@@ -59,3 +59,8 @@ Please be verbose when explaining changes in commit messages and PRs.  When writ
 Put two line returns after the title and then add the body of the commit.  Explain both the high level of what has been done, and more importantly, *why* this change is being written.
 
 Both of these apply to commits as well as PRs.
+
+## Documentation
+
+Documentation is of the utmost importance for users of gnorm. To ensure that the documentation is always up to date, many parts of the gnorm documentation are generated from the source directly.  The gnorm.org website code exists in the same repo under the /site directory, so that changes to the code are updated simultaneously with changes to the documentation.  Go generate is used liberally along with [gocog](https://github.com/natefinch/gocog) to generate a lot of the documentation.  After any change, before committing, run `go generate ./...` and note if any changes were made in the files under the /site directory.
+
