@@ -1,5 +1,5 @@
 +++
-title= "version"
+title= "gen"
 date= 2017-08-17T13:16:04-04:00
 description = ""
 +++
@@ -18,27 +18,23 @@ func main() {
     x := cli.ParseAndRun(environ.Values{
         Stderr: os.Stdout,
         Stdout: os.Stdout,
-        Args: []string{"help", "version"},
+        Args: []string{"help", "gen"},
     })
     fmt.Println("```")
     os.Exit(x)
 }
 gocog}}} -->
 ```
-		Shows the build date and commit hash used to build this binary.
+Reads your gnorm.toml file and connects to your database, translating the schema
+into in-memory objects.  Then reads your templates and writes files to disk
+based on those templates.
 
 Usage:
-  gnorm version [flags]
+  gnorm gen [flags]
 
 Flags:
-  -h, --help   help for version
+      --config string   relative path to gnorm config file (default "gnorm.toml")
+  -h, --help            help for gen
+      --verbose         show debugging output
 ```
 <!-- {{{end}}} -->
-
-Example output:
-
-```
-$ gnorm version
-built at: 2017-08-23T21:55:35-04:00
-commit hash: 14b58c2e4904b13e8526d95486450617c5e0c4f6
-```

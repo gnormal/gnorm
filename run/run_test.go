@@ -27,7 +27,7 @@ func TestMakeTable(t *testing.T) {
 	}
 	expected := `
 +----------+-----+
-|   NAME   | AGE |
+|   Name   | Age |
 +----------+-----+
 | Bob      |  30 |
 | Samantha |   3 |

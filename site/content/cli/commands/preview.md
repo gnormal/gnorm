@@ -25,9 +25,9 @@ func main() {
 }
 gocog}}} -->
 ```
-Reads your gnorm.toml file and connects to your database, translating the schema
-just as it would be during a full run.  It is then printed out in an
-easy-to-read format.
+		Reads your gnorm.toml file and connects to your database, translating the schema
+		just as it would be during a full run.  It is then printed out in an
+		easy-to-read format.
 
 Usage:
   gnorm preview [flags]
@@ -86,7 +86,7 @@ func main() {
     x := cli.ParseAndRun(environ.Values{
         Stderr: os.Stdout,
         Stdout: os.Stdout,
-        Args: []string{"preview"},
+        Args: []string{"preview", "--config", "./_testdata/gnorm.toml"},
     })
     fmt.Println("```")
     os.Exit(x)
@@ -98,16 +98,25 @@ Schema: public
 
 Enum: public.book_type
 +------------+-------+
-|    NAME    | VALUE |
+|    Name    | Value |
 +------------+-------+
 | FICTION    |     1 |
 | NONFICTION |     2 |
 +------------+-------+
 
 
+Table: public.authors
++--------+-----------+--------+---------+--------+-------------+----------+------------+
+| Column |   Type    | DBType | IsArray | Length | UserDefined | Nullable | HasDefault |
++--------+-----------+--------+---------+--------+-------------+----------+------------+
+| id     | uuid.UUID | uuid   | false   |      0 | false       | false    | true       |
+| name   | string    | text   | false   |      0 | false       | false    | false      |
++--------+-----------+--------+---------+--------+-------------+----------+------------+
+
+
 Table: public.books
 +-----------+-----------+--------------------------+---------+--------+-------------+----------+------------+
-|  COLUMN   |   TYPE    |          DBTYPE          | ISARRAY | LENGTH | USERDEFINED | NULLABLE | HASDEFAULT |
+|  Column   |   Type    |          DBType          | IsArray | Length | UserDefined | Nullable | HasDefault |
 +-----------+-----------+--------------------------+---------+--------+-------------+----------+------------+
 | id        | int       | integer                  | false   |      0 | false       | false    | true       |
 | author_id | uuid.UUID | uuid                     | false   |      0 | false       | false    | false      |
@@ -124,19 +133,10 @@ Table: public.books
 
 Table: public.schema_version
 +---------+------+---------+---------+--------+-------------+----------+------------+
-| COLUMN  | TYPE | DBTYPE  | ISARRAY | LENGTH | USERDEFINED | NULLABLE | HASDEFAULT |
+| Column  | Type | DBType  | IsArray | Length | UserDefined | Nullable | HasDefault |
 +---------+------+---------+---------+--------+-------------+----------+------------+
 | version | int  | integer | false   |      0 | false       | false    | false      |
 +---------+------+---------+---------+--------+-------------+----------+------------+
-
-
-Table: public.authors
-+--------+-----------+--------+---------+--------+-------------+----------+------------+
-| COLUMN |   TYPE    | DBTYPE | ISARRAY | LENGTH | USERDEFINED | NULLABLE | HASDEFAULT |
-+--------+-----------+--------+---------+--------+-------------+----------+------------+
-| id     | uuid.UUID | uuid   | false   |      0 | false       | false    | true       |
-| name   | string    | text   | false   |      0 | false       | false    | false      |
-+--------+-----------+--------+---------+--------+-------------+----------+------------+
 
 ```
 <!-- {{{end}}} -->

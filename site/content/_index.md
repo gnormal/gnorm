@@ -17,19 +17,14 @@ RPC API that exposes the data in your database.
 ## Templates
 
 Gnorm reads your database schema, then runs the resulting data through templates
-you can customize in any way you like.  Included in the repo are a set of
-templates produces Go structs and functions using the stdlib's database/sql
-package as a thorough example and usable database layer for most go projects.
-
-However, your templates may generate whatever code or text files you wish, based
-on your templates.
+you can customize in any way you like to produce code or documentation.
 
 ## Configuration
 
 Configuring gnorm is as easy as creating a simple
 [TOML](https://github.com/toml-lang/toml) file with a few configuration values.
 Gnorm takes care of the rest.  See details about configuration
-[here](https://gnorm.org/cli/configuration).
+[here](/cli/configuration).
 
 ## Code
 

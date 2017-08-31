@@ -3,13 +3,11 @@ package run
 import (
 	"bytes"
 	"encoding/csv"
-	"os"
 	"strings"
 	"text/template"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
-	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/database/drivers/postgres"
 	"gnorm.org/gnorm/environ"
 	yaml "gopkg.in/yaml.v2"
@@ -17,8 +15,8 @@ import (
 
 // Preview displays the database info that woudl be passed to your template
 // based on your configuration.
-func Preview(env environ.Values, cfg Config, useYaml, verbose bool) error {
-	info, err := dbInfo(env, cfg)
+func Preview(env environ.Values, cfg Config, useYaml bool) error {
+	info, err := postgres.Parse(cfg.TypeMap, cfg.NullableTypeMap, env.Log, cfg.ConnStr, cfg.Schemas)
 	if err != nil {
 		return err
 	}
@@ -48,15 +46,6 @@ Table: {{$schema}}.{{.Name}}
 	return t.Execute(env.Stdout, info)
 }
 
-func dbInfo(env environ.Values, cfg Config) (*database.Info, error) {
-	expand := func(s string) string {
-		return env.Env[s]
-	}
-	conn := os.Expand(cfg.ConnStr, expand)
-	return postgres.Parse(cfg.TypeMap, cfg.NullableTypeMap, env.Log, conn, cfg.Schemas)
-
-}
-
 // makeTable makes a nice-looking textual table from the given data using the
 // given template as the rendering for each line.  Columns in the template
 // should be separated by a pipe '|'.  Column titles are prepended to the table
@@ -82,6 +71,7 @@ func makeTable(data interface{}, templateStr string, columnTitles ...string) (st
 	if err != nil {
 		return "", errors.WithMessage(err, "failed to render from pipe delimited bytes")
 	}
+	table.SetAutoFormatHeaders(false)
 	table.Render()
 	return output.String(), nil
 }

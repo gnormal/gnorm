@@ -11,6 +11,8 @@ import (
 //go:generate gocog ./site/content/cli/_index.md --startmark={{{ --endmark=}}}
 //go:generate gocog ./site/content/cli/commands/preview.md --startmark={{{ --endmark=}}}
 //go:generate gocog ./site/content/cli/commands/version.md --startmark={{{ --endmark=}}}
+//go:generate gocog ./site/content/cli/commands/gen.md --startmark={{{ --endmark=}}}
+//go:generate gocog ./site/content/templates/data.md --startmark={{{ --endmark=}}}
 
 func main() {
 	os.Exit(cli.Run())

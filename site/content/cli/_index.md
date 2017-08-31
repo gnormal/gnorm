@@ -1,6 +1,6 @@
 +++
 title= "Command Line"
-date= 2017-08-17T13:16:04-04:00
+weight=1
 alwaysopen=true
 +++
 
@@ -29,6 +29,7 @@ Usage:
   gnorm [command]
 
 Available Commands:
+  gen         Generate code from DB schema
   help        Help about any command
   preview     Preview the data that will be sent to your templates
   version     Displays the version of GNORM.

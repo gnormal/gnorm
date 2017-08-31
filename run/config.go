@@ -33,6 +33,16 @@ type Config struct {
 	// schema to ./schemas/public/public.go
 	SchemaPath string
 
+	// EnumPath is a relative path for enums to be rendered.  The enum.tpl template
+	// will be rendered with each enum in turn. If the path is empty, enums will not
+	// be rendered this way (thought you could render them via the schemas template).
+	//
+	// The enum path may be a template, in which case the values .Schema and .Enum
+	// may be referenced, containing the name of the current schema and Enum being
+	// rendered.  For example, "gnorm/{{.Schema}}/enums/{{.Enum}}.go" would render
+	// the "public.book_type" enum to ./gnorm/public/enums/users.go.
+	EnumPath string
+
 	TypeMap map[string]string
 
 	NullableTypeMap map[string]string
