@@ -15,6 +15,7 @@ import (
 )
 
 var (
+	version    = "DEV"
 	timestamp  = "no timestamp, did you build with make.go?"
 	commitHash = "no hash, did you build with make.go?"
 )
@@ -110,7 +111,7 @@ func versionCmd(env environ.Values) *cobra.Command {
 		Long: `
 		Shows the build date and commit hash used to build this binary.`[1:],
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Fprintf(env.Stdout, "built at: %s\ncommit hash: %s", timestamp, commitHash)
+			fmt.Fprintf(env.Stdout, "version: %s\nbuilt at: %s\ncommit hash: %s", version, timestamp, commitHash)
 		},
 	}
 }

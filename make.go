@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -47,7 +48,13 @@ func main() {
 
 	timestamp := time.Now().Format(time.RFC3339)
 	hash := run("git", "rev-parse", "HEAD")
-	flags := fmt.Sprintf(`-X "gnorm.org/gnorm/cli.timestamp=%s" -X "gnorm.org/gnorm/cli.commitHash=%s"`, timestamp, hash)
+	version := run("git", "describe", "--tags")
+	version = strings.TrimSuffix(version, "\n")
+	fmt.Printf("%q\n", version)
+	if version == "" {
+		version = "DEV"
+	}
+	flags := fmt.Sprintf(`-X "gnorm.org/gnorm/cli.timestamp=%s" -X "gnorm.org/gnorm/cli.commitHash=%s" -X "gnorm.org/gnorm/cli.version=%s"`, timestamp, hash, version)
 	fmt.Print(run("go", cmd, "--ldflags="+flags, "gnorm.org/gnorm"))
 }
 
