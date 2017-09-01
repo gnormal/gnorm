@@ -16,42 +16,42 @@ import (
 // Strings methods are from the strings package - https://golang.org/pkg/strings/
 // kace methods are from https://github.com/codemodus/kace/
 var FuncMap = map[string]interface{}{
-	"compare":      strings.Compare,
-	"contains":     strings.Contains,
-	"containsAny":  strings.ContainsAny,
-	"count":        strings.Count,
-	"equalFold":    strings.EqualFold,
-	"fields":       strings.Fields,
-	"hasPrefix":    strings.HasPrefix,
-	"hasSuffix":    strings.HasPrefix,
-	"index":        strings.Index,
-	"indexAny":     strings.IndexAny,
-	"join":         strings.Join,
-	"lastIndex":    strings.LastIndex,
-	"lastIndexAny": strings.LastIndexAny,
-	"repeat":       strings.Repeat,
-	"replace":      strings.Replace,
-	"split":        strings.Split,
-	"splitAfter":   strings.SplitAfter,
-	"splitAfterN":  strings.SplitAfterN,
-	"splitN":       strings.SplitN,
-	"title":        strings.Title,
-	"toLower":      strings.ToLower,
-	"toTitle":      strings.ToTitle,
-	"toUpper":      strings.ToUpper,
-	"trim":         strings.Trim,
-	"trimLeft":     strings.TrimLeft,
-	"trimPrefix":   strings.TrimPrefix,
-	"trimRight":    strings.TrimRight,
-	"trimSpace":    strings.TrimSpace,
-	"trimSuffix":   strings.TrimSuffix,
+	"compare":      strings.Compare,      // https://golang.org/pkg/strings/#Compare
+	"contains":     strings.Contains,     // https://golang.org/pkg/strings/#Contains
+	"containsAny":  strings.ContainsAny,  // https://golang.org/pkg/strings/#ContainsAny
+	"count":        strings.Count,        // https://golang.org/pkg/strings/#Count
+	"equalFold":    strings.EqualFold,    // https://golang.org/pkg/strings/#EqualFold
+	"fields":       strings.Fields,       // https://golang.org/pkg/strings/#Fields
+	"hasPrefix":    strings.HasPrefix,    // https://golang.org/pkg/strings/#HasPrefix
+	"hasSuffix":    strings.HasPrefix,    // https://golang.org/pkg/strings/#HasPrefix
+	"index":        strings.Index,        // https://golang.org/pkg/strings/#Index
+	"indexAny":     strings.IndexAny,     // https://golang.org/pkg/strings/#IndexAny
+	"join":         strings.Join,         // https://golang.org/pkg/strings/#Join
+	"lastIndex":    strings.LastIndex,    // https://golang.org/pkg/strings/#LastIndex
+	"lastIndexAny": strings.LastIndexAny, // https://golang.org/pkg/strings/#LastIndexAny
+	"repeat":       strings.Repeat,       // https://golang.org/pkg/strings/#Repeat
+	"replace":      strings.Replace,      // https://golang.org/pkg/strings/#Replace
+	"split":        strings.Split,        // https://golang.org/pkg/strings/#Split
+	"splitAfter":   strings.SplitAfter,   // https://golang.org/pkg/strings/#SplitAfter
+	"splitAfterN":  strings.SplitAfterN,  // https://golang.org/pkg/strings/#SplitAfterN
+	"splitN":       strings.SplitN,       // https://golang.org/pkg/strings/#SplitN
+	"title":        strings.Title,        // https://golang.org/pkg/strings/#Title
+	"toLower":      strings.ToLower,      // https://golang.org/pkg/strings/#ToLower
+	"toTitle":      strings.ToTitle,      // https://golang.org/pkg/strings/#ToTitle
+	"toUpper":      strings.ToUpper,      // https://golang.org/pkg/strings/#ToUpper
+	"trim":         strings.Trim,         // https://golang.org/pkg/strings/#Trim
+	"trimLeft":     strings.TrimLeft,     // https://golang.org/pkg/strings/#TrimLeft
+	"trimPrefix":   strings.TrimPrefix,   // https://golang.org/pkg/strings/#TrimPrefix
+	"trimRight":    strings.TrimRight,    // https://golang.org/pkg/strings/#TrimRight
+	"trimSpace":    strings.TrimSpace,    // https://golang.org/pkg/strings/#TrimSpace
+	"trimSuffix":   strings.TrimSuffix,   // https://golang.org/pkg/strings/#TrimSuffix
 
-	"pascal":     kace.Pascal,
-	"camel":      kace.Camel,
-	"snake":      kace.Snake,
-	"kebab":      kace.Kebab,
-	"snakeUpper": kace.SnakeUpper,
-	"kebabUpper": kace.KebabUpper,
+	"camel":      kace.Camel,      // https://godoc.org/github.com/codemodus/kace#Camel
+	"kebab":      kace.Kebab,      // https://godoc.org/github.com/codemodus/kace#Kebab
+	"kebabUpper": kace.KebabUpper, // https://godoc.org/github.com/codemodus/kace#KebabUpper
+	"pascal":     kace.Pascal,     // https://godoc.org/github.com/codemodus/kace#Pascal
+	"snake":      kace.Snake,      // https://godoc.org/github.com/codemodus/kace#Snake
+	"snakeUpper": kace.SnakeUpper, // https://godoc.org/github.com/codemodus/kace#SnakeUpper
 
 	"sliceString": sliceString,
 	"makeTable":   makeTable,
