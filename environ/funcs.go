@@ -13,8 +13,9 @@ import (
 )
 
 // FuncMap is the standard list of functions available to templates.
+// Strings methods are from the strings package - https://golang.org/pkg/strings/
+// kace methods are from https://github.com/codemodus/kace/
 var FuncMap = map[string]interface{}{
-	// funcs from strings package
 	"compare":      strings.Compare,
 	"contains":     strings.Contains,
 	"containsAny":  strings.ContainsAny,
@@ -45,15 +46,16 @@ var FuncMap = map[string]interface{}{
 	"trimSpace":    strings.TrimSpace,
 	"trimSuffix":   strings.TrimSuffix,
 
+	"pascal":     kace.Pascal,
+	"camel":      kace.Camel,
+	"snake":      kace.Snake,
+	"kebab":      kace.Kebab,
+	"snakeUpper": kace.SnakeUpper,
+	"kebabUpper": kace.KebabUpper,
+
 	"sliceString": sliceString,
 	"makeTable":   makeTable,
 	"makeSlice":   makeSlice,
-	"pascal":      kace.Pascal,
-	"camel":       kace.Camel,
-	"snake":       kace.Snake,
-	"kebab":       kace.Kebab,
-	"snakeUpper":  kace.SnakeUpper,
-	"kebabUpper":  kace.KebabUpper,
 }
 
 // sliceString returns a slice of s from index start to end.
