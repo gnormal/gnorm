@@ -67,6 +67,18 @@ func sliceString(s string, start, end int) string {
 // given template as the rendering for each line.  Columns in the template
 // should be separated by a pipe '|'.  Column titles are prepended to the table
 // if they exist.
+//
+// For example where here people is a slice of structs with a Name and Age fields:
+//    ```
+//    makeTable(people, "{{.Name}}|{{.Age}}", "Name", "Age")
+//
+//    +----------+-----+
+//    |   Name   | Age |
+//    +----------+-----+
+//    | Bob      |  30 |
+//    | Samantha |   3 |
+//    +----------+-----+
+//    ```
 func makeTable(data interface{}, templateStr string, columnTitles ...string) (string, error) {
 	t, err := template.New("table").Parse("{{range .}}" + templateStr + "\n{{end}}")
 	if err != nil {

@@ -52,15 +52,19 @@ func main() {
 
 	for _, s := range []string{"sliceString", "makeTable", "makeSlice"} {
 		fmt.Println("##", s)
-		fmt.Println("```")
 		c := exec.Command("go", "doc", "-u", "gnorm.org/gnorm/environ."+s)
 		b, err := c.CombinedOutput()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		fmt.Println(string(b))
-		fmt.Println("```")
+		s := strings.TrimSpace(string(b))
+		vals := strings.Split(s, "\n")
+		fmt.Println("`", vals[0], "`")
+		fmt.Println()
+		for _, s := range vals[1:] {
+			fmt.Println(strings.TrimSpace(s))
+		}
 	}
 }
 gocog}}} -->
@@ -104,29 +108,34 @@ gocog}}} -->
 - "makeSlice":   makeSlice
 
 ## sliceString
-```
-func sliceString(s string, start, end int) string
-    sliceString returns a slice of s from index start to end.
+` func sliceString(s string, start, end int) string `
 
-
-```
+sliceString returns a slice of s from index start to end.
 ## makeTable
+` func makeTable(data interface{}, templateStr string, columnTitles ...string) (string, error) `
+
+makeTable makes a nice-looking textual table from the given data using the
+given template as the rendering for each line. Columns in the template
+should be separated by a pipe '|'. Column titles are prepended to the table
+if they exist.
+
+For example where here people is a slice of structs with a Name and Age
+fields:
+
 ```
-func makeTable(data interface{}, templateStr string, columnTitles ...string) (string, error)
-    makeTable makes a nice-looking textual table from the given data using the
-    given template as the rendering for each line. Columns in the template
-    should be separated by a pipe '|'. Column titles are prepended to the table
-    if they exist.
+makeTable(people, "{{.Name}}|{{.Age}}", "Name", "Age")
 
-
++----------+-----+
+|   Name   | Age |
++----------+-----+
+| Bob      |  30 |
+| Samantha |   3 |
++----------+-----+
 ```
 ## makeSlice
-```
-func makeSlice(vals ...interface{}) interface{}
-    makeSlice returns the arguments as a single slice. If all the arguments are
-    strings, they are returned as a []string, otherwise they're returned as
-    []interface{}.
+` func makeSlice(vals ...interface{}) interface{} `
 
-
-```
+makeSlice returns the arguments as a single slice. If all the arguments are
+strings, they are returned as a []string, otherwise they're returned as
+[]interface{}.
 <!-- {{{end}}} -->
