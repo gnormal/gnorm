@@ -18,7 +18,9 @@ import (
 //go:generate go get github.com/xoxo-go/xoxo
 //go:generate xoxo pgsql://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME?sslmode=$DB_SSL_MODE --schema information_schema -o pg --template-path ./templates
 
-func Parse(typeMap, nullableTypeMap map[string]string, log *log.Logger, conn string, schemaNames []string) (*database.Info, error) {
+// Parse reads the postgres schemas for the given schemas and converts them into
+// database.Info structs.
+func Parse(log *log.Logger, conn string, schemaNames []string) (*database.Info, error) {
 	log.Println("connecting to postgres with DSN", conn)
 	db, err := sql.Open("postgres", conn)
 	if err != nil {
@@ -34,9 +36,9 @@ func Parse(typeMap, nullableTypeMap map[string]string, log *log.Logger, conn str
 		return nil, err
 	}
 
-	schemas := make(map[string]map[string][]database.Column, len(schemaNames))
+	schemas := make(map[string]map[string][]*database.Column, len(schemaNames))
 	for _, name := range schemaNames {
-		schemas[name] = map[string][]database.Column{}
+		schemas[name] = map[string][]*database.Column{}
 	}
 
 	for _, t := range tables {
@@ -65,7 +67,7 @@ func Parse(typeMap, nullableTypeMap map[string]string, log *log.Logger, conn str
 			continue
 		}
 
-		col := toDBColumn(c, typeMap, nullableTypeMap, log)
+		col := toDBColumn(c, log)
 		schema[c.TableName.String] = append(schema[c.TableName.String], col)
 	}
 
@@ -74,15 +76,15 @@ func Parse(typeMap, nullableTypeMap map[string]string, log *log.Logger, conn str
 		return nil, err
 	}
 
-	res := &database.Info{Schemas: make([]database.Schema, 0, len(schemas))}
-	for _, name := range schemaNames {
-		tables := schemas[name]
-		s := database.Schema{
-			Name:  name,
-			Enums: enums[name],
+	res := &database.Info{Schemas: make([]*database.Schema, 0, len(schemas))}
+	for _, schema := range schemaNames {
+		tables := schemas[schema]
+		s := &database.Schema{
+			DBName: schema,
+			Enums:  enums[schema],
 		}
 		for tname, columns := range tables {
-			s.Tables = append(s.Tables, database.Table{Name: tname, Columns: columns})
+			s.Tables = append(s.Tables, &database.Table{DBName: tname, DBSchema: schema, Columns: columns})
 		}
 		res.Schemas = append(res.Schemas, s)
 	}
@@ -90,9 +92,9 @@ func Parse(typeMap, nullableTypeMap map[string]string, log *log.Logger, conn str
 	return res, nil
 }
 
-func toDBColumn(c *pg.Column, typeMap, nullableTypeMap map[string]string, log *log.Logger) database.Column {
-	col := database.Column{
-		Name:       c.ColumnName.String,
+func toDBColumn(c *pg.Column, log *log.Logger) *database.Column {
+	col := &database.Column{
+		DBName:     c.ColumnName.String,
 		Nullable:   bool(c.IsNullable),
 		HasDefault: c.ColumnDefault.String != "",
 		Orig:       *c,
@@ -121,28 +123,19 @@ func toDBColumn(c *pg.Column, typeMap, nullableTypeMap map[string]string, log *l
 	}
 	col.DBType = typ
 
-	if col.Nullable {
-		t, ok := nullableTypeMap[typ]
-		if !ok {
-			log.Println("unmapped nullable type:", typ)
-		} else {
-			col.Type = t
-		}
-	} else {
-		t, ok := typeMap[typ]
-		if !ok {
-			log.Println("unmapped non-nullable type:", typ)
-		} else {
-			col.Type = t
-		}
-	}
 	return col
 }
 
+// calculateLength tries to convert a type that contains a length specification
+// to a length number and a type name without the brackets.  Thus varchar[32]
+// would return 32, "varchar".  It's up to the consumer to understand that
+// sometimes length is a maximum and sometimes it's a requirement (i.e.
+// varchar[32] vs char[32]), since this information is intrinsic to the type
+// name.
 func calculateLength(typ string) (length int, newtyp string, err error) {
 	idx := strings.Index(typ, "[")
 	if idx == -1 {
-		// no length
+		// no length indicated
 		return 0, "", nil
 	}
 	end := strings.LastIndex(typ, "]")
@@ -159,7 +152,7 @@ func calculateLength(typ string) (length int, newtyp string, err error) {
 	return 0, "", errors.New("unknown bracket format in type name")
 }
 
-func queryEnums(db *sql.DB, schemas []string) (map[string][]database.Enum, error) {
+func queryEnums(db *sql.DB, schemas []string) (map[string][]*database.Enum, error) {
 	const q = `
 	SELECT      n.nspname, t.typname as type 
 	FROM        pg_type t 
@@ -179,7 +172,7 @@ func queryEnums(db *sql.DB, schemas []string) (map[string][]database.Enum, error
 	if err != nil {
 		return nil, errors.WithMessage(err, "error querying enum names")
 	}
-	ret := map[string][]database.Enum{}
+	ret := map[string][]*database.Enum{}
 	for rows.Next() {
 		var name, schema string
 		if err := rows.Scan(&schema, &name); err != nil {
@@ -189,9 +182,10 @@ func queryEnums(db *sql.DB, schemas []string) (map[string][]database.Enum, error
 		if err != nil {
 			return nil, err
 		}
-		enum := database.Enum{
-			Name:   name,
-			Values: vals,
+		enum := &database.Enum{
+			DBName:   name,
+			DBSchema: schema,
+			Values:   vals,
 		}
 		ret[schema] = append(ret[schema], enum)
 	}
@@ -201,7 +195,7 @@ func queryEnums(db *sql.DB, schemas []string) (map[string][]database.Enum, error
 	return ret, nil
 }
 
-func queryValues(db *sql.DB, schema, enum string) ([]database.EnumValue, error) {
+func queryValues(db *sql.DB, schema, enum string) ([]*database.EnumValue, error) {
 	rows, err := db.Query(`
 	SELECT
 	e.enumlabel,
@@ -214,39 +208,15 @@ func queryValues(db *sql.DB, schema, enum string) ([]database.EnumValue, error) 
 		return nil, errors.Wrapf(err, "failed to query enum values for %s.%s", schema, enum)
 	}
 	defer rows.Close()
-	var vals []database.EnumValue
+	var vals []*database.EnumValue
 	for rows.Next() {
-		val := database.EnumValue{}
-		if err := rows.Scan(&val.Name, &val.Value); err != nil {
+		var name string
+		var val int
+		if err := rows.Scan(&name, &val); err != nil {
 			return nil, errors.Wrapf(err, "failed reading enum values for %s.%s", schema, enum)
 		}
-		vals = append(vals, val)
+
+		vals = append(vals, &database.EnumValue{DBName: name, Value: val})
 	}
 	return vals, nil
 }
-
-/*
-
-SELECT
-DISTINCT column_name AS enum_name
-FROM information_schema.columns
-WHERE data_type = 'enum' AND table_schema = `public`
-
-
-SELECT
-e.enumlabel,
-e.enumsortorder
-FROM pg_type t
-JOIN ONLY pg_namespace n ON n.oid = t.typnamespace
-LEFT JOIN pg_enum e ON t.oid = e.enumtypid
-WHERE n.nspname = 'public' AND t.typname = 'user_role';
-
-
-SELECT      t.typname as type
-FROM        pg_type t
-LEFT JOIN   pg_catalog.pg_namespace n ON n.oid = t.typnamespace
-WHERE       (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid))
-AND     NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
-AND     n.nspname IN ($1);
-
-*/

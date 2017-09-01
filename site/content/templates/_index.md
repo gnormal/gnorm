@@ -1,6 +1,6 @@
 +++
 title= "Templates"
-date= 2017-08-30T13:16:04-04:00
+weight=2
 alwaysopen=true
 +++
 

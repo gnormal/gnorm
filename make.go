@@ -48,12 +48,7 @@ func main() {
 
 	timestamp := time.Now().Format(time.RFC3339)
 	hash := run("git", "rev-parse", "HEAD")
-	version := run("git", "describe", "--tags")
-	version = strings.TrimSuffix(version, "\n")
-	fmt.Printf("%q\n", version)
-	if version == "" {
-		version = "DEV"
-	}
+	version := gitTag()
 	flags := fmt.Sprintf(`-X "gnorm.org/gnorm/cli.timestamp=%s" -X "gnorm.org/gnorm/cli.commitHash=%s" -X "gnorm.org/gnorm/cli.version=%s"`, timestamp, hash, version)
 	fmt.Print(run("go", cmd, "--ldflags="+flags, "gnorm.org/gnorm"))
 }
@@ -67,4 +62,20 @@ func run(cmd string, args ...string) string {
 		os.Exit(1)
 	}
 	return string(b)
+}
+
+func gitTag() string {
+	c := exec.Command("git", "describe", "--tags")
+	b, err := c.Output()
+	if err != nil {
+		exit, ok := err.(*exec.ExitError)
+		if ok && exit.Exited() {
+			// probably no git tag
+			return "dev"
+		}
+		fmt.Print(string(b))
+		os.Exit(1)
+	}
+
+	return strings.TrimSuffix(string(b), "\n")
 }

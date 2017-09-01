@@ -20,19 +20,20 @@ Schemas = ["public", "foobar"]
 # directory where gnorm is running.
 TemplateDir = "templates"
 
-# TablePath is a relative path for tables to be rendered.  The table
+# TablePath is a relative path for tables to be rendered.  The table.tpl
 # template will be rendered with each table in turn. If the path is empty,
-# tables will not be rendered.
+# tables will not be rendered this way (though you could render them via the
+# schemas template).
 #
-# The table path may be a template, in which case the values .Schema and
-# .Table may be referenced, containing the name of the current schema and
-# table being rendered.  For example, "schemas/{{.Schema}}/{{.Table}}/{{.Table}}.go" would render
-# the "public.users" table to .schemas/public/users/users.go.
+# The table path may be a template, in which case the values .Schema and .Table
+# may be referenced, containing the name of the current schema and table being
+# rendered.  For example, "gnorm/{{.Schema}}/tables/{{.Table}}/{{.Table}}.go"
+# would render the "public.users" table to ./gnorm/public/tables/users/users.go.
 TablePath = "schemas/{{.Schema}}/{{.Table}}/{{.Table}}.go"
 
-# SchemaPath is a relative path for schemas to be rendered.  The schema
+# SchemaPath is a relative path for schemas to be rendered.  The schema.tpl
 # template will be rendered with each schema in turn. If the path is empty,
-# schema will not be rendered.
+# schemas will not be rendered.
 #
 # The schema path may be a template, in which case the value .Schema may be
 # referenced, containing the name of the current schema being rendered. For
@@ -40,12 +41,23 @@ TablePath = "schemas/{{.Schema}}/{{.Table}}/{{.Table}}.go"
 # schema to ./schemas/public/public.go
 SchemaPath = "schemas/{{.Schema}}/{{.Schema}}.go"
 
+# EnumPath is a relative path for enums to be rendered.  The enum.tpl template
+# will be rendered with each enum in turn. If the path is empty, enums will not
+# be rendered this way (thought you could render them via the schemas template).
+#
+# The enum path may be a template, in which case the values .Schema and .Enum
+# may be referenced, containing the name of the current schema and Enum being
+# rendered.  For example, "gnorm/{{.Schema}}/enums/{{.Enum}}.go" would render
+# the "public.book_type" enum to ./gnorm/public/enums/users.go.
+EnumPath =  "gnorm/{{.Schema}}/enums/{{.Enum}}.go"
+
 # TypeMap is a mapping of database type names to replacement type names
-# (generally types from your language for deserialization).  Types not in
-# this list will remain in their database form.  In the data sent to your
-# template, this is the Column.Type, and the original type is in
-# Column.OrigType.  Note that because of the way tables in TOML work, TypeMap
-# and NullableTypeMap must be at the end of your configuration file.
+# (generally types from your language for deserialization), specifically for
+# database columns that are nullable.  In the data sent to your template, this
+# is the mapping that translates Column.DBType into Column.Type.  If a DBType is
+# not in this mapping, Column.Type will be an empty string.  Note that because
+# of the way tables in TOML work, TypeMap and NullableTypeMap must be at the end
+# of your configuration file.
 [TypeMap]
 "timestamp with time zone" = "time.Time"
 "text" = "string"
@@ -55,13 +67,13 @@ SchemaPath = "schemas/{{.Schema}}/{{.Schema}}.go"
 "integer" = "int"
 "numeric" = "float64"
 
-# NullableTypeMap is a mapping of database type names to replacement type
-# names (generally types from your language for deserialization)
-# specifically for database columns that are nullable.  Types not in this
-# list will remain in their database form.  In the data sent to your
-# template, this is the Column.Type, and the original type is in
-# Column.OrigType.  Note that because of the way tables in TOML work, TypeMap
-# and NullableTypeMap must be at the end of your configuration file.
+# NullableTypeMap is a mapping of database type names to replacement type names
+# (generally types from your language for deserialization), specifically for
+# database columns that are nullable.  In the data sent to your template, this
+# is the mapping that translates Column.DBType into Column.Type.  If a DBType is
+# not in this mapping, Column.Type will be an empty string.  Note that because
+# of the way tables in TOML work, TypeMap and NullableTypeMap must be at the end
+# of your configuration file.
 [NullableTypeMap]
 "timestamp with time zone" = "pq.NullTime"
 "text" = "sql.NullString"

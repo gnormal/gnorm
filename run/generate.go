@@ -1,4 +1,4 @@
-package run
+package run // import "gnorm.org/gnorm/run"
 
 import (
 	"bytes"
@@ -14,28 +14,31 @@ import (
 	"gnorm.org/gnorm/environ"
 )
 
-// Generate reads your database, gets the schema for it, and then generates files
-// based on your templates and your configuration.
-func Generate(env environ.Values, cfg Config) error {
-	info, err := postgres.Parse(cfg.TypeMap, cfg.NullableTypeMap, env.Log, cfg.ConnStr, cfg.Schemas)
+// Generate reads your database, gets the schema for it, and then generates
+// files based on your templates and your configuration.
+func Generate(env environ.Values, cfg *Config) error {
+	info, err := postgres.Parse(env.Log, cfg.ConnStr, cfg.Schemas)
 	if err != nil {
 		return err
 	}
-	if cfg.SchemaPath == "" {
+	if err := convertNames(env.Log, info, cfg); err != nil {
+		return err
+	}
+	if cfg.SchemaPath == nil {
 		env.Log.Println("No SchemaPath specified, skipping schemas.")
 	} else {
 		if err := generateSchemas(env, cfg, info); err != nil {
 			return err
 		}
 	}
-	if cfg.EnumPath == "" {
+	if cfg.EnumPath == nil {
 		env.Log.Println("No EnumPath specified, skipping enums.")
 	} else {
 		if err := generateEnums(env, cfg, info); err != nil {
 			return err
 		}
 	}
-	if cfg.TablePath == "" {
+	if cfg.TablePath == nil {
 		env.Log.Println("No table path specified, skipping tables.")
 	} else {
 		if err := generateTables(env, cfg, info); err != nil {
@@ -45,25 +48,20 @@ func Generate(env environ.Values, cfg Config) error {
 	return nil
 }
 
-func generateSchemas(env environ.Values, cfg Config, info *database.Info) error {
-	pathTpl, err := template.New("").Parse(cfg.SchemaPath)
-	if err != nil {
-		return errors.WithMessage(err, "failed parsing SchemaPath")
-	}
-
+func generateSchemas(env environ.Values, cfg *Config, info *database.Info) error {
 	outputTpl, err := template.ParseFiles(templatePath(cfg, "schema.tpl"))
 	if err != nil {
 		return errors.WithMessage(err, "failed parsing schema template")
 	}
 	for _, schema := range info.Schemas {
-		if err := generateSchema(env.Log, schema, pathTpl, outputTpl); err != nil {
+		if err := generateSchema(env.Log, schema, cfg.SchemaPath, outputTpl); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func generateSchema(log *log.Logger, schema database.Schema, pathTpl, outputTpl *template.Template) error {
+func generateSchema(log *log.Logger, schema *database.Schema, pathTpl, outputTpl *template.Template) error {
 	log.Printf("Generating output for schema %v", schema.Name)
 	buf := &bytes.Buffer{}
 	err := pathTpl.Execute(buf, struct{ Schema string }{Schema: schema.Name})
@@ -85,19 +83,14 @@ func generateSchema(log *log.Logger, schema database.Schema, pathTpl, outputTpl 
 	return nil
 }
 
-func generateEnums(env environ.Values, cfg Config, info *database.Info) error {
-	pathTpl, err := template.New("").Parse(cfg.EnumPath)
-	if err != nil {
-		return errors.WithMessage(err, "failed parsing EnumPath")
-	}
-
+func generateEnums(env environ.Values, cfg *Config, info *database.Info) error {
 	outputTpl, err := template.ParseFiles(templatePath(cfg, "enum.tpl"))
 	if err != nil {
 		return errors.WithMessage(err, "failed parsing enum template")
 	}
 	for _, schema := range info.Schemas {
 		for _, enum := range schema.Enums {
-			if err := generateEnum(env.Log, enum, pathTpl, outputTpl); err != nil {
+			if err := generateEnum(env.Log, enum, cfg.EnumPath, outputTpl); err != nil {
 				return err
 			}
 		}
@@ -105,7 +98,7 @@ func generateEnums(env environ.Values, cfg Config, info *database.Info) error {
 	return nil
 }
 
-func generateEnum(log *log.Logger, enum database.Enum, pathTpl, outputTpl *template.Template) error {
+func generateEnum(log *log.Logger, enum *database.Enum, pathTpl, outputTpl *template.Template) error {
 	log.Printf("Generating output for enum %v", enum.Name)
 	buf := &bytes.Buffer{}
 	err := pathTpl.Execute(buf, struct{ Schema, Enum string }{Schema: enum.Schema, Enum: enum.Name})
@@ -127,19 +120,14 @@ func generateEnum(log *log.Logger, enum database.Enum, pathTpl, outputTpl *templ
 	return nil
 }
 
-func generateTables(env environ.Values, cfg Config, info *database.Info) error {
-	pathTpl, err := template.New("").Parse(cfg.TablePath)
-	if err != nil {
-		return errors.WithMessage(err, "failed parsing TablePath")
-	}
-
+func generateTables(env environ.Values, cfg *Config, info *database.Info) error {
 	outputTpl, err := template.ParseFiles(templatePath(cfg, "table.tpl"))
 	if err != nil {
 		return errors.WithMessage(err, "failed parsing table template")
 	}
 	for _, schema := range info.Schemas {
 		for _, table := range schema.Tables {
-			if err := generateTable(env.Log, table, pathTpl, outputTpl); err != nil {
+			if err := generateTable(env.Log, table, cfg.TablePath, outputTpl); err != nil {
 				return err
 			}
 		}
@@ -147,7 +135,7 @@ func generateTables(env environ.Values, cfg Config, info *database.Info) error {
 	return nil
 }
 
-func generateTable(log *log.Logger, table database.Table, pathTpl, outputTpl *template.Template) error {
+func generateTable(log *log.Logger, table *database.Table, pathTpl, outputTpl *template.Template) error {
 	log.Printf("Generating output for table %v", table.Name)
 	buf := &bytes.Buffer{}
 	err := pathTpl.Execute(buf, struct{ Schema, Table string }{Schema: table.Schema, Table: table.Name})
@@ -169,6 +157,6 @@ func generateTable(log *log.Logger, table database.Table, pathTpl, outputTpl *te
 	return nil
 }
 
-func templatePath(cfg Config, name string) string {
+func templatePath(cfg *Config, name string) string {
 	return filepath.Join(cfg.TemplateDir, name)
 }

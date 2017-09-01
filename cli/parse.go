@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"text/template"
 
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
@@ -63,7 +64,7 @@ func previewCmd(env environ.Values, code *int) *cobra.Command {
 				*code = 2
 				return
 			}
-			if err := run.Preview(env, run.Config(cfg), useYaml); err != nil {
+			if err := run.Preview(env, cfg, useYaml); err != nil {
 				fmt.Fprintln(env.Stderr, err)
 				*code = 1
 			}
@@ -93,7 +94,7 @@ based on those templates.`[1:],
 				*code = 2
 				return
 			}
-			if err := run.Generate(env, run.Config(cfg)); err != nil {
+			if err := run.Generate(env, cfg); err != nil {
 				fmt.Fprintln(env.Stderr, err)
 				*code = 1
 			}
@@ -115,29 +116,76 @@ func versionCmd(env environ.Values) *cobra.Command {
 		},
 	}
 }
-func parseFile(env environ.Values, file string) (Config, error) {
+func parseFile(env environ.Values, file string) (*run.Config, error) {
 	f, err := os.Open(file)
 	if err != nil {
-		return Config{}, errors.WithMessage(err, "can't open config file")
+		return nil, errors.WithMessage(err, "can't open config file")
 	}
 	defer f.Close()
 	return parse(env, f)
 }
 
 // parse reads the configuration file and returns a gnorm config value.
-func parse(env environ.Values, r io.Reader) (Config, error) {
+func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	c := Config{}
 	m, err := toml.DecodeReader(r, &c)
 	if err != nil {
-		return Config{}, errors.WithMessage(err, "error parsing config file")
+		return nil, errors.WithMessage(err, "error parsing config file")
 	}
 	undec := m.Undecoded()
 	if len(undec) > 0 {
 		log.Println("Warning: unknown values present in config file:", undec)
 	}
+
+	if len(c.Schemas) == 0 {
+		return nil, errors.New("no schemas specified in config")
+	}
+
+	if c.NameConversion == "" {
+		return nil, errors.New("no NameConversion specified in config")
+	}
+
+	cfg := &run.Config{
+		ConnStr:         c.ConnStr,
+		Schemas:         c.Schemas,
+		NullableTypeMap: c.NullableTypeMap,
+		TypeMap:         c.TypeMap,
+	}
+
+	t, err := template.New("NameConversion").Funcs(environ.FuncMap).Parse(c.NameConversion)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error parsing NameConversion template")
+	}
+	cfg.NameConversion = t
+
+	if c.SchemaPath != "" {
+		t, err := template.New("SchemaPath").Funcs(environ.FuncMap).Parse(c.SchemaPath)
+		if err != nil {
+			return nil, errors.WithMessage(err, "error parsing SchemaPath template")
+		}
+		cfg.SchemaPath = t
+	}
+
+	if c.TablePath != "" {
+		t, err := template.New("TablePath").Funcs(environ.FuncMap).Parse(c.TablePath)
+		if err != nil {
+			return nil, errors.WithMessage(err, "error parsing SchemaPath template")
+		}
+		cfg.TablePath = t
+	}
+
+	if c.EnumPath != "" {
+		t, err := template.New("EnumPath").Funcs(environ.FuncMap).Parse(c.EnumPath)
+		if err != nil {
+			return nil, errors.WithMessage(err, "error parsing SchemaPath template")
+		}
+		cfg.EnumPath = t
+	}
+
 	expand := func(s string) string {
 		return env.Env[s]
 	}
-	c.ConnStr = os.Expand(c.ConnStr, expand)
-	return c, nil
+
+	cfg.ConnStr = os.Expand(c.ConnStr, expand)
+	return cfg, nil
 }

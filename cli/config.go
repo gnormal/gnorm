@@ -2,7 +2,7 @@ package cli
 
 // Config holds the schema that is expected to exist in the gnorm.toml file.
 type Config struct {
-	// ConnStr is the connection string for the database.  environment variables
+	// ConnStr is the connection string for the database.  Environment variables
 	// in $FOO form will be expanded.
 	ConnStr string
 
@@ -43,6 +43,14 @@ type Config struct {
 	// rendered.  For example, "gnorm/{{.Schema}}/enums/{{.Enum}}.go" would render
 	// the "public.book_type" enum to ./gnorm/public/enums/users.go.
 	EnumPath string
+
+	// NameConversion defines how the DBName of tables, schemas, and enums are
+	// converted into their Name value.  This is a template that may use all the
+	// regular functions.  The "." value is the DB name of the item. Thus, to
+	// make an item's Name the same as its DBName, you'd use a template of
+	// "{{.}}". To make the Name the PascalCase version of DBName, you'd use
+	// "{{pascal .}}".
+	NameConversion string
 
 	// TypeMap is a mapping of database type names to replacement type names
 	// (generally types from your language for deserialization).  Types not in
