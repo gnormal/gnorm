@@ -94,49 +94,49 @@ func main() {
 gocog}}} -->
 ```
 $ gnorm preview
-Schema: public
+Schema: Public(public)
 
-Enum: public.book_type
-+------------+-------+
-|    Name    | Value |
-+------------+-------+
-| FICTION    |     1 |
-| NONFICTION |     2 |
-+------------+-------+
-
-
-Table: public.authors
-+--------+-----------+--------+---------+--------+-------------+----------+------------+
-| Column |   Type    | DBType | IsArray | Length | UserDefined | Nullable | HasDefault |
-+--------+-----------+--------+---------+--------+-------------+----------+------------+
-| id     | uuid.UUID | uuid   | false   |      0 | false       | false    | true       |
-| name   | string    | text   | false   |      0 | false       | false    | false      |
-+--------+-----------+--------+---------+--------+-------------+----------+------------+
+Enum: BookType(public.book_type)
++------------+------------+-------+
+|    Name    |   DBName   | Value |
++------------+------------+-------+
+| FICTION    | FICTION    |     1 |
+| NONFICTION | NONFICTION |     2 |
++------------+------------+-------+
 
 
-Table: public.books
-+-----------+-----------+--------------------------+---------+--------+-------------+----------+------------+
-|  Column   |   Type    |          DBType          | IsArray | Length | UserDefined | Nullable | HasDefault |
-+-----------+-----------+--------------------------+---------+--------+-------------+----------+------------+
-| id        | int       | integer                  | false   |      0 | false       | false    | true       |
-| author_id | uuid.UUID | uuid                     | false   |      0 | false       | false    | false      |
-| isbn      | string    | text                     | false   |      0 | false       | false    | false      |
-| booktype  | BookType  | book_type                | false   |      0 | true        | false    | false      |
-| title     | string    | text                     | false   |      0 | false       | false    | false      |
-| published | time.Time | timestamptz              | true    |      0 | false       | false    | false      |
-| years     | int32     | int4                     | true    |      0 | false       | false    | false      |
-| pages     | int       | integer                  | false   |      0 | false       | false    | false      |
-| available | time.Time | timestamp with time zone | false   |      0 | false       | false    | true       |
-| tags      | string    | varchar                  | true    |      0 | false       | false    | true       |
-+-----------+-----------+--------------------------+---------+--------+-------------+----------+------------+
+Table: Authors(public.authors)
++------+--------+-----------+--------+---------+--------+-------------+----------+------------+
+| Name | DBName |   Type    | DBType | IsArray | Length | UserDefined | Nullable | HasDefault |
++------+--------+-----------+--------+---------+--------+-------------+----------+------------+
+| ID   | id     | uuid.UUID | uuid   | false   |      0 | false       | false    | true       |
+| Name | name   | string    | text   | false   |      0 | false       | false    | false      |
++------+--------+-----------+--------+---------+--------+-------------+----------+------------+
 
 
-Table: public.schema_version
-+---------+------+---------+---------+--------+-------------+----------+------------+
-| Column  | Type | DBType  | IsArray | Length | UserDefined | Nullable | HasDefault |
-+---------+------+---------+---------+--------+-------------+----------+------------+
-| version | int  | integer | false   |      0 | false       | false    | false      |
-+---------+------+---------+---------+--------+-------------+----------+------------+
+Table: Books(public.books)
++-----------+-----------+-----------+--------------------------+---------+--------+-------------+----------+------------+
+|   Name    |  DBName   |   Type    |          DBType          | IsArray | Length | UserDefined | Nullable | HasDefault |
++-----------+-----------+-----------+--------------------------+---------+--------+-------------+----------+------------+
+| ID        | id        | int       | integer                  | false   |      0 | false       | false    | true       |
+| AuthorID  | author_id | uuid.UUID | uuid                     | false   |      0 | false       | false    | false      |
+| Isbn      | isbn      | string    | text                     | false   |      0 | false       | false    | false      |
+| Booktype  | booktype  |           | book_type                | false   |      0 | true        | false    | false      |
+| Title     | title     | string    | text                     | false   |      0 | false       | false    | false      |
+| Published | published | time.Time | timestamptz              | true    |      0 | false       | false    | false      |
+| Years     | years     | int32     | int4                     | true    |      0 | false       | false    | false      |
+| Pages     | pages     | int       | integer                  | false   |      0 | false       | false    | false      |
+| Available | available | time.Time | timestamp with time zone | false   |      0 | false       | false    | true       |
+| Tags      | tags      | string    | varchar                  | true    |      0 | false       | false    | true       |
++-----------+-----------+-----------+--------------------------+---------+--------+-------------+----------+------------+
+
+
+Table: SchemaVersion(public.schema_version)
++---------+---------+------+---------+---------+--------+-------------+----------+------------+
+|  Name   | DBName  | Type | DBType  | IsArray | Length | UserDefined | Nullable | HasDefault |
++---------+---------+------+---------+---------+--------+-------------+----------+------------+
+| Version | version | int  | integer | false   |      0 | false       | false    | false      |
++---------+---------+------+---------+---------+--------+-------------+----------+------------+
 
 ```
 <!-- {{{end}}} -->

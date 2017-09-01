@@ -51,6 +51,13 @@ SchemaPath = "schemas/{{.Schema}}/{{.Schema}}.go"
 # the "public.book_type" enum to ./gnorm/public/enums/users.go.
 EnumPath =  "gnorm/{{.Schema}}/enums/{{.Enum}}.go"
 
+# NameConversion defines how the DBName of tables, schemas, and enums are
+# converted into their Name value.  This is a template that may use all the
+# regular functions.  The "." value is the DB name of the item. Thus, to make an
+# item's Name the same as its DBName, you'd use a template of "{{.}}". To make
+# the Name the PascalCase version, you'd use "{{pascal .}}".
+NameConversion = "{{pascal .}}"
+
 # TypeMap is a mapping of database type names to replacement type names
 # (generally types from your language for deserialization), specifically for
 # database columns that are nullable.  In the data sent to your template, this
