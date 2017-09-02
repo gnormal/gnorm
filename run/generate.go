@@ -2,10 +2,12 @@ package run // import "gnorm.org/gnorm/run"
 
 import (
 	"bytes"
-	"log"
+	"context"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"text/template"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -54,15 +56,15 @@ func generateSchemas(env environ.Values, cfg *Config, info *database.Info) error
 		return errors.WithMessage(err, "failed parsing schema template")
 	}
 	for _, schema := range info.Schemas {
-		if err := generateSchema(env.Log, schema, cfg.SchemaPath, outputTpl); err != nil {
+		if err := generateSchema(env, schema, cfg.SchemaPath, outputTpl, cfg.PostRun); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func generateSchema(log *log.Logger, schema *database.Schema, pathTpl, outputTpl *template.Template) error {
-	log.Printf("Generating output for schema %v", schema.Name)
+func generateSchema(env environ.Values, schema *database.Schema, pathTpl, outputTpl *template.Template, postrun []string) error {
+	env.Log.Printf("Generating output for schema %v", schema.Name)
 	buf := &bytes.Buffer{}
 	err := pathTpl.Execute(buf, struct{ Schema string }{Schema: schema.Name})
 	if err != nil {
@@ -80,6 +82,12 @@ func generateSchema(log *log.Logger, schema *database.Schema, pathTpl, outputTpl
 	if err := outputTpl.Execute(f, schema); err != nil {
 		return errors.WithMessage(err, "failed to run schema template over schema "+schema.Name)
 	}
+	if err := f.Close(); err != nil {
+		return errors.Wrapf(err, "error closing generated file %q", outputPath)
+	}
+	if len(postrun) > 0 {
+		return doPostRun(env, outputPath, postrun)
+	}
 	return nil
 }
 
@@ -90,7 +98,7 @@ func generateEnums(env environ.Values, cfg *Config, info *database.Info) error {
 	}
 	for _, schema := range info.Schemas {
 		for _, enum := range schema.Enums {
-			if err := generateEnum(env.Log, enum, cfg.EnumPath, outputTpl); err != nil {
+			if err := generateEnum(env, enum, cfg.EnumPath, outputTpl, cfg.PostRun); err != nil {
 				return err
 			}
 		}
@@ -98,8 +106,8 @@ func generateEnums(env environ.Values, cfg *Config, info *database.Info) error {
 	return nil
 }
 
-func generateEnum(log *log.Logger, enum *database.Enum, pathTpl, outputTpl *template.Template) error {
-	log.Printf("Generating output for enum %v", enum.Name)
+func generateEnum(env environ.Values, enum *database.Enum, pathTpl, outputTpl *template.Template, postrun []string) error {
+	env.Log.Printf("Generating output for enum %v", enum.Name)
 	buf := &bytes.Buffer{}
 	err := pathTpl.Execute(buf, struct{ Schema, Enum string }{Schema: enum.Schema, Enum: enum.Name})
 	if err != nil {
@@ -117,6 +125,12 @@ func generateEnum(log *log.Logger, enum *database.Enum, pathTpl, outputTpl *temp
 	if err := outputTpl.Execute(f, enum); err != nil {
 		return errors.Wrapf(err, "failed to run enum template over enum %v.%v"+enum.Schema, enum.Name)
 	}
+	if err := f.Close(); err != nil {
+		return errors.Wrapf(err, "error closing generated file %q", outputPath)
+	}
+	if len(postrun) > 0 {
+		return doPostRun(env, outputPath, postrun)
+	}
 	return nil
 }
 
@@ -127,7 +141,7 @@ func generateTables(env environ.Values, cfg *Config, info *database.Info) error 
 	}
 	for _, schema := range info.Schemas {
 		for _, table := range schema.Tables {
-			if err := generateTable(env.Log, table, cfg.TablePath, outputTpl); err != nil {
+			if err := generateTable(env, table, cfg.TablePath, outputTpl, cfg.PostRun); err != nil {
 				return err
 			}
 		}
@@ -135,8 +149,8 @@ func generateTables(env environ.Values, cfg *Config, info *database.Info) error 
 	return nil
 }
 
-func generateTable(log *log.Logger, table *database.Table, pathTpl, outputTpl *template.Template) error {
-	log.Printf("Generating output for table %v", table.Name)
+func generateTable(env environ.Values, table *database.Table, pathTpl, outputTpl *template.Template, postrun []string) error {
+	env.Log.Printf("Generating output for table %v", table.Name)
 	buf := &bytes.Buffer{}
 	err := pathTpl.Execute(buf, struct{ Schema, Table string }{Schema: table.Schema, Table: table.Name})
 	if err != nil {
@@ -153,6 +167,39 @@ func generateTable(log *log.Logger, table *database.Table, pathTpl, outputTpl *t
 	defer f.Close()
 	if err := outputTpl.Execute(f, table); err != nil {
 		return errors.Wrapf(err, "failed to run table template over table %v.%v"+table.Schema, table.Name)
+	}
+	if err := f.Close(); err != nil {
+		return errors.Wrapf(err, "error closing generated file %q", outputPath)
+	}
+	if len(postrun) > 0 {
+		return doPostRun(env, outputPath, postrun)
+	}
+	return nil
+}
+
+func doPostRun(env environ.Values, file string, postrun []string) error {
+	newenv := make(map[string]string, len(env.Env)+1)
+	for k := range env.Env {
+		newenv[k] = env.Env[k]
+	}
+	run := make([]string, len(postrun))
+	newenv["GNORMFILE"] = file
+	conv := func(s string) string { return newenv[s] }
+	for x, s := range postrun {
+		run[x] = os.Expand(s, conv)
+	}
+	var cmd *exec.Cmd
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	if len(run) > 1 {
+		cmd = exec.CommandContext(ctx, run[0], run[1:]...)
+	} else {
+		cmd = exec.CommandContext(ctx, run[0])
+	}
+	cmd.Stderr = env.Stderr
+	cmd.Stdout = env.Stdout
+	if err := cmd.Run(); err != nil {
+		return errors.Wrapf(err, "error running postrun command %q", run)
 	}
 	return nil
 }

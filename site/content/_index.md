@@ -40,6 +40,17 @@ stabilized a little.  Contributions more than welcome.  Check out
 database/drivers/postgres to get an idea of what is involved (it's not that
 much). 
 
+## What's Wrong With ORMs?
+
+Gnorm believes that the code should not generate the database schema, but the
+database schema should generate the code.  Schema is declarative, code is
+imperative, so there's an inherent mismatch of doing code-first.  You end up
+having to write your schema in special tags or structures purely to generate a
+schema... when there's already a langauge to generate a database schema - SQL.
+Why create a new one?  By creating your database schema exactly the way you want
+it and then generating code to access it, you get the full power of the
+database, and no hidden costs for what an ORM is doing behind your back.
+
 ## Code
 
 https://github.com/gnormal/gnorm

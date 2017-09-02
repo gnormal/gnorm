@@ -25,6 +25,7 @@ func convertNames(log *log.Logger, info *database.Info, cfg *Config) error {
 		}
 		for _, e := range s.Enums {
 			e.Schema = s.Name
+			e.DBSchema = s.DBName
 			e.Name, err = convert(e.DBName)
 			if err != nil {
 				return errors.WithMessage(err, "enum")
@@ -37,7 +38,8 @@ func convertNames(log *log.Logger, info *database.Info, cfg *Config) error {
 			}
 		}
 		for _, t := range s.Tables {
-			t.DBSchema = s.Name
+			t.Schema = s.Name
+			t.DBSchema = s.DBName
 			t.Name, err = convert(t.DBName)
 			if err != nil {
 				return errors.WithMessage(err, "table")

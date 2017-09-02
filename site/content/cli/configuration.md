@@ -20,6 +20,13 @@ Schemas = ["public", "foobar"]
 # directory where gnorm is running.
 TemplateDir = "templates"
 
+# PostRun is a command with arguments that is run after each file is generated
+# by GNORM.  It is generally used to reformat the file, but it can be for any
+# use. Environment variables will be expanded, and the special $GNORMFILE
+# environment variable may be used, which will expand to the name of the file
+# that was just generated.
+PostRun = ["goimports", "-w", "$GNORMFILE"]
+
 # TablePath is a relative path for tables to be rendered.  The table.tpl
 # template will be rendered with each table in turn. If the path is empty,
 # tables will not be rendered this way (though you could render them via the

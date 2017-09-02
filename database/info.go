@@ -49,5 +49,5 @@ type Column struct {
 	UserDefined bool        // true if the type is user-defined
 	Nullable    bool        // true if the column is not NON NULL
 	HasDefault  bool        // true if the column has a default
-	Orig        interface{} // the raw database column data
+	Orig        interface{} `yaml:"-"` // the raw database column data
 }

@@ -11,7 +11,7 @@ import (
 )
 
 func TestConvertNames(t *testing.T) {
-	c := &environ.Config{
+	c := &Config{
 		NameConversion: template.Must(template.New("").Funcs(environ.FuncMap).Parse(`{{print "abc " .}}`)),
 		NullableTypeMap: map[string]string{
 			"*int": "*INTEGER",
@@ -69,6 +69,18 @@ func TestConvertNames(t *testing.T) {
 	got = info.Schemas[0].Tables[0].Name
 	if got != expected {
 		t.Errorf("table name expected %q but got %q", expected, got)
+	}
+
+	expected = info.Schemas[0].Name
+	got = info.Schemas[0].Tables[0].Schema
+	if got != expected {
+		t.Errorf("table schema expected %q but got %q", expected, got)
+	}
+
+	expected = info.Schemas[0].DBName
+	got = info.Schemas[0].Tables[0].DBSchema
+	if got != expected {
+		t.Errorf("table db schema expected %q but got %q", expected, got)
 	}
 
 	expected = "abc " + info.Schemas[0].Tables[0].Columns[0].DBName
