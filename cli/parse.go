@@ -150,6 +150,7 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		Schemas:         c.Schemas,
 		NullableTypeMap: c.NullableTypeMap,
 		TypeMap:         c.TypeMap,
+		TemplateDir:     c.TemplateDir,
 	}
 
 	t, err := template.New("NameConversion").Funcs(environ.FuncMap).Parse(c.NameConversion)
