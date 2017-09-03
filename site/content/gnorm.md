@@ -14,7 +14,7 @@ aliases = [
 # )
 # 
 # func main() {
-# 	exclude := map[string]bool{".git": true, "site": true, "vendor": true}
+# 	exclude := map[string]bool{".git": true, "site": true, "vendor": true, "_testdata": true}
 # 	// this runs in the root dir of the repo, thanks to go:generate, so
 # 	// this is actually getting the top level subdirectories
 # 	err := filepath.Walk(".", func(path string, f os.FileInfo, err error) error {
@@ -32,8 +32,6 @@ aliases = [
 # 	}
 # }
 # gocog]]]
-"/gnorm/_testdata",
-"/gnorm/_testdata/templates",
 "/gnorm/cli",
 "/gnorm/database",
 "/gnorm/database/drivers",
