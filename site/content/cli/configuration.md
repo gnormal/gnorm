@@ -12,6 +12,10 @@ and must live in the directory where you call gnorm.
 # ConnStr is the connection string for the database.
 ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 
+# DBType holds the type of db you're connecting to.  Possible values are
+# "postgres" or "mysql". 
+DBType = "postgres"
+
 # Schemas holds the names of schemas to generate code for.
 Schemas = ["public", "foobar"]
 
