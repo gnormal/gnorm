@@ -67,6 +67,8 @@ type Column struct {
 type Enum struct {
 	Schema   string       // the converted name of the schema this enum is in
 	DBSchema string       // the original name of the schema in the DB
+	Table    string       // (mysql) the converted name of the table this enum is in
+	DBTable  string       // (mysql) the original name of the table in the DB
 	Name     string       // the converted name of the enum
 	DBName   string       // the original name of the enum in the DB
 	Values   []*EnumValue // the list of possible values for this enum

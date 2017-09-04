@@ -12,18 +12,14 @@ import (
 	"github.com/pkg/errors"
 
 	"gnorm.org/gnorm/database"
-	"gnorm.org/gnorm/database/drivers/postgres"
 	"gnorm.org/gnorm/environ"
 )
 
 // Generate reads your database, gets the schema for it, and then generates
 // files based on your templates and your configuration.
 func Generate(env environ.Values, cfg *Config) error {
-	info, err := postgres.Parse(env.Log, cfg.ConnStr, cfg.Schemas)
+	info, err := getDBInfo(env, cfg)
 	if err != nil {
-		return err
-	}
-	if err := convertNames(env.Log, info, cfg); err != nil {
 		return err
 	}
 	if cfg.SchemaPath == nil {

@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 	"text/template"
 
 	"github.com/BurntSushi/toml"
@@ -152,6 +153,17 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		TypeMap:         c.TypeMap,
 		TemplateDir:     c.TemplateDir,
 		PostRun:         c.PostRun,
+	}
+
+	switch strings.ToLower(c.DBType) {
+	case "":
+		return nil, errors.New("no DBType specificed")
+	case "postgres":
+		cfg.DBType = run.Postgres
+	case "mysql":
+		cfg.DBType = run.Mysql
+	default:
+		return nil, errors.Errorf("unsupported dbtype %q", c.DBType)
 	}
 
 	t, err := template.New("NameConversion").Funcs(environ.FuncMap).Parse(c.NameConversion)

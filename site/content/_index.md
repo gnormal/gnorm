@@ -34,11 +34,9 @@ make an issue (and preferably also a PR).
 
 ## Database Support
 
-Right now, GNORM only supports Postgres, however, adding more database support
-is fairly easy and is something we'll be working on once we have the feature set
-stabilized a little.  Contributions more than welcome.  Check out
-database/drivers/postgres to get an idea of what is involved (it's not that
-much). 
+GNORM supports Postgres amd MySQL.  Further database support is planned for the
+future.  Contributions more than welcome.  Check out database/drivers to get an
+idea of what is involved (it's not that much). 
 
 ## What's Wrong With ORMs?
 
