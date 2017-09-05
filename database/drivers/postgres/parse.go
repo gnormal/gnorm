@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 
 	// register postgres driver
@@ -93,10 +92,12 @@ func Parse(log *log.Logger, conn string, schemaNames []string) (*database.Info, 
 }
 
 func toDBColumn(c *pg.Column, log *log.Logger) *database.Column {
+
 	col := &database.Column{
 		DBName:     c.ColumnName.String,
 		Nullable:   bool(c.IsNullable),
 		HasDefault: c.ColumnDefault.String != "",
+		Length:     int(c.CharacterMaximumLength.Int64),
 		Orig:       *c,
 	}
 
@@ -113,43 +114,9 @@ func toDBColumn(c *pg.Column, log *log.Logger) *database.Column {
 		typ = c.UdtName.String
 	}
 
-	length, newtyp, err := calculateLength(typ)
-	switch {
-	case err != nil:
-		log.Println(err)
-	case length > 0:
-		col.Length = length
-		typ = newtyp
-	}
 	col.DBType = typ
 
 	return col
-}
-
-// calculateLength tries to convert a type that contains a length specification
-// to a length number and a type name without the brackets.  Thus varchar[32]
-// would return 32, "varchar".  It's up to the consumer to understand that
-// sometimes length is a maximum and sometimes it's a requirement (i.e.
-// varchar[32] vs char[32]), since this information is intrinsic to the type
-// name.
-func calculateLength(typ string) (length int, newtyp string, err error) {
-	idx := strings.Index(typ, "[")
-	if idx == -1 {
-		// no length indicated
-		return 0, "", nil
-	}
-	end := strings.LastIndex(typ, "]")
-	// we expect the length of the type to be the end of the name.
-	if end == len(typ)-1 {
-		lstr := typ[idx+1 : end]
-		l, err := strconv.Atoi(lstr)
-		if err != nil {
-			return 0, "", err
-		}
-		return l, typ[:idx], nil
-	}
-	// something wonky with the brackets
-	return 0, "", errors.New("unknown bracket format in type name")
 }
 
 func queryEnums(db *sql.DB, schemas []string) (map[string][]*database.Enum, error) {

@@ -2,8 +2,8 @@ package mysql // import "gnorm.org/gnorm/database/drivers/mysql"
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
-	"strconv"
 	"strings"
 
 	// mysql driver
@@ -98,73 +98,45 @@ func toDBColumn(c *pg.Column, log *log.Logger) (*database.Column, *database.Enum
 		DBName:     c.ColumnName.String,
 		Nullable:   bool(c.IsNullable),
 		HasDefault: c.ColumnDefault.String != "",
+		DBType:     c.DataType.String,
 		Orig:       *c,
 	}
 
-	typ := c.DataType.String
-
-	var enum *database.Enum
-
-	// in mysql, enums are specific to a column in a table
-	if typ == "enum" {
-		// column type should be enum('foo', 'bar')
-		if len(c.ColumnType.String) < 5 {
-			return nil, nil, errors.New("unexpected column type: " + c.ColumnType.String)
-		}
-		// we'll call the enum the same as the column name.
-		// the function above will set the table name etc
-		enum = &database.Enum{
-			DBName: col.DBName,
-		}
-		// strip off the enum and parens
-		s := c.ColumnType.String[5 : len(c.ColumnType.String)-1]
-		vals := strings.Split(s, ",")
-		enum.Values = make([]*database.EnumValue, len(vals))
-		for x := range vals {
-			enum.Values[x] = &database.EnumValue{
-				// strip off the quotes
-				DBName: vals[x][1 : len(vals[x])-1],
-				// enum values start at 1 in mysql
-				Value: x + 1,
-			}
-		}
+	// MySQL always specifies length even if it's not a part of the type. We
+	// only really care if it's a part of the type, so check if the size is part
+	// of the column_type.
+	if strings.HasSuffix(c.ColumnType.String, fmt.Sprintf("(%v)", c.CharacterMaximumLength.Int64)) {
+		col.Length = int(c.CharacterMaximumLength.Int64)
 	}
 
-	length, newtyp, err := calculateLength(typ)
-	switch {
-	case err != nil:
-		return nil, nil, err
-	case length > 0:
-		col.Length = length
-		typ = newtyp
+	if col.Type != "enum" {
+		return col, nil, nil
 	}
-	col.DBType = typ
+	// in mysql, enums are specific to a column in a table, so all their data is
+	// contained in the column they're used by.
+
+	// column type should be enum('foo', 'bar')
+	if len(c.ColumnType.String) < 5 {
+		return nil, nil, errors.New("unexpected column type: " + c.ColumnType.String)
+	}
+
+	// we'll call the enum the same as the column name.
+	// the function above will set the table name etc
+	enum := &database.Enum{
+		DBName: col.DBName,
+	}
+	// strip off the enum and parens
+	s := c.ColumnType.String[5 : len(c.ColumnType.String)-1]
+	vals := strings.Split(s, ",")
+	enum.Values = make([]*database.EnumValue, len(vals))
+	for x := range vals {
+		enum.Values[x] = &database.EnumValue{
+			// strip off the quotes
+			DBName: vals[x][1 : len(vals[x])-1],
+			// enum values start at 1 in mysql
+			Value: x + 1,
+		}
+	}
 
 	return col, enum, nil
-}
-
-// calculateLength tries to convert a type that contains a length specification
-// to a length number and a type name without the brackets.  Thus varchar(32)
-// would return 32, "varchar".  It's up to the consumer to understand that
-// sometimes length is a maximum and sometimes it's a requirement (i.e.
-// varchar(32) vs char(32), since this information is intrinsic to the type
-// name.
-func calculateLength(typ string) (length int, newtyp string, err error) {
-	idx := strings.Index(typ, "(")
-	if idx == -1 {
-		// no length indicated
-		return 0, "", nil
-	}
-	end := strings.LastIndex(typ, ")")
-	// we expect the length of the type to be the end of the name.
-	if end == len(typ)-1 {
-		lstr := typ[idx+1 : end]
-		l, err := strconv.Atoi(lstr)
-		if err != nil {
-			return 0, "", err
-		}
-		return l, typ[:idx], nil
-	}
-	// something wonky with the brackets
-	return 0, "", errors.New("unknown bracket format in type name")
 }

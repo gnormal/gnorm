@@ -15,12 +15,13 @@ CREATE TYPE book_type AS ENUM (
 CREATE TABLE books (
   id SERIAL PRIMARY KEY,
   author_id uuid NOT NULL REFERENCES authors(id),
-  isbn text NOT NULL UNIQUE,
+  isbn char(32) NOT NULL UNIQUE,
   booktype book_type NOT NULL,
   title text NOT NULL,
   published timestamptz[] NOT NULL,
   years integer[] NOT NULL,
   pages integer NOT NULL,
+  summary text,
   available timestamptz NOT NULL DEFAULT 'NOW()',
   tags varchar[] NOT NULL DEFAULT '{}'
 );
