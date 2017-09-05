@@ -2,6 +2,18 @@
 
 Of course, contributions are more than welcome. Please read these guidelines for making the process as painless as possible.
 
+## Discussion
+
+Development discussion should take place on the #gnorm channel of [gopher
+slack](https://gophers.slack.com/).
+
+## Tasks
+
+See the [Nearterm Todos](https://github.com/gnormal/gnorm/projects/1) github
+project on the repo to see what needs to be done soon.  If there's something
+you'd like to do that's not on the list, feel free to file a new issue, or talk
+to the devs on the #gnorm channel in [gopher slack](https://gophers.slack.com/).
+
 ## Dependency Management
 
 gnorm uses the official dep tool for managing dependencies.
