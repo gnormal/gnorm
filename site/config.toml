@@ -2,8 +2,25 @@ baseURL = "http://gnorm.org/"
 languageCode = "en-us"
 title = "GNORM"
 theme = "docdock"
+repo = "https://github.com/vjeantet/hugo-theme-docdock"
 
 [params]
     noSearch = true
     noHomeIcon = true
     logo = "/images/gnorm.png"
+
+[outputs]
+home = [ "HTML", "RSS", "JSON"]
+
+[[menu.shortcuts]]
+pre = "<h3>Links</h3>"
+name = "<i class='fa fa-github'></i> Github repo"
+identifier = "github"
+url = "https://github.com/gnormal/gnorm"
+weight = 1
+
+[[menu.shortcuts]]
+name = "<i class='fa fa-twitter'></i> Twitter"
+identifier = "twtiter"
+url = "https://twitter.com/GnormDotOrg"
+weight = 2

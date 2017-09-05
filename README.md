@@ -26,6 +26,11 @@ Gnorm uses a build script called make.go.  To install gnorm, just run
 You can also just run `go get` or `go install`, but the output of gnorm -version
 will not reflect the build environment.
 
+## Discussion 
+
+If you have questions about Gnorm or want to hack on it, meet the devs on the #gnorm 
+channel of [gopher slack](https://gophers.slack.com/).
+
 ## Contributing
 
 See CONTRIBUTING.md

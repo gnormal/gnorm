@@ -49,6 +49,11 @@ Why create a new one?  By creating your database schema exactly the way you want
 it and then generating code to access it, you get the full power of the
 database, and no hidden costs for what an ORM is doing behind your back.
 
+## Discussion
+
+If you have questions about Gnorm or want to hack on it, meet the devs on the #gnorm 
+channel of [gopher slack](https://gophers.slack.com/).
+
 ## Code
 
 https://github.com/gnormal/gnorm
