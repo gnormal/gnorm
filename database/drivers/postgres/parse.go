@@ -177,13 +177,12 @@ func queryValues(db *sql.DB, schema, enum string) ([]*database.EnumValue, error)
 	defer rows.Close()
 	var vals []*database.EnumValue
 	for rows.Next() {
-		var name string
-		var val int
+		var name sql.NullString
+		var val sql.NullInt64
 		if err := rows.Scan(&name, &val); err != nil {
 			return nil, errors.Wrapf(err, "failed reading enum values for %s.%s", schema, enum)
 		}
-
-		vals = append(vals, &database.EnumValue{DBName: name, Value: val})
+		vals = append(vals, &database.EnumValue{DBName: name.String, Value: int(val.Int64)})
 	}
 	return vals, nil
 }
