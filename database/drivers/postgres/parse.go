@@ -19,7 +19,7 @@ import (
 
 // Parse reads the postgres schemas for the given schemas and converts them into
 // database.Info structs.
-func Parse(log *log.Logger, conn string, schemaNames []string) (*database.Info, error) {
+func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
 	log.Println("connecting to postgres with DSN", conn)
 	db, err := sql.Open("postgres", conn)
 	if err != nil {

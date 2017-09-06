@@ -145,6 +145,19 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	if c.NameConversion == "" {
 		return nil, errors.New("no NameConversion specified in config")
 	}
+	if len(c.ExcludeTables) > 0 && len(c.IncludeTables) > 0 {
+		return nil, errors.New("both include tables and exclude tables")
+	}
+
+	include, err := parseTables(c.IncludeTables, c.Schemas)
+	if err != nil {
+		return nil, err
+	}
+
+	exclude, err := parseTables(c.ExcludeTables, c.Schemas)
+	if err != nil {
+		return nil, err
+	}
 
 	cfg := &run.Config{
 		ConnStr:         c.ConnStr,
@@ -153,6 +166,8 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		TypeMap:         c.TypeMap,
 		TemplateDir:     c.TemplateDir,
 		PostRun:         c.PostRun,
+		ExcludeTables:   exclude,
+		IncludeTables:   include,
 	}
 
 	switch strings.ToLower(c.DBType) {
@@ -202,4 +217,37 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 
 	cfg.ConnStr = os.Expand(c.ConnStr, expand)
 	return cfg, nil
+}
+
+// parseTables takes a list of tablenames in "<schema.>table" format and spits
+// out a map of schema to list of tables.  Tables with no schema apply to all
+// schemas.  Tables with a schema apply to only that schema.  Tables that
+// specify a schema not in the list of schemas given are an error.
+func parseTables(tables, schemas []string) (map[string][]string, error) {
+	out := make(map[string][]string, len(schemas))
+	for _, s := range schemas {
+		out[s] = nil
+	}
+	for _, t := range tables {
+		vals := strings.Split(t, ".")
+		switch len(vals) {
+		case 1:
+			// just the table name, so it goes for all schemas
+			for schema := range out {
+				out[schema] = append(out[schema], t)
+			}
+		case 2:
+			// schema and table
+			list, ok := out[vals[0]]
+			if !ok {
+				return nil, errors.Errorf("%q specified for tables but schema %q not in schema list", t, vals[0])
+			}
+			out[vals[0]] = append(list, vals[1])
+		default:
+			// too many periods... bad format
+			return nil, errors.Errorf(`badly formatted table: %q, should be just "table" or "table.schema"`, t)
+		}
+	}
+
+	return out, nil
 }

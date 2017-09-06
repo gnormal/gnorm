@@ -16,7 +16,7 @@ import (
 
 // Parse reads the postgres schemas for the given schemas and converts them into
 // database.Info structs.
-func Parse(log *log.Logger, conn string, schemaNames []string) (*database.Info, error) {
+func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
 	log.Println("connecting to mysql with DSN", conn)
 	db, err := sql.Open("mysql", conn)
 	if err != nil {
@@ -38,6 +38,9 @@ func Parse(log *log.Logger, conn string, schemaNames []string) (*database.Info, 
 	}
 
 	for _, t := range tables {
+		if !filterTables(t.TableSchema.String, t.TableName.String) {
+			continue
+		}
 		s, ok := schemas[t.TableSchema.String]
 		if !ok {
 			log.Printf("Should be impossible: table %q references unknown schema %q", t.TableName.String, t.TableSchema.String)
@@ -54,6 +57,9 @@ func Parse(log *log.Logger, conn string, schemaNames []string) (*database.Info, 
 	enums := map[string][]*database.Enum{}
 
 	for _, c := range columns {
+		if !filterTables(c.TableSchema.String, c.TableName.String) {
+			continue
+		}
 		schema, ok := schemas[c.TableSchema.String]
 		if !ok {
 			log.Printf("Should be impossible: column %q references unknown schema %q", c.ColumnName.String, c.TableSchema.String)
@@ -64,7 +70,6 @@ func Parse(log *log.Logger, conn string, schemaNames []string) (*database.Info, 
 			log.Printf("Should be impossible: column %q references unknown table %q in schema %q", c.ColumnName.String, c.TableName.String, c.TableSchema.String)
 			continue
 		}
-
 		col, enum, err := toDBColumn(c, log)
 		if err != nil {
 			return nil, err

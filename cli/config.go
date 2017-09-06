@@ -13,6 +13,20 @@ type Config struct {
 	// Schemas holds the names of schemas to generate code for.
 	Schemas []string
 
+	// IncludeTables is a whitelist of tables to generate data for. Tables not
+	// in this list will not be included in data geenrated by gnorm. You cannot
+	// set IncludeTables if ExcludeTables is set.  By default, tables will be
+	// included in all schemas.  To specify tables for a specific schema only,
+	// use the schema.tablenmae format.
+	IncludeTables []string
+
+	// ExcludeTables is a blacklist of tables to ignore while generating data.
+	// All tables in a schema that are not in this list will be used for
+	// generation. You cannot set ExcludeTables if IncludeTables is set.  By
+	// default, tables will be excluded from all schemas.  To specify tables for
+	// a specific schema only, use the schema.tablenmae format.
+	ExcludeTables []string
+
 	// TemplateDir contains the relative path to the directory where gnorm
 	// expects to find templates to render.  The default is the current
 	// directory where gnorm is running.
