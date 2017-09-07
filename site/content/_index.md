@@ -26,17 +26,21 @@ Configuring gnorm is as easy as creating a simple
 Gnorm takes care of the rest.  See details about configuration
 [here](/cli/configuration).
 
-## Feature Support
-
-Databases support a large variety of features, GNORM will add support for more
-features as time allows, and as needed.  If you need a feature, feel free to
-make an issue (and preferably also a PR).
-
 ## Database Support
 
 GNORM supports Postgres amd MySQL.  Further database support is planned for the
 future.  Contributions more than welcome.  Check out database/drivers to get an
 idea of what is involved (it's not that much). 
+
+## Downloads
+
+https://github.com/gnormal/gnorm/releases
+
+## Feature Support
+
+Databases support a large variety of features, GNORM will add support for more
+features as time allows, and as needed.  If you need a feature, feel free to
+make an issue (and preferably also a PR).
 
 ## What's Wrong With ORMs?
 

@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -19,38 +18,47 @@ make.go is the build script for gnorm.
 
 commands:
   install	compile with go install [default]
-  build		compile with go build
+  all		build for all supported platforms
   help		display this help
-  
 `
 
 func main() {
-	log.SetFlags(0)
-	cmd := "install"
-	if len(os.Args) > 2 {
-		log.Printf("too many arguments: %q\n\n", os.Args[1:])
-		log.Fatal(usage)
+	switch len(os.Args) {
+	case 1:
+		fmt.Print(run("go", "install", "--ldflags="+flags(), "gnorm.org/gnorm"))
+	case 2:
+		switch os.Args[1] {
+		case "install":
+			fmt.Print(run("go", "install", "--ldflags="+flags(), "gnorm.org/gnorm"))
+		case "all":
+			ldf := flags()
+			for _, OS := range []string{"windows", "darwin", "linux"} {
+				if err := os.Setenv("GOOS", OS); err != nil {
+					fmt.Println(err)
+					os.Exit(1)
+				}
+				for _, ARCH := range []string{"amd64", "386"} {
+					if err := os.Setenv("GOOS", OS); err != nil {
+						fmt.Println(err)
+						os.Exit(1)
+					}
+					fmt.Print(run("go", "build", "-o", "gnorm_"+OS+"_"+ARCH, "--ldflags="+ldf, "gnorm.org/gnorm"))
+				}
+			}
+		case "help":
+			fmt.Println(usage)
+		default:
+			fmt.Println(usage)
+			os.Exit(1)
+		}
 	}
-	if len(os.Args) == 2 {
-		cmd = os.Args[1]
-	}
+}
 
-	switch cmd {
-	case "help":
-		log.Print(usage)
-		os.Exit(0)
-	case "install", "build":
-	// ok
-	default:
-		log.Printf("unknown command %q\n\n", cmd)
-		log.Fatal(usage)
-	}
-
+func flags() string {
 	timestamp := time.Now().Format(time.RFC3339)
 	hash := run("git", "rev-parse", "HEAD")
 	version := gitTag()
-	flags := fmt.Sprintf(`-X "gnorm.org/gnorm/cli.timestamp=%s" -X "gnorm.org/gnorm/cli.commitHash=%s" -X "gnorm.org/gnorm/cli.version=%s"`, timestamp, hash, version)
-	fmt.Print(run("go", cmd, "--ldflags="+flags, "gnorm.org/gnorm"))
+	return fmt.Sprintf(`-X "gnorm.org/gnorm/cli.timestamp=%s" -X "gnorm.org/gnorm/cli.commitHash=%s" -X "gnorm.org/gnorm/cli.version=%s"`, timestamp, hash, version)
 }
 
 func run(cmd string, args ...string) string {
