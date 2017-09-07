@@ -71,27 +71,6 @@ CREATE TABLE books (
 CREATE INDEX books_title_idx ON books(author_id, title);
 ```
 
-<!-- {{{gocog
-package main
-import (
-    "fmt"
-    "os"
-    "gnorm.org/gnorm/cli"
-    "gnorm.org/gnorm/environ"
-)
-func main() {
-    fmt.Println("```")
-    fmt.Println("$ gnorm preview")
-    os.Stderr = os.Stdout
-    x := cli.ParseAndRun(environ.Values{
-        Stderr: os.Stdout,
-        Stdout: os.Stdout,
-        Args: []string{"preview", "--config", "./_testdata/gnorm.toml"},
-    })
-    fmt.Println("```")
-    os.Exit(x)
-}
-gocog}}} -->
 ```
 $ gnorm preview
 Schema: Public(public)
@@ -100,8 +79,8 @@ Enum: BookType(public.book_type)
 +------------+------------+-------+
 |    Name    |   DBName   | Value |
 +------------+------------+-------+
-| FICTION    | FICTION    |     1 |
-| NONFICTION | NONFICTION |     2 |
+| Fiction    | FICTION    |     1 |
+| Nonfiction | NONFICTION |     2 |
 +------------+------------+-------+
 
 
@@ -131,12 +110,4 @@ Table: Books(public.books)
 +-----------+-----------+-----------+--------------------------+---------+--------+-------------+----------+------------+
 
 
-Table: SchemaVersion(public.schema_version)
-+---------+---------+------+---------+---------+--------+-------------+----------+------------+
-|  Name   | DBName  | Type | DBType  | IsArray | Length | UserDefined | Nullable | HasDefault |
-+---------+---------+------+---------+---------+--------+-------------+----------+------------+
-| Version | version | int  | integer | false   |      0 | false       | false    | false      |
-+---------+---------+------+---------+---------+--------+-------------+----------+------------+
-
 ```
-<!-- {{{end}}} -->

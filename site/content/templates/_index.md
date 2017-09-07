@@ -10,9 +10,9 @@ documentation](https://golang.org/pkg/text/template/).
 
 There are three templates that gnorm uses to generate code: 
 
-- schema.tpl - used to generate code per database schema
-- table.tpl - used to generate code per table
-- enum.tpl - used to generate code per database enum
+- schema.gotmpl - used to generate code per database schema
+- table.gotmpl - used to generate code per table
+- enum.gotmpl - used to generate code per database enum
 
 By default, these templates are expected to be in the directory where gnorm is
 run, but you can configure the directory by setting TemplateDir in your

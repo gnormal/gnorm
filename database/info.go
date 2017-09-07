@@ -7,10 +7,10 @@ type Info struct {
 
 // Schema is the information on a single named schema in the database.
 type Schema struct {
-	Name   string   // the converted name of this schema
-	DBName string   // the original name of the schema in the DB
-	Tables []*Table // the list of tables in this schema
-	Enums  []*Enum  // the list of enums in this schema
+	Name   string  // the converted name of this schema
+	DBName string  // the original name of the schema in the DB
+	Tables Tables  // the list of tables in this schema
+	Enums  []*Enum // the list of enums in this schema
 }
 
 // Enum represents a type that has a set of allowed values.
@@ -33,11 +33,32 @@ type EnumValue struct {
 
 // Table contains the definiiton of a database table.
 type Table struct {
-	Schema   string    // the converted name of the schema this table is in
-	DBSchema string    // the original name of the schema in the DB
-	Name     string    // the name of the table
-	DBName   string    // the original name of the table in the DB
-	Columns  []*Column // ordered list of columns in this table
+	Schema   string  // the converted name of the schema this table is in
+	DBSchema string  // the original name of the schema in the DB
+	Name     string  // the name of the table
+	DBName   string  // the original name of the table in the DB
+	Columns  Columns // ordered list of columns in this table
+}
+
+// Tables is a list of tables in this schema.
+type Tables []*Table
+
+// Names returns a list of table Names in this schema.
+func (t Tables) Names() []string {
+	names := make([]string, len(t))
+	for x := range t {
+		names[x] = t[x].Name
+	}
+	return names
+}
+
+// DBNames returns a list of table DBNames in this schema.
+func (t Tables) DBNames() []string {
+	names := make([]string, len(t))
+	for x := range t {
+		names[x] = t[x].DBName
+	}
+	return names
 }
 
 // Column contains data about a column in a table.
@@ -52,4 +73,25 @@ type Column struct {
 	Nullable    bool        // true if the column is not NON NULL
 	HasDefault  bool        // true if the column has a default
 	Orig        interface{} `yaml:"-"` // the raw database column data
+}
+
+// Columns represents the ordered list of columns in a table.
+type Columns []*Column
+
+// Names returns the ordered list of column Names in this table.
+func (c Columns) Names() []string {
+	names := make([]string, len(c))
+	for x := range c {
+		names[x] = c[x].Name
+	}
+	return names
+}
+
+// DBNames returns the ordered list of column DBNames in this table.
+func (c Columns) DBNames() []string {
+	names := make([]string, len(c))
+	for x := range c {
+		names[x] = c[x].DBName
+	}
+	return names
 }

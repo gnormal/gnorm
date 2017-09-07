@@ -11,11 +11,9 @@ import (
 	"github.com/pkg/errors"
 
 	"gnorm.org/gnorm/database"
-	"gnorm.org/gnorm/database/drivers/postgres/pg"
+	"gnorm.org/gnorm/database/drivers/postgres/gnorm/columns"
+	"gnorm.org/gnorm/database/drivers/postgres/gnorm/tables"
 )
-
-//go:generate go get github.com/xoxo-go/xoxo
-//go:generate xoxo pgsql://$DB_USER:$DB_PASSWORD@$DB_HOST/$DB_NAME?sslmode=$DB_SSL_MODE --schema information_schema -o pg --template-path ./templates
 
 // Parse reads the postgres schemas for the given schemas and converts them into
 // database.Info structs.
@@ -29,8 +27,9 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	for x := range schemaNames {
 		sch[x] = sql.NullString{String: schemaNames[x], Valid: true}
 	}
+
 	log.Println("querying table schemas for", schemaNames)
-	tables, err := pg.QueryTable(db, pg.TableTableSchemaWhere.In(sch), pg.UnOrdered)
+	tables, err := tables.Query(db, tables.TableSchemaCol.In(sch))
 	if err != nil {
 		return nil, err
 	}
@@ -41,6 +40,10 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	}
 
 	for _, t := range tables {
+		if !filterTables(t.TableSchema.String, t.TableName.String) {
+			continue
+		}
+
 		s, ok := schemas[t.TableSchema.String]
 		if !ok {
 			log.Printf("Should be impossible: table %q references unknown schema %q", t.TableName.String, t.TableSchema.String)
@@ -49,12 +52,16 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		s[t.TableName.String] = nil
 	}
 
-	columns, err := pg.QueryColumn(db, pg.ColumnTableSchemaWhere.In(sch), pg.UnOrdered)
+	columns, err := columns.Query(db, columns.TableSchemaCol.In(sch))
 	if err != nil {
 		return nil, err
 	}
 
 	for _, c := range columns {
+		if !filterTables(c.TableSchema.String, c.TableName.String) {
+			continue
+		}
+
 		schema, ok := schemas[c.TableSchema.String]
 		if !ok {
 			log.Printf("Should be impossible: column %q references unknown schema %q", c.ColumnName.String, c.TableSchema.String)
@@ -91,11 +98,11 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	return res, nil
 }
 
-func toDBColumn(c *pg.Column, log *log.Logger) *database.Column {
+func toDBColumn(c *columns.Row, log *log.Logger) *database.Column {
 
 	col := &database.Column{
 		DBName:     c.ColumnName.String,
-		Nullable:   bool(c.IsNullable),
+		Nullable:   c.IsNullable.String == "YES",
 		HasDefault: c.ColumnDefault.String != "",
 		Length:     int(c.CharacterMaximumLength.Int64),
 		Orig:       *c,

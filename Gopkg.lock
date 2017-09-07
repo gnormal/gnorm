@@ -8,6 +8,18 @@
   version = "v0.3.0"
 
 [[projects]]
+  name = "github.com/codemodus/kace"
+  packages = [".","ktrie"]
+  revision = "6cba456eea9261c36a87dd747773cfb18f4c61d9"
+  version = "v0.4.1"
+
+[[projects]]
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
+  version = "v1.3"
+
+[[projects]]
   name = "github.com/google/go-cmp"
   packages = ["cmp","cmp/internal/diff","cmp/internal/function","cmp/internal/value"]
   revision = "8099a9787ce5dc5984ed879a3bda47dc730a8e97"
@@ -70,6 +82,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ead28caa482c6433d4360c5d845fa5a29ec74ceac97cc53467af71c8a069ebd0"
+  inputs-digest = "aafa9ca51744044c22a93d0ca5a6f73084b964d3f31d9133a28ab086f5c4f26c"
   solver-name = "gps-cdcl"
   solver-version = 1

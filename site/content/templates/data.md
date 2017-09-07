@@ -17,7 +17,7 @@ import (
 
 func main() {
 	fmt.Println("```")
-	for _, s := range []string{"Schema", "Table", "Column", "Enum", "EnumValue"} {
+	for _, s := range []string{"Schema", "Table", "Tables", "Column", "Columns", "Enum", "EnumValue"} {
 		c := exec.Command("go", "doc", "gnorm.org/gnorm/database."+s)
 		b, err := c.CombinedOutput()
 		if err != nil {
@@ -31,23 +31,30 @@ func main() {
 gocog}}} -->
 ```
 type Schema struct {
-	Name   string   // the converted name of this schema
-	DBName string   // the original name of the schema in the DB
-	Tables []*Table // the list of tables in this schema
-	Enums  []*Enum  // the list of enums in this schema
+	Name   string  // the converted name of this schema
+	DBName string  // the original name of the schema in the DB
+	Tables Tables  // the list of tables in this schema
+	Enums  []*Enum // the list of enums in this schema
 }
     Schema is the information on a single named schema in the database.
 
 
 type Table struct {
-	Schema   string    // the converted name of the schema this table is in
-	DBSchema string    // the original name of the schema in the DB
-	Name     string    // the name of the table
-	DBName   string    // the original name of the table in the DB
-	Columns  []*Column // ordered list of columns in this table
+	Schema   string  // the converted name of the schema this table is in
+	DBSchema string  // the original name of the schema in the DB
+	Name     string  // the name of the table
+	DBName   string  // the original name of the table in the DB
+	Columns  Columns // ordered list of columns in this table
 }
     Table contains the definiiton of a database table.
 
+
+type Tables []*Table
+    Tables is a list of tables in this schema.
+
+
+func (t Tables) DBNames() []string
+func (t Tables) Names() []string
 
 type Column struct {
 	Name        string      // the converted name of the column
@@ -63,6 +70,13 @@ type Column struct {
 }
     Column contains data about a column in a table.
 
+
+type Columns []*Column
+    Columns represents the ordered list of columns in a table.
+
+
+func (c Columns) DBNames() []string
+func (c Columns) Names() []string
 
 type Enum struct {
 	Schema   string       // the converted name of the schema this enum is in

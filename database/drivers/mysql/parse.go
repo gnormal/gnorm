@@ -11,7 +11,8 @@ import (
 	"github.com/pkg/errors"
 
 	"gnorm.org/gnorm/database"
-	"gnorm.org/gnorm/database/drivers/mysql/pg"
+	"gnorm.org/gnorm/database/drivers/mysql/gnorm/columns"
+	"gnorm.org/gnorm/database/drivers/mysql/gnorm/tables"
 )
 
 // Parse reads the postgres schemas for the given schemas and converts them into
@@ -22,34 +23,30 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
-	sch := make([]sql.NullString, len(schemaNames))
-	for x := range schemaNames {
-		sch[x] = sql.NullString{String: schemaNames[x], Valid: true}
-	}
 	log.Println("querying table schemas for", schemaNames)
-	tables, err := pg.QueryTable(db, pg.TableTableSchemaWhere.In(sch), pg.UnOrdered)
+	tables, err := tables.Query(db, tables.TableSchemaCol.In(schemaNames))
 	if err != nil {
 		return nil, err
 	}
 
-	schemas := make(map[string]map[string][]*database.Column, len(schemaNames))
+	schemas := make(map[string]map[string]database.Columns, len(schemaNames))
 	for _, name := range schemaNames {
-		schemas[name] = map[string][]*database.Column{}
+		schemas[name] = map[string]database.Columns{}
 	}
 
 	for _, t := range tables {
-		if !filterTables(t.TableSchema.String, t.TableName.String) {
+		if !filterTables(t.TableSchema, t.TableName) {
 			continue
 		}
-		s, ok := schemas[t.TableSchema.String]
+		s, ok := schemas[t.TableSchema]
 		if !ok {
-			log.Printf("Should be impossible: table %q references unknown schema %q", t.TableName.String, t.TableSchema.String)
+			log.Printf("Should be impossible: table %q references unknown schema %q", t.TableName, t.TableSchema)
 			continue
 		}
-		s[t.TableName.String] = nil
+		s[t.TableName] = nil
 	}
 
-	columns, err := pg.QueryColumn(db, pg.ColumnTableSchemaWhere.In(sch), pg.UnOrdered)
+	columns, err := columns.Query(db, columns.TableSchemaCol.In(schemaNames))
 	if err != nil {
 		return nil, err
 	}
@@ -57,27 +54,27 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	enums := map[string][]*database.Enum{}
 
 	for _, c := range columns {
-		if !filterTables(c.TableSchema.String, c.TableName.String) {
+		if !filterTables(c.TableSchema, c.TableName) {
 			continue
 		}
-		schema, ok := schemas[c.TableSchema.String]
+		schema, ok := schemas[c.TableSchema]
 		if !ok {
-			log.Printf("Should be impossible: column %q references unknown schema %q", c.ColumnName.String, c.TableSchema.String)
+			log.Printf("Should be impossible: column %q references unknown schema %q", c.ColumnName, c.TableSchema)
 			continue
 		}
-		_, ok = schema[c.TableName.String]
+		_, ok = schema[c.TableName]
 		if !ok {
-			log.Printf("Should be impossible: column %q references unknown table %q in schema %q", c.ColumnName.String, c.TableName.String, c.TableSchema.String)
+			log.Printf("Should be impossible: column %q references unknown table %q in schema %q", c.ColumnName, c.TableName, c.TableSchema)
 			continue
 		}
 		col, enum, err := toDBColumn(c, log)
 		if err != nil {
 			return nil, err
 		}
-		schema[c.TableName.String] = append(schema[c.TableName.String], col)
+		schema[c.TableName] = append(schema[c.TableName], col)
 		if enum != nil {
-			enum.DBTable = c.TableName.String
-			enum.DBSchema = c.TableSchema.String
+			enum.DBTable = c.TableName
+			enum.DBSchema = c.TableSchema
 			enums[enum.DBSchema] = append(enums[enum.DBSchema], enum)
 		}
 	}
@@ -98,19 +95,19 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	return res, nil
 }
 
-func toDBColumn(c *pg.Column, log *log.Logger) (*database.Column, *database.Enum, error) {
+func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.Enum, error) {
 	col := &database.Column{
-		DBName:     c.ColumnName.String,
-		Nullable:   bool(c.IsNullable),
+		DBName:     c.ColumnName,
+		Nullable:   c.IsNullable == "YES",
 		HasDefault: c.ColumnDefault.String != "",
-		DBType:     c.DataType.String,
+		DBType:     c.DataType,
 		Orig:       *c,
 	}
 
 	// MySQL always specifies length even if it's not a part of the type. We
 	// only really care if it's a part of the type, so check if the size is part
 	// of the column_type.
-	if strings.HasSuffix(c.ColumnType.String, fmt.Sprintf("(%v)", c.CharacterMaximumLength.Int64)) {
+	if strings.HasSuffix(c.ColumnType, fmt.Sprintf("(%v)", c.CharacterMaximumLength.Int64)) {
 		col.Length = int(c.CharacterMaximumLength.Int64)
 	}
 
@@ -121,8 +118,8 @@ func toDBColumn(c *pg.Column, log *log.Logger) (*database.Column, *database.Enum
 	// contained in the column they're used by.
 
 	// column type should be enum('foo', 'bar')
-	if len(c.ColumnType.String) < 5 {
-		return nil, nil, errors.New("unexpected column type: " + c.ColumnType.String)
+	if len(c.ColumnType) < 5 {
+		return nil, nil, errors.New("unexpected column type: " + c.ColumnType)
 	}
 
 	// we'll call the enum the same as the column name.
@@ -131,7 +128,7 @@ func toDBColumn(c *pg.Column, log *log.Logger) (*database.Column, *database.Enum
 		DBName: col.DBName,
 	}
 	// strip off the enum and parens
-	s := c.ColumnType.String[5 : len(c.ColumnType.String)-1]
+	s := c.ColumnType[5 : len(c.ColumnType)-1]
 	vals := strings.Split(s, ",")
 	enum.Values = make([]*database.EnumValue, len(vals))
 	for x := range vals {

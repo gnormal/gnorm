@@ -47,7 +47,7 @@ func Generate(env environ.Values, cfg *Config) error {
 }
 
 func generateSchemas(env environ.Values, cfg *Config, info *database.Info) error {
-	outputTpl, err := template.New("schema.tpl").Funcs(environ.FuncMap).ParseFiles(templatePath(cfg, "schema.tpl"))
+	outputTpl, err := template.New("schema.gotmpl").Funcs(environ.FuncMap).ParseFiles(templatePath(cfg, "schema.gotmpl"))
 	if err != nil {
 		return errors.WithMessage(err, "failed parsing schema template")
 	}
@@ -88,7 +88,7 @@ func generateSchema(env environ.Values, schema *database.Schema, pathTpl, output
 }
 
 func generateEnums(env environ.Values, cfg *Config, info *database.Info) error {
-	outputTpl, err := template.New("enum.tpl").Funcs(environ.FuncMap).ParseFiles(templatePath(cfg, "enum.tpl"))
+	outputTpl, err := template.New("enum.gotmpl").Funcs(environ.FuncMap).ParseFiles(templatePath(cfg, "enum.gotmpl"))
 	if err != nil {
 		return errors.WithMessage(err, "failed parsing enum template")
 	}
@@ -131,7 +131,7 @@ func generateEnum(env environ.Values, enum *database.Enum, pathTpl, outputTpl *t
 }
 
 func generateTables(env environ.Values, cfg *Config, info *database.Info) error {
-	outputTpl, err := template.New("table.tpl").Funcs(environ.FuncMap).ParseFiles(templatePath(cfg, "table.tpl"))
+	outputTpl, err := template.New("table.gotmpl").Funcs(environ.FuncMap).ParseFiles(templatePath(cfg, "table.gotmpl"))
 	if err != nil {
 		return errors.WithMessage(err, "failed parsing table template")
 	}
