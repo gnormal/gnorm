@@ -34,7 +34,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/lib/pq"
-  packages = [".","hstore","oid"]
+  packages = [".","oid"]
   revision = "e42267488fe361b9dc034be7a6bffef5b195bceb"
 
 [[projects]]
@@ -54,12 +54,6 @@
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
-
-[[projects]]
-  name = "github.com/satori/go.uuid"
-  packages = ["."]
-  revision = "879c5887cd475cd7864858769793b2ceb0d44feb"
-  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -82,6 +76,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "aafa9ca51744044c22a93d0ca5a6f73084b964d3f31d9133a28ab086f5c4f26c"
+  inputs-digest = "31f509215ba63ba95032e45813352dc5716858f5a6c1bbea8e9e764cffeae493"
   solver-name = "gps-cdcl"
   solver-version = 1

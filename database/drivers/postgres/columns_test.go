@@ -5,57 +5,57 @@ import (
 	"log"
 	"testing"
 
-	"gnorm.org/gnorm/database/drivers/postgres/pg"
+	"gnorm.org/gnorm/database/drivers/postgres/gnorm/columns"
 )
 
 // These values are actual values created by reading postgres 9.6.3.
 var (
 	// uuid
-	AuthorIDCol = &pg.Column{
+	AuthorIDCol = &columns.Row{
 		TableCatalog:         sql.NullString{String: "gnorm-db", Valid: true},
 		TableSchema:          sql.NullString{String: "public", Valid: true},
 		TableName:            sql.NullString{String: "books", Valid: true},
 		ColumnName:           sql.NullString{String: "author_id", Valid: true},
 		OrdinalPosition:      sql.NullInt64{Int64: 2, Valid: true},
-		IsNullable:           false,
+		IsNullable:           sql.NullString{String: "NO ", Valid: true},
 		DataType:             sql.NullString{String: "uuid", Valid: true},
 		UdtCatalog:           sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:            sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:              sql.NullString{String: "uuid", Valid: true},
-		DtdIdentifier:        sql.NullString{String: "2", Valid: true},
+		DtdIDentifier:        sql.NullString{String: "2", Valid: true},
 		IsGenerated:          sql.NullString{String: "NEVER", Valid: true},
 		GenerationExpression: sql.NullString{String: "", Valid: false},
-		IsUpdatable:          true,
+		IsUpdatable:          sql.NullString{String: "YES", Valid: true},
 	}
 
 	// character(32)
-	ISBNCol = &pg.Column{
+	ISBNCol = &columns.Row{
 		TableCatalog:           sql.NullString{String: "gnorm-db", Valid: true},
 		TableSchema:            sql.NullString{String: "public", Valid: true},
 		TableName:              sql.NullString{String: "books", Valid: true},
 		ColumnName:             sql.NullString{String: "isbn", Valid: true},
 		OrdinalPosition:        sql.NullInt64{Int64: 3, Valid: true},
-		IsNullable:             false,
+		IsNullable:             sql.NullString{String: "NO", Valid: true},
 		DataType:               sql.NullString{String: "character", Valid: true},
 		CharacterMaximumLength: sql.NullInt64{Int64: 32, Valid: true},
 		CharacterOctetLength:   sql.NullInt64{Int64: 128, Valid: true},
 		UdtCatalog:             sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:              sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:                sql.NullString{String: "bpchar", Valid: true},
-		DtdIdentifier:          sql.NullString{String: "3", Valid: true},
+		DtdIDentifier:          sql.NullString{String: "3", Valid: true},
 		IsGenerated:            sql.NullString{String: "NEVER", Valid: true},
-		IsUpdatable:            true,
+		IsUpdatable:            sql.NullString{String: "YES", Valid: true},
 	}
 
 	// autoincrement id
-	BooksIDCol = &pg.Column{
+	BooksIDCol = &columns.Row{
 		TableCatalog:          sql.NullString{String: "gnorm-db", Valid: true},
 		TableSchema:           sql.NullString{String: "public", Valid: true},
 		TableName:             sql.NullString{String: "books", Valid: true},
 		ColumnName:            sql.NullString{String: "id", Valid: true},
 		OrdinalPosition:       sql.NullInt64{Int64: 1, Valid: true},
 		ColumnDefault:         sql.NullString{String: "nextval('books_id_seq'::regclass)", Valid: true},
-		IsNullable:            false,
+		IsNullable:            sql.NullString{String: "NO", Valid: true},
 		DataType:              sql.NullString{String: "integer", Valid: true},
 		NumericPrecision:      sql.NullInt64{Int64: 32, Valid: true},
 		NumericPrecisionRadix: sql.NullInt64{Int64: 2, Valid: true},
@@ -63,80 +63,80 @@ var (
 		UdtCatalog:            sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:             sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:               sql.NullString{String: "int4", Valid: true},
-		DtdIdentifier:         sql.NullString{String: "1", Valid: true},
+		DtdIDentifier:         sql.NullString{String: "1", Valid: true},
 		IsGenerated:           sql.NullString{String: "NEVER", Valid: true},
-		IsUpdatable:           true,
+		IsUpdatable:           sql.NullString{String: "YES", Valid: true},
 	}
 
 	// Timestamp with timezone with a default of now()
-	AvailableCol = &pg.Column{
+	AvailableCol = &columns.Row{
 		TableCatalog:      sql.NullString{String: "gnorm-db", Valid: true},
 		TableSchema:       sql.NullString{String: "public", Valid: true},
 		TableName:         sql.NullString{String: "books", Valid: true},
 		ColumnName:        sql.NullString{String: "available", Valid: true},
 		OrdinalPosition:   sql.NullInt64{Int64: 9, Valid: true},
 		ColumnDefault:     sql.NullString{String: "'2017-09-04 20:04:33.854571-04'::timestamp with time zone", Valid: true},
-		IsNullable:        false,
+		IsNullable:        sql.NullString{String: "NO", Valid: true},
 		DataType:          sql.NullString{String: "timestamp with time zone", Valid: true},
 		DatetimePrecision: sql.NullInt64{Int64: 6, Valid: true},
 		UdtCatalog:        sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:         sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:           sql.NullString{String: "timestamptz", Valid: true},
-		DtdIdentifier:     sql.NullString{String: "9", Valid: true},
+		DtdIDentifier:     sql.NullString{String: "9", Valid: true},
 		IsGenerated:       sql.NullString{String: "NEVER", Valid: true},
-		IsUpdatable:       true,
+		IsUpdatable:       sql.NullString{String: "YES", Valid: true},
 	}
 
 	// nullable text
-	SummaryCol = &pg.Column{
+	SummaryCol = &columns.Row{
 		TableCatalog:         sql.NullString{String: "gnorm-db", Valid: true},
 		TableSchema:          sql.NullString{String: "public", Valid: true},
 		TableName:            sql.NullString{String: "books", Valid: true},
 		ColumnName:           sql.NullString{String: "summary", Valid: true},
 		OrdinalPosition:      sql.NullInt64{Int64: 9, Valid: true},
-		IsNullable:           true,
+		IsNullable:           sql.NullString{String: "YES", Valid: true},
 		DataType:             sql.NullString{String: "text", Valid: true},
 		CharacterOctetLength: sql.NullInt64{Int64: 1073741824, Valid: true},
 		UdtCatalog:           sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:            sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:              sql.NullString{String: "text", Valid: true},
-		DtdIdentifier:        sql.NullString{String: "9", Valid: true},
+		DtdIDentifier:        sql.NullString{String: "9", Valid: true},
 		IsGenerated:          sql.NullString{String: "NEVER", Valid: true},
-		IsUpdatable:          true,
+		IsUpdatable:          sql.NullString{String: "YES", Valid: true},
 	}
 
 	// int4 array
-	YearsCol = &pg.Column{
+	YearsCol = &columns.Row{
 		TableCatalog:    sql.NullString{String: "gnorm-db", Valid: true},
 		TableSchema:     sql.NullString{String: "public", Valid: true},
 		TableName:       sql.NullString{String: "books", Valid: true},
 		ColumnName:      sql.NullString{String: "years", Valid: true},
 		OrdinalPosition: sql.NullInt64{Int64: 7, Valid: true},
-		IsNullable:      false,
+		IsNullable:      sql.NullString{String: "NO", Valid: true},
 		DataType:        sql.NullString{String: "ARRAY", Valid: true},
 		UdtCatalog:      sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:       sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:         sql.NullString{String: "_int4", Valid: true},
-		DtdIdentifier:   sql.NullString{String: "7", Valid: true},
+		DtdIDentifier:   sql.NullString{String: "7", Valid: true},
 		IsGenerated:     sql.NullString{String: "NEVER", Valid: true},
-		IsUpdatable:     true,
+		IsUpdatable:     sql.NullString{String: "YES", Valid: true},
 	}
 
 	// user defined enum type
-	BookTypeCol = &pg.Column{
+	BookTypeCol = &columns.Row{
 		TableCatalog:    sql.NullString{String: "gnorm-db", Valid: true},
 		TableSchema:     sql.NullString{String: "public", Valid: true},
 		TableName:       sql.NullString{String: "books", Valid: true},
 		ColumnName:      sql.NullString{String: "booktype", Valid: true},
 		OrdinalPosition: sql.NullInt64{Int64: 4, Valid: true},
-		IsNullable:      false,
+		IsNullable:      sql.NullString{String: "NO", Valid: true},
 		DataType:        sql.NullString{String: "USER-DEFINED", Valid: true},
 		UdtCatalog:      sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:       sql.NullString{String: "public", Valid: true},
 		UdtName:         sql.NullString{String: "book_type", Valid: true},
-		DtdIdentifier:   sql.NullString{String: "4", Valid: true},
-		IdentityCycle:   false, IsGenerated: sql.NullString{String: "NEVER", Valid: true},
-		IsUpdatable: true,
+		DtdIDentifier:   sql.NullString{String: "4", Valid: true},
+		IDentityCycle:   sql.NullString{String: "NO", Valid: true}, IsGenerated: sql.NullString{String: "NEVER", Valid: true},
+		IsUpdatable: sql.NullString{String: "YES", Valid: true},
 	}
 )
 
