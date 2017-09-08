@@ -17,7 +17,7 @@ import (
 
 func main() {
 	fmt.Println("```")
-	for _, s := range []string{"Schema", "Table", "Tables", "Column", "Columns", "Enum", "EnumValue"} {
+	for _, s := range []string{"Schema", "Table", "Tables", "Column", "Columns", "Enum", "EnumValue", "Strings"} {
 		c := exec.Command("go", "doc", "gnorm.org/gnorm/database."+s)
 		b, err := c.CombinedOutput()
 		if err != nil {
@@ -53,8 +53,8 @@ type Tables []*Table
     Tables is a list of tables in this schema.
 
 
-func (t Tables) DBNames() []string
-func (t Tables) Names() []string
+func (t Tables) DBNames() Strings
+func (t Tables) Names() Strings
 
 type Column struct {
 	Name        string      // the converted name of the column
@@ -75,8 +75,8 @@ type Columns []*Column
     Columns represents the ordered list of columns in a table.
 
 
-func (c Columns) DBNames() []string
-func (c Columns) Names() []string
+func (c Columns) DBNames() Strings
+func (c Columns) Names() Strings
 
 type Enum struct {
 	Schema   string       // the converted name of the schema this enum is in
@@ -97,6 +97,13 @@ type EnumValue struct {
 }
     EnumValue is one of the named values for an enum.
 
+
+type Strings []string
+    Strings is a named type of []string to allow us to put methods on it.
+
+
+func (s Strings) Join(sep string) string
+func (s Strings) Sprintf(format string) Strings
 
 ```
 <!-- {{{end}}} -->

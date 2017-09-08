@@ -1,4 +1,8 @@
 package database // import "gnorm.org/gnorm/database"
+import (
+	"fmt"
+	"strings"
+)
 
 // Info is the collection of schema info from a database.
 type Info struct {
@@ -44,7 +48,7 @@ type Table struct {
 type Tables []*Table
 
 // Names returns a list of table Names in this schema.
-func (t Tables) Names() []string {
+func (t Tables) Names() Strings {
 	names := make([]string, len(t))
 	for x := range t {
 		names[x] = t[x].Name
@@ -53,7 +57,7 @@ func (t Tables) Names() []string {
 }
 
 // DBNames returns a list of table DBNames in this schema.
-func (t Tables) DBNames() []string {
+func (t Tables) DBNames() Strings {
 	names := make([]string, len(t))
 	for x := range t {
 		names[x] = t[x].DBName
@@ -79,8 +83,8 @@ type Column struct {
 type Columns []*Column
 
 // Names returns the ordered list of column Names in this table.
-func (c Columns) Names() []string {
-	names := make([]string, len(c))
+func (c Columns) Names() Strings {
+	names := make(Strings, len(c))
 	for x := range c {
 		names[x] = c[x].Name
 	}
@@ -88,10 +92,28 @@ func (c Columns) Names() []string {
 }
 
 // DBNames returns the ordered list of column DBNames in this table.
-func (c Columns) DBNames() []string {
-	names := make([]string, len(c))
+func (c Columns) DBNames() Strings {
+	names := make(Strings, len(c))
 	for x := range c {
 		names[x] = c[x].DBName
 	}
 	return names
+}
+
+// Strings is a named type of []string to allow us to put methods on it.
+type Strings []string
+
+// Sprintf calls fmt.Sprintf(format, str) for every string in this value and
+// returns the results as a new Strings.
+func (s Strings) Sprintf(format string) Strings {
+	ret := make(Strings, len(s))
+	for x := range s {
+		ret[x] = fmt.Sprintf(format, s[x])
+	}
+	return ret
+}
+
+// Join returbs strings.Join(s, sep).
+func (s Strings) Join(sep string) string {
+	return strings.Join([]string(s), sep)
 }
