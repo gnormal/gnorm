@@ -34,6 +34,7 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		return nil, err
 	}
 
+	log.Printf("found %v tables", len(tables))
 	schemas := make(map[string]map[string][]*database.Column, len(schemaNames))
 	for _, name := range schemaNames {
 		schemas[name] = map[string][]*database.Column{}
@@ -41,6 +42,7 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 
 	for _, t := range tables {
 		if !filterTables(t.TableSchema.String, t.TableName.String) {
+			log.Printf("skipping filtered-out table %v.%v", t.TableSchema.String, t.TableName.String)
 			continue
 		}
 
@@ -56,9 +58,10 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	if err != nil {
 		return nil, err
 	}
-
+	log.Printf("found %v columns for all tables in all specified schemas", len(columns))
 	for _, c := range columns {
 		if !filterTables(c.TableSchema.String, c.TableName.String) {
+			log.Printf("skipping column %q because it is for filtered-out table %v.%v", c.ColumnName.String, c.TableSchema.String, c.TableName.String)
 			continue
 		}
 
@@ -81,7 +84,7 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	if err != nil {
 		return nil, err
 	}
-
+	log.Printf("found %v enums for all schemas", len(enums))
 	res := &database.Info{Schemas: make([]*database.Schema, 0, len(schemas))}
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
@@ -99,7 +102,6 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 }
 
 func toDBColumn(c *columns.Row, log *log.Logger) *database.Column {
-
 	col := &database.Column{
 		DBName:     c.ColumnName.String,
 		Nullable:   c.IsNullable.String == "YES",
@@ -127,6 +129,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) *database.Column {
 }
 
 func queryEnums(db *sql.DB, schemas []string) (map[string][]*database.Enum, error) {
+	// TODO: make this work with Gnorm generated types
 	const q = `
 	SELECT      n.nspname, t.typname as type 
 	FROM        pg_type t 
@@ -170,6 +173,7 @@ func queryEnums(db *sql.DB, schemas []string) (map[string][]*database.Enum, erro
 }
 
 func queryValues(db *sql.DB, schema, enum string) ([]*database.EnumValue, error) {
+	// TODO: make this work with Gnorm generated types
 	rows, err := db.Query(`
 	SELECT
 	e.enumlabel,
@@ -191,5 +195,6 @@ func queryValues(db *sql.DB, schema, enum string) ([]*database.EnumValue, error)
 		}
 		vals = append(vals, &database.EnumValue{DBName: name.String, Value: int(val.Int64)})
 	}
+	fmt.Printf("found %d values for enum %v.%v", len(vals), schema, enum)
 	return vals, nil
 }

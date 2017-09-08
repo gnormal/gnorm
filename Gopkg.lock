@@ -10,8 +10,8 @@
 [[projects]]
   name = "github.com/codemodus/kace"
   packages = [".","ktrie"]
-  revision = "6cba456eea9261c36a87dd747773cfb18f4c61d9"
-  version = "v0.4.1"
+  revision = "5014436b6047e869bffac20eecddbbe55a0c050d"
+  version = "v0.5.0"
 
 [[projects]]
   name = "github.com/go-sql-driver/mysql"
@@ -59,7 +59,7 @@
   branch = "master"
   name = "github.com/spf13/cobra"
   packages = ["."]
-  revision = "2df9a531813370438a4d79bfc33e21f58063ed87"
+  revision = "b78744579491c1ceeaaa3b40205e56b0591b93a3"
 
 [[projects]]
   name = "github.com/spf13/pflag"

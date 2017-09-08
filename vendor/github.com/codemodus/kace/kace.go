@@ -13,6 +13,7 @@ import (
 const (
 	kebabDelim = '-'
 	snakeDelim = '_'
+	none       = rune(-1)
 )
 
 var (
@@ -117,43 +118,62 @@ func (k *Kace) KebabUpper(s string) string {
 
 func camelCase(t *ktrie.KTrie, s string, ucFirst bool) string {
 	rs := []rune(s)
-	d := 0
-	prev := rune(-1)
+	offset := 0
+	prev := none
 
 	for i := 0; i < len(rs); i++ {
 		r := rs[i]
 
-		if unicode.IsLetter(r) {
-			isToUpper := isToUpperInCamel(prev, r, ucFirst)
+		switch {
+		case unicode.IsLetter(r):
+			ucCurr := isToBeUpper(r, prev, ucFirst)
 
-			tprev, skip := updateRunes(rs, i, d, t, isToUpper)
-			if skip > 0 {
-				i += skip
-				prev = tprev
-				continue
+			if ucCurr || isSegmentStart(r, prev) {
+				prv, skip := updateRunes(rs, i, offset, t, ucCurr)
+				if skip > 0 {
+					i += skip - 1
+					prev = prv
+					continue
+				}
 			}
 
-			prev = updateRune(rs, i, d, isToUpper)
+			prev = updateRune(rs, i, offset, ucCurr)
 			continue
-		}
 
-		if unicode.IsDigit(r) {
-			prev = updateRune(rs, i, d, false)
+		case unicode.IsNumber(r):
+			prev = updateRune(rs, i, offset, false)
 			continue
-		}
 
-		prev = r
-		d++
+		default:
+			prev = r
+			offset--
+		}
 	}
 
-	return string(rs[:len(rs)-d])
+	return string(rs[:len(rs)+offset])
 }
 
-func updateRune(rs []rune, i, delta int, upper bool) rune {
+func isToBeUpper(curr, prev rune, ucFirst bool) bool {
+	if prev == none {
+		return ucFirst
+	}
+
+	return isSegmentStart(curr, prev)
+}
+
+func isSegmentStart(curr, prev rune) bool {
+	if !unicode.IsLetter(prev) || unicode.IsUpper(curr) && unicode.IsLower(prev) {
+		return true
+	}
+
+	return false
+}
+
+func updateRune(rs []rune, i, offset int, upper bool) rune {
 	r := rs[i]
 
-	targ := i - delta
-	if targ < 0 || i > len(rs)-1 {
+	dest := i + offset
+	if dest < 0 || i > len(rs)-1 {
 		panic("this function has been used or designed incorrectly")
 	}
 
@@ -162,52 +182,39 @@ func updateRune(rs []rune, i, delta int, upper bool) rune {
 		fn = unicode.ToUpper
 	}
 
-	rs[targ] = fn(r)
+	rs[dest] = fn(r)
 
 	return r
 }
 
-func updateRunes(rs []rune, i, delta int, t *ktrie.KTrie, upper bool) (rune, int) {
+func updateRunes(rs []rune, i, offset int, t *ktrie.KTrie, upper bool) (rune, int) {
 	r := rs[i]
-	ct := 0
+	ns := nextSegment(rs, i)
+	ct := len(ns)
 
-	for j := t.MaxDepth(); j >= t.MinDepth(); j-- {
-		if i+j <= len(rs) && t.FindAsUpper(rs[i:i+j]) {
-			r = rs[i+j-1]
-			ct = j - 1
-			break
-		}
+	if ct < t.MinDepth() || ct > t.MaxDepth() || !t.FindAsUpper(ns) {
+		return r, 0
 	}
 
-	if ct > 0 {
-		for j := i; j <= i+ct; j++ {
-			targ := j - delta
-			if targ < 0 {
-				panic("this function has been used or designed incorrectly")
-			}
-
-			fn := unicode.ToLower
-			if upper {
-				fn = unicode.ToUpper
-			}
-
-			rs[targ] = fn(rs[j])
-		}
+	for j := i; j < i+ct; j++ {
+		r = updateRune(rs, j, offset, upper)
 	}
 
 	return r, ct
 }
 
-func isToUpperInCamel(prev, curr rune, ucFirst bool) bool {
-	if prev == -1 {
-		return ucFirst
+func nextSegment(rs []rune, i int) []rune {
+	for j := i; j < len(rs); j++ {
+		if !unicode.IsLetter(rs[j]) && !unicode.IsNumber(rs[j]) {
+			return rs[i:j]
+		}
+
+		if j == len(rs)-1 {
+			return rs[i : j+1]
+		}
 	}
 
-	if !unicode.IsLetter(prev) || unicode.IsUpper(curr) && unicode.IsLower(prev) {
-		return true
-	}
-
-	return false
+	return nil
 }
 
 func delimitedCase(s string, delim rune, upper bool) string {
@@ -224,8 +231,8 @@ func delimitedCase(s string, delim rune, upper bool) string {
 
 			buf = appendCased(buf, upper, rune(s[i-1]))
 
-		case unicode.IsDigit(rune(s[i-1])):
-			if i == len(s) || i == 1 || unicode.IsDigit(rune(s[i])) {
+		case unicode.IsNumber(rune(s[i-1])):
+			if i == len(s) || i == 1 || unicode.IsNumber(rune(s[i])) {
 				buf = append(buf, rune(s[i-1]))
 				continue
 			}
