@@ -1,41 +1,30 @@
-+++
-title = "Configuration"
-date = 2017-08-23T13:16:04-04:00
-+++
+package cli
 
-Gnorm is configured using a configuration file written in
-[TOML](https://github.com/toml-lang/toml).  The file must be called gnorm.toml
-and must live in the directory where you call gnorm.
-
-### example configuration file
-<!--
-{{{gocog
-package main
-import (
-	"fmt"
-	"io"
-	"os"
-    "path/filepath"
-)
-func main() {
-	fmt.Println("```")
-    gopath := os.Getenv("GOPATH")
-	f, err := os.Open(filepath.Join(gopath, "src", "gnorm.org", "gnorm", "cli", "gnorm.toml"))
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	defer f.Close()
-	_, err = io.Copy(os.Stdout, f)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	fmt.Println("\n```")
-}
-gocog}}} -->
-```
-# ConnStr is the connection string for the database.
+//go:generate gocog -q $GOFILE
+// [[[gocog
+// package main
+// import (
+// 	"fmt"
+// 	"io"
+// 	"os"
+// )
+// func main() {
+// 	fmt.Print("const sample = `")
+// 	f, err := os.Open("gnorm.toml")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		os.Exit(1)
+// 	}
+// 	defer f.Close()
+// 	_, err = io.Copy(os.Stdout, f)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		os.Exit(1)
+// 	}
+// 	fmt.Println("`")
+// }
+// gocog]]]
+const sample = `# ConnStr is the connection string for the database.
 # Postgres example:
 # ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 # MySQL example:
@@ -149,6 +138,5 @@ NameConversion = ""
 # "character varying" = "sql.NullString"
 # "integer" = "sql.NullInt64"
 # "numeric" = "sql.NullFloat64"
-[NullableTypeMap]
-```
-<!-- {{{end}}} -->
+[NullableTypeMap]`
+// [[[end]]]

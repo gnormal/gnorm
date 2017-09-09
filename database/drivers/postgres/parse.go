@@ -80,7 +80,7 @@ func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		schema[c.TableName.String] = append(schema[c.TableName.String], col)
 	}
 
-	enums, err := queryEnums(db, schemaNames)
+	enums, err := queryEnums(log, db, schemaNames)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) *database.Column {
 	return col
 }
 
-func queryEnums(db *sql.DB, schemas []string) (map[string][]*database.Enum, error) {
+func queryEnums(log *log.Logger, db *sql.DB, schemas []string) (map[string][]*database.Enum, error) {
 	// TODO: make this work with Gnorm generated types
 	const q = `
 	SELECT      n.nspname, t.typname as type 
@@ -155,7 +155,7 @@ func queryEnums(db *sql.DB, schemas []string) (map[string][]*database.Enum, erro
 		if err := rows.Scan(&schema, &name); err != nil {
 			return nil, errors.WithMessage(err, "error scanning enum name into string")
 		}
-		vals, err := queryValues(db, schema, name)
+		vals, err := queryValues(log, db, schema, name)
 		if err != nil {
 			return nil, err
 		}
@@ -172,7 +172,7 @@ func queryEnums(db *sql.DB, schemas []string) (map[string][]*database.Enum, erro
 	return ret, nil
 }
 
-func queryValues(db *sql.DB, schema, enum string) ([]*database.EnumValue, error) {
+func queryValues(log *log.Logger, db *sql.DB, schema, enum string) ([]*database.EnumValue, error) {
 	// TODO: make this work with Gnorm generated types
 	rows, err := db.Query(`
 	SELECT
@@ -195,6 +195,6 @@ func queryValues(db *sql.DB, schema, enum string) ([]*database.EnumValue, error)
 		}
 		vals = append(vals, &database.EnumValue{DBName: name.String, Value: int(val.Int64)})
 	}
-	fmt.Printf("found %d values for enum %v.%v", len(vals), schema, enum)
+	log.Printf("found %d values for enum %v.%v", len(vals), schema, enum)
 	return vals, nil
 }

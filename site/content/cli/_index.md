@@ -31,6 +31,7 @@ Usage:
 Available Commands:
   gen         Generate code from DB schema
   help        Help about any command
+  init        Generates the files needed to run GNORM.
   preview     Preview the data that will be sent to your templates
   version     Displays the version of GNORM.
 

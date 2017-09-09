@@ -4,6 +4,8 @@ import (
 	"os"
 	"strings"
 
+	"github.com/spf13/cobra"
+
 	"gnorm.org/gnorm/environ"
 )
 
@@ -31,4 +33,29 @@ func getenv(env []string) map[string]string {
 		ret[parts[0]] = parts[1]
 	}
 	return ret
+}
+
+// ParseAndRun parses the environment and runs the command.
+func ParseAndRun(env environ.Values) int {
+	// the return code from the executed command
+	var code int
+	rootCmd := &cobra.Command{
+		Use:   "gnorm",
+		Short: "GNORM is Not an ORM, it's a db schema->code generator",
+		Long: `
+A flexible code generator that turns your DB schema into
+runnable code.  See full docs at https://gnorm.org`[1:],
+	}
+	rootCmd.SetArgs(env.Args)
+	rootCmd.SetOutput(env.Stderr)
+
+	rootCmd.AddCommand(previewCmd(env, &code))
+	rootCmd.AddCommand(genCmd(env, &code))
+	rootCmd.AddCommand(versionCmd(env))
+	rootCmd.AddCommand(initCmd(env, &code))
+	if err := rootCmd.Execute(); err != nil {
+		// cobra outputs the error itself.
+		return 2
+	}
+	return code
 }

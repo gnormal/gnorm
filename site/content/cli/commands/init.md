@@ -1,5 +1,5 @@
 +++
-title= "gen"
+title= "init"
 date= 2017-08-17T13:16:04-04:00
 description = ""
 +++
@@ -18,23 +18,19 @@ func main() {
     x := cli.ParseAndRun(environ.Values{
         Stderr: os.Stdout,
         Stdout: os.Stdout,
-        Args: []string{"help", "gen"},
+        Args: []string{"help", "init"},
     })
     fmt.Println("```")
     os.Exit(x)
 }
 gocog}}} -->
 ```
-Reads your gnorm.toml file and connects to your database, translating the schema
-into in-memory objects.  Then reads your templates and writes files to disk
-based on those templates.
+Creates a default gnorm.toml and the various template files needed to run GNORM.
 
 Usage:
-  gnorm gen [flags]
+  gnorm init [flags]
 
 Flags:
-  -c, --config string   relative path to gnorm config file (default "gnorm.toml")
-  -h, --help            help for gen
-  -v, --verbose         show debugging output
+  -h, --help   help for init
 ```
 <!-- {{{end}}} -->

@@ -25,7 +25,7 @@ func main() {
 }
 gocog}}} -->
 ```
-		Shows the build date and commit hash used to build this binary.
+Shows the build date and commit hash used to build this binary.
 
 Usage:
   gnorm version [flags]

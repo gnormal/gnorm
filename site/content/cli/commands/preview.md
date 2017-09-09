@@ -25,17 +25,17 @@ func main() {
 }
 gocog}}} -->
 ```
-		Reads your gnorm.toml file and connects to your database, translating the schema
-		just as it would be during a full run.  It is then printed out in an
-		easy-to-read format.
+Reads your gnorm.toml file and connects to your database, translating the schema
+just as it would be during a full run.  It is then printed out in an
+easy-to-read format.
 
 Usage:
   gnorm preview [flags]
 
 Flags:
-      --config string   relative path to gnorm config file (default "gnorm.toml")
+  -c, --config string   relative path to gnorm config file (default "gnorm.toml")
   -h, --help            help for preview
-      --verbose         show debugging output
+  -v, --verbose         show debugging output
       --yaml            show output in yaml instead of tabular
 ```
 <!-- {{{end}}} -->
