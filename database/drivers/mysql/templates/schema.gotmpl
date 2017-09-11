@@ -30,7 +30,7 @@ func (f {{$fieldName}}Field) GreaterThan(v {{.}}) WhereClause {
 func (f {{$fieldName}}Field) LessThan(v {{.}}) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
