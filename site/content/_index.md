@@ -32,7 +32,7 @@ Gnorm takes care of the rest.  See details about configuration
 
 ## Database Support
 
-GNORM supports Postgres amd MySQL.  Further database support is planned for the
+GNORM supports Postgres and MySQL.  Further database support is planned for the
 future.  Contributions more than welcome.  Check out database/drivers to get an
 idea of what is involved (it's not that much). 
 
