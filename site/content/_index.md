@@ -14,6 +14,10 @@ how you want it to look.  It can be used to generate type-safe database queries
 that are faster than a traditional ORM.  It can also be used to create a REST or
 RPC API that exposes the data in your database.
 
+## Demo
+
+{{< youtube IPLpZj2SLWw >}}
+
 ## Templates
 
 Gnorm reads your database schema, then runs the resulting data through templates
