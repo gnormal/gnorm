@@ -35,7 +35,7 @@ func (f IntField) GreaterThan(v int) WhereClause {
 func (f IntField) LessThan(v int) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -105,7 +105,7 @@ func (f StringField) GreaterThan(v string) WhereClause {
 func (f StringField) LessThan(v string) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -175,7 +175,7 @@ func (f SqlNullStringField) GreaterThan(v sql.NullString) WhereClause {
 func (f SqlNullStringField) LessThan(v sql.NullString) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -245,7 +245,7 @@ func (f Int64Field) GreaterThan(v int64) WhereClause {
 func (f Int64Field) LessThan(v int64) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -315,7 +315,7 @@ func (f SqlNullInt64Field) GreaterThan(v sql.NullInt64) WhereClause {
 func (f SqlNullInt64Field) LessThan(v sql.NullInt64) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -385,7 +385,7 @@ func (f Float64Field) GreaterThan(v float64) WhereClause {
 func (f Float64Field) LessThan(v float64) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -455,7 +455,7 @@ func (f SqlNullFloat64Field) GreaterThan(v sql.NullFloat64) WhereClause {
 func (f SqlNullFloat64Field) LessThan(v sql.NullFloat64) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -525,7 +525,7 @@ func (f BoolField) GreaterThan(v bool) WhereClause {
 func (f BoolField) LessThan(v bool) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -595,7 +595,7 @@ func (f SqlNullBoolField) GreaterThan(v sql.NullBool) WhereClause {
 func (f SqlNullBoolField) LessThan(v sql.NullBool) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -665,7 +665,7 @@ func (f TimeTimeField) GreaterThan(v time.Time) WhereClause {
 func (f TimeTimeField) LessThan(v time.Time) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -735,7 +735,7 @@ func (f MysqlNullTimeField) GreaterThan(v mysql.NullTime) WhereClause {
 func (f MysqlNullTimeField) LessThan(v mysql.NullTime) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }
@@ -805,7 +805,7 @@ func (f Uint32Field) GreaterThan(v uint32) WhereClause {
 func (f Uint32Field) LessThan(v uint32) WhereClause {
 	return whereClause{
 		field: string(f),
-		comp:  compEqual,
+		comp:  compLess,
 		value: v,
 	}
 }

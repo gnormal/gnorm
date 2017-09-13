@@ -1,6 +1,6 @@
 +++
 title= "Command Line"
-weight=1
+weight=10
 alwaysopen=true
 +++
 

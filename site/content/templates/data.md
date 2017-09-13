@@ -102,7 +102,6 @@ type Strings []string
     Strings is a named type of []string to allow us to put methods on it.
 
 
-func (s Strings) Join(sep string) string
 func (s Strings) Sprintf(format string) Strings
 
 ```

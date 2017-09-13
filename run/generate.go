@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"text/template"
 	"time"
 
 	"github.com/pkg/errors"
@@ -22,21 +21,21 @@ func Generate(env environ.Values, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	if cfg.SchemaPath == nil {
-		env.Log.Println("No SchemaPath specified, skipping schemas.")
+	if len(cfg.SchemaPaths) == 0 {
+		env.Log.Println("No SchemaPaths specified, skipping schemas.")
 	} else {
 		if err := generateSchemas(env, cfg, info); err != nil {
 			return err
 		}
 	}
-	if cfg.EnumPath == nil {
+	if len(cfg.EnumPaths) == 0 {
 		env.Log.Println("No EnumPath specified, skipping enums.")
 	} else {
 		if err := generateEnums(env, cfg, info); err != nil {
 			return err
 		}
 	}
-	if cfg.TablePath == nil {
+	if len(cfg.TablePaths) == 0 {
 		env.Log.Println("No table path specified, skipping tables.")
 	} else {
 		if err := generateTables(env, cfg, info); err != nil {
@@ -47,24 +46,22 @@ func Generate(env environ.Values, cfg *Config) error {
 }
 
 func generateSchemas(env environ.Values, cfg *Config, info *database.Info) error {
-	outputTpl, err := template.New("schema.gotmpl").Funcs(environ.FuncMap).ParseFiles(templatePath(cfg, "schema.gotmpl"))
-	if err != nil {
-		return errors.WithMessage(err, "failed parsing schema template")
-	}
 	for _, schema := range info.Schemas {
-		if err := generateSchema(env, schema, cfg.SchemaPath, outputTpl, cfg.PostRun); err != nil {
-			return err
+		for _, target := range cfg.SchemaPaths {
+			if err := generateSchema(env, schema, target, cfg.PostRun); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
 }
 
-func generateSchema(env environ.Values, schema *database.Schema, pathTpl, outputTpl *template.Template, postrun []string) error {
+func generateSchema(env environ.Values, schema *database.Schema, target OutputTarget, postrun []string) error {
 	env.Log.Printf("Generating output for schema %v", schema.Name)
 	buf := &bytes.Buffer{}
-	err := pathTpl.Execute(buf, struct{ Schema string }{Schema: schema.Name})
+	err := target.Filename.Execute(buf, struct{ Schema string }{Schema: schema.Name})
 	if err != nil {
-		return errors.WithMessage(err, "failed to run SchemaPath template with schema "+schema.Name)
+		return errors.WithMessage(err, "failed to run SchemaPath Filename template with schema "+schema.Name)
 	}
 	outputPath := buf.String()
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0700); err != nil {
@@ -75,7 +72,7 @@ func generateSchema(env environ.Values, schema *database.Schema, pathTpl, output
 		return errors.WithMessage(err, "failed to create output file for schema "+schema.Name)
 	}
 	defer f.Close()
-	if err := outputTpl.Execute(f, schema); err != nil {
+	if err := target.Contents.Execute(f, schema); err != nil {
 		return errors.WithMessage(err, "failed to run schema template over schema "+schema.Name)
 	}
 	if err := f.Close(); err != nil {
@@ -88,26 +85,24 @@ func generateSchema(env environ.Values, schema *database.Schema, pathTpl, output
 }
 
 func generateEnums(env environ.Values, cfg *Config, info *database.Info) error {
-	outputTpl, err := template.New("enum.gotmpl").Funcs(environ.FuncMap).ParseFiles(templatePath(cfg, "enum.gotmpl"))
-	if err != nil {
-		return errors.WithMessage(err, "failed parsing enum template")
-	}
 	for _, schema := range info.Schemas {
 		for _, enum := range schema.Enums {
-			if err := generateEnum(env, enum, cfg.EnumPath, outputTpl, cfg.PostRun); err != nil {
-				return err
+			for _, target := range cfg.EnumPaths {
+				if err := generateEnum(env, enum, target, cfg.PostRun); err != nil {
+					return err
+				}
 			}
 		}
 	}
 	return nil
 }
 
-func generateEnum(env environ.Values, enum *database.Enum, pathTpl, outputTpl *template.Template, postrun []string) error {
+func generateEnum(env environ.Values, enum *database.Enum, target OutputTarget, postrun []string) error {
 	env.Log.Printf("Generating output for enum %v", enum.Name)
 	buf := &bytes.Buffer{}
-	err := pathTpl.Execute(buf, struct{ Schema, Enum string }{Schema: enum.Schema, Enum: enum.Name})
+	err := target.Filename.Execute(buf, struct{ Schema, Enum string }{Schema: enum.Schema, Enum: enum.Name})
 	if err != nil {
-		return errors.Wrapf(err, "failed to run EnumPath template with enum %v.%v"+enum.Schema, enum.Name)
+		return errors.Wrapf(err, "failed to run enum filename template with enum %v.%v"+enum.Schema, enum.Name)
 	}
 	outputPath := buf.String()
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0700); err != nil {
@@ -118,8 +113,8 @@ func generateEnum(env environ.Values, enum *database.Enum, pathTpl, outputTpl *t
 		return errors.Wrapf(err, "failed to create output file for enum %v.%v"+enum.Schema, enum.Name)
 	}
 	defer f.Close()
-	if err := outputTpl.Execute(f, enum); err != nil {
-		return errors.Wrapf(err, "failed to run enum template over enum %v.%v"+enum.Schema, enum.Name)
+	if err := target.Contents.Execute(f, enum); err != nil {
+		return errors.Wrapf(err, "failed to run enum contents template over enum %v.%v"+enum.Schema, enum.Name)
 	}
 	if err := f.Close(); err != nil {
 		return errors.Wrapf(err, "error closing generated file %q", outputPath)
@@ -131,26 +126,24 @@ func generateEnum(env environ.Values, enum *database.Enum, pathTpl, outputTpl *t
 }
 
 func generateTables(env environ.Values, cfg *Config, info *database.Info) error {
-	outputTpl, err := template.New("table.gotmpl").Funcs(environ.FuncMap).ParseFiles(templatePath(cfg, "table.gotmpl"))
-	if err != nil {
-		return errors.WithMessage(err, "failed parsing table template")
-	}
 	for _, schema := range info.Schemas {
 		for _, table := range schema.Tables {
-			if err := generateTable(env, table, cfg.TablePath, outputTpl, cfg.PostRun); err != nil {
-				return err
+			for _, target := range cfg.TablePaths {
+				if err := generateTable(env, table, target, cfg.PostRun); err != nil {
+					return err
+				}
 			}
 		}
 	}
 	return nil
 }
 
-func generateTable(env environ.Values, table *database.Table, pathTpl, outputTpl *template.Template, postrun []string) error {
+func generateTable(env environ.Values, table *database.Table, target OutputTarget, postrun []string) error {
 	env.Log.Printf("Generating output for table %v", table.Name)
 	buf := &bytes.Buffer{}
-	err := pathTpl.Execute(buf, struct{ Schema, Table string }{Schema: table.Schema, Table: table.Name})
+	err := target.Filename.Execute(buf, struct{ Schema, Table string }{Schema: table.Schema, Table: table.Name})
 	if err != nil {
-		return errors.Wrapf(err, "failed to run tablePath template with table %v.%v"+table.Schema, table.Name)
+		return errors.Wrapf(err, "failed to run table filename template with table %v.%v"+table.Schema, table.Name)
 	}
 	outputPath := buf.String()
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0700); err != nil {
@@ -161,8 +154,8 @@ func generateTable(env environ.Values, table *database.Table, pathTpl, outputTpl
 		return errors.Wrapf(err, "failed to create output file for table %v.%v"+table.Schema, table.Name)
 	}
 	defer f.Close()
-	if err := outputTpl.Execute(f, table); err != nil {
-		return errors.Wrapf(err, "failed to run table template over table %v.%v"+table.Schema, table.Name)
+	if err := target.Contents.Execute(f, table); err != nil {
+		return errors.Wrapf(err, "failed to run table contents template over table %v.%v"+table.Schema, table.Name)
 	}
 	if err := f.Close(); err != nil {
 		return errors.Wrapf(err, "error closing generated file %q", outputPath)
@@ -198,8 +191,4 @@ func doPostRun(env environ.Values, file string, postrun []string) error {
 		return errors.Wrapf(err, "error running postrun command %q", run)
 	}
 	return nil
-}
-
-func templatePath(cfg *Config, name string) string {
-	return filepath.Join(cfg.TemplateDir, name)
 }

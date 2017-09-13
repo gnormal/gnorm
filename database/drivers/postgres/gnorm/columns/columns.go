@@ -42,15 +42,15 @@ type Row struct {
 	ScopeSchema            sql.NullString // scope_schema
 	ScopeName              sql.NullString // scope_name
 	MaximumCardinality     sql.NullInt64  // maximum_cardinality
-	DtdIDentifier          sql.NullString // dtd_identifier
+	DtdIdentifier          sql.NullString // dtd_identifier
 	IsSelfReferencing      sql.NullString // is_self_referencing
-	IsIDentity             sql.NullString // is_identity
-	IDentityGeneration     sql.NullString // identity_generation
-	IDentityStart          sql.NullString // identity_start
-	IDentityIncrement      sql.NullString // identity_increment
-	IDentityMaximum        sql.NullString // identity_maximum
-	IDentityMinimum        sql.NullString // identity_minimum
-	IDentityCycle          sql.NullString // identity_cycle
+	IsIdentity             sql.NullString // is_identity
+	IdentityGeneration     sql.NullString // identity_generation
+	IdentityStart          sql.NullString // identity_start
+	IdentityIncrement      sql.NullString // identity_increment
+	IdentityMaximum        sql.NullString // identity_maximum
+	IdentityMinimum        sql.NullString // identity_minimum
+	IdentityCycle          sql.NullString // identity_cycle
 	IsGenerated            sql.NullString // is_generated
 	GenerationExpression   sql.NullString // generation_expression
 	IsUpdatable            sql.NullString // is_updatable
@@ -90,15 +90,15 @@ var (
 	ScopeSchemaCol            gnorm.SqlNullStringField = "scope_schema"
 	ScopeNameCol              gnorm.SqlNullStringField = "scope_name"
 	MaximumCardinalityCol     gnorm.SqlNullInt64Field  = "maximum_cardinality"
-	DtdIDentifierCol          gnorm.SqlNullStringField = "dtd_identifier"
+	DtdIdentifierCol          gnorm.SqlNullStringField = "dtd_identifier"
 	IsSelfReferencingCol      gnorm.SqlNullStringField = "is_self_referencing"
-	IsIDentityCol             gnorm.SqlNullStringField = "is_identity"
-	IDentityGenerationCol     gnorm.SqlNullStringField = "identity_generation"
-	IDentityStartCol          gnorm.SqlNullStringField = "identity_start"
-	IDentityIncrementCol      gnorm.SqlNullStringField = "identity_increment"
-	IDentityMaximumCol        gnorm.SqlNullStringField = "identity_maximum"
-	IDentityMinimumCol        gnorm.SqlNullStringField = "identity_minimum"
-	IDentityCycleCol          gnorm.SqlNullStringField = "identity_cycle"
+	IsIdentityCol             gnorm.SqlNullStringField = "is_identity"
+	IdentityGenerationCol     gnorm.SqlNullStringField = "identity_generation"
+	IdentityStartCol          gnorm.SqlNullStringField = "identity_start"
+	IdentityIncrementCol      gnorm.SqlNullStringField = "identity_increment"
+	IdentityMaximumCol        gnorm.SqlNullStringField = "identity_maximum"
+	IdentityMinimumCol        gnorm.SqlNullStringField = "identity_minimum"
+	IdentityCycleCol          gnorm.SqlNullStringField = "identity_cycle"
 	IsGeneratedCol            gnorm.SqlNullStringField = "is_generated"
 	GenerationExpressionCol   gnorm.SqlNullStringField = "generation_expression"
 	IsUpdatableCol            gnorm.SqlNullStringField = "is_updatable"
@@ -121,7 +121,7 @@ func Query(db gnorm.DB, where gnorm.WhereClause) ([]*Row, error) {
 	for q.Next() {
 		r := Row{}
 
-		err = q.Scan(&r.TableCatalog, &r.TableSchema, &r.TableName, &r.ColumnName, &r.OrdinalPosition, &r.ColumnDefault, &r.IsNullable, &r.DataType, &r.CharacterMaximumLength, &r.CharacterOctetLength, &r.NumericPrecision, &r.NumericPrecisionRadix, &r.NumericScale, &r.DatetimePrecision, &r.IntervalType, &r.IntervalPrecision, &r.CharacterSetCatalog, &r.CharacterSetSchema, &r.CharacterSetName, &r.CollationCatalog, &r.CollationSchema, &r.CollationName, &r.DomainCatalog, &r.DomainSchema, &r.DomainName, &r.UdtCatalog, &r.UdtSchema, &r.UdtName, &r.ScopeCatalog, &r.ScopeSchema, &r.ScopeName, &r.MaximumCardinality, &r.DtdIDentifier, &r.IsSelfReferencing, &r.IsIDentity, &r.IDentityGeneration, &r.IDentityStart, &r.IDentityIncrement, &r.IDentityMaximum, &r.IDentityMinimum, &r.IDentityCycle, &r.IsGenerated, &r.GenerationExpression, &r.IsUpdatable)
+		err = q.Scan(&r.TableCatalog, &r.TableSchema, &r.TableName, &r.ColumnName, &r.OrdinalPosition, &r.ColumnDefault, &r.IsNullable, &r.DataType, &r.CharacterMaximumLength, &r.CharacterOctetLength, &r.NumericPrecision, &r.NumericPrecisionRadix, &r.NumericScale, &r.DatetimePrecision, &r.IntervalType, &r.IntervalPrecision, &r.CharacterSetCatalog, &r.CharacterSetSchema, &r.CharacterSetName, &r.CollationCatalog, &r.CollationSchema, &r.CollationName, &r.DomainCatalog, &r.DomainSchema, &r.DomainName, &r.UdtCatalog, &r.UdtSchema, &r.UdtName, &r.ScopeCatalog, &r.ScopeSchema, &r.ScopeName, &r.MaximumCardinality, &r.DtdIdentifier, &r.IsSelfReferencing, &r.IsIdentity, &r.IdentityGeneration, &r.IdentityStart, &r.IdentityIncrement, &r.IdentityMaximum, &r.IdentityMinimum, &r.IdentityCycle, &r.IsGenerated, &r.GenerationExpression, &r.IsUpdatable)
 		if err != nil {
 			return nil, err
 		}

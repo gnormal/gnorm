@@ -2,6 +2,7 @@ package cli // import "gnorm.org/gnorm/cli"
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -61,7 +62,6 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		Schemas:         c.Schemas,
 		NullableTypeMap: c.NullableTypeMap,
 		TypeMap:         c.TypeMap,
-		TemplateDir:     c.TemplateDir,
 		PostRun:         c.PostRun,
 		ExcludeTables:   exclude,
 		IncludeTables:   include,
@@ -84,31 +84,22 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	}
 	cfg.NameConversion = t
 
-	if c.SchemaPath != "" {
-		t, err := template.New("SchemaPath").Funcs(environ.FuncMap).Parse(c.SchemaPath)
-		if err != nil {
-			return nil, errors.WithMessage(err, "error parsing SchemaPath template")
-		}
-		cfg.SchemaPath = t
+	cfg.SchemaPaths, err = parseOutputTargets(c.SchemaPaths)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error parsing SchemaPaths")
 	}
 
-	if c.TablePath != "" {
-		t, err := template.New("TablePath").Funcs(environ.FuncMap).Parse(c.TablePath)
-		if err != nil {
-			return nil, errors.WithMessage(err, "error parsing SchemaPath template")
-		}
-		cfg.TablePath = t
+	cfg.TablePaths, err = parseOutputTargets(c.TablePaths)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error parsing TablePaths")
 	}
 
-	if c.EnumPath != "" {
-		t, err := template.New("EnumPath").Funcs(environ.FuncMap).Parse(c.EnumPath)
-		if err != nil {
-			return nil, errors.WithMessage(err, "error parsing SchemaPath template")
-		}
-		cfg.EnumPath = t
+	cfg.EnumPaths, err = parseOutputTargets(c.EnumPaths)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error parsing RnumPaths")
 	}
 
-	if cfg.EnumPath == nil && cfg.TablePath == nil && cfg.SchemaPath == nil {
+	if len(cfg.EnumPaths) == 0 && len(cfg.TablePaths) == 0 && len(cfg.SchemaPaths) == 0 {
 		return nil, errors.New("no output paths defined, so no output will be generated")
 	}
 
@@ -148,5 +139,25 @@ func parseTables(tables, schemas []string) (map[string][]string, error) {
 		}
 	}
 
+	return out, nil
+}
+
+func parseOutputTargets(vals map[string]string) ([]run.OutputTarget, error) {
+	out := make([]run.OutputTarget, 0, len(vals))
+	for fnTempl, contTempl := range vals {
+		fn, err := template.New("filename").Funcs(environ.FuncMap).Parse(fnTempl)
+		if err != nil {
+			return nil, errors.WithMessage(err, "error parsing filename template")
+		}
+		b, err := ioutil.ReadFile(contTempl)
+		if err != nil {
+			return nil, errors.WithMessage(err, "error reading contents template")
+		}
+		cont, err := template.New(contTempl).Funcs(environ.FuncMap).Parse(string(b))
+		if err != nil {
+			return nil, errors.WithMessage(err, "error parsing contents template")
+		}
+		out = append(out, run.OutputTarget{Filename: fn, Contents: cont})
+	}
 	return out, nil
 }
