@@ -12,6 +12,8 @@ import (
 	"github.com/pkg/errors"
 
 	"gnorm.org/gnorm/database/drivers"
+	"gnorm.org/gnorm/database/drivers/mysql"
+	"gnorm.org/gnorm/database/drivers/postgres"
 	"gnorm.org/gnorm/environ"
 	"gnorm.org/gnorm/run"
 )
@@ -68,7 +70,7 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		IncludeTables:   include,
 	}
 	cfg.DBType = strings.ToLower(c.DBType)
-	d, err := drivers.Get(cfg.DBType)
+	d, err := getDriver(cfg.DBType)
 	if err != nil {
 		return nil, err
 	}
@@ -102,6 +104,17 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		return env.Env[s]
 	})
 	return cfg, nil
+}
+
+func getDriver(name string) (drivers.Driver, error) {
+	switch name {
+	case "postgres":
+		return &postgres.PG{}, nil
+	case "mysql":
+		return &mysql.MySQL{}, nil
+	default:
+		return nil, errors.Errorf("unknown database type: %v", name)
+	}
 }
 
 // parseTables takes a list of tablenames in "<schema.>table" format and spits

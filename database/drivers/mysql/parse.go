@@ -11,7 +11,6 @@ import (
 	"github.com/pkg/errors"
 
 	"gnorm.org/gnorm/database"
-	"gnorm.org/gnorm/database/drivers"
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/columns"
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/tables"
 )
@@ -29,10 +28,6 @@ func (db *MySQL) Name() string {
 // database.Info structs.
 func (db *MySQL) Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
 	return parse(log, conn, schemaNames, filterTables)
-}
-
-func init() {
-	drivers.Register(&MySQL{})
 }
 
 func parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
