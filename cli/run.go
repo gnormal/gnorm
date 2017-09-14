@@ -6,6 +6,10 @@ import (
 
 	"github.com/spf13/cobra"
 
+	// register mysql,postgressql driver
+	_ "gnorm.org/gnorm/database/drivers/mysql"
+	_ "gnorm.org/gnorm/database/drivers/postgres"
+
 	"gnorm.org/gnorm/environ"
 )
 

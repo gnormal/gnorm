@@ -11,13 +11,31 @@ import (
 	"github.com/pkg/errors"
 
 	"gnorm.org/gnorm/database"
+	"gnorm.org/gnorm/database/drivers"
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/columns"
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/tables"
 )
 
+// MySQL implements drivers.Driver interface for MySQL database
+type MySQL struct {
+}
+
+// Name returns the current driver name
+func (db *MySQL) Name() string {
+	return "mysql"
+}
+
 // Parse reads the postgres schemas for the given schemas and converts them into
 // database.Info structs.
-func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
+func (db *MySQL) Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
+	return parse(log, conn, schemaNames, filterTables)
+}
+
+func init() {
+	drivers.Register(&MySQL{})
+}
+
+func parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
 	log.Println("connecting to mysql with DSN", conn)
 	db, err := sql.Open("mysql", conn)
 	if err != nil {

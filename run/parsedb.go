@@ -1,25 +1,12 @@
 package run
 
 import (
-	"github.com/pkg/errors"
-
 	"gnorm.org/gnorm/database"
-	"gnorm.org/gnorm/database/drivers/mysql"
-	"gnorm.org/gnorm/database/drivers/postgres"
 	"gnorm.org/gnorm/environ"
 )
 
 func getDBInfo(env environ.Values, cfg *Config) (*database.Info, error) {
-	var info *database.Info
-	var err error
-	switch cfg.DBType {
-	case Postgres:
-		info, err = postgres.Parse(env.Log, cfg.ConnStr, cfg.Schemas, makeFilter(cfg.IncludeTables, cfg.ExcludeTables))
-	case Mysql:
-		info, err = mysql.Parse(env.Log, cfg.ConnStr, cfg.Schemas, makeFilter(cfg.IncludeTables, cfg.ExcludeTables))
-	default:
-		return nil, errors.Errorf("unknown database type: %v", cfg.DBType)
-	}
+	info, err := cfg.Driver.Parse(env.Log, cfg.ConnStr, cfg.Schemas, makeFilter(cfg.IncludeTables, cfg.ExcludeTables))
 	if err != nil {
 		return nil, err
 	}

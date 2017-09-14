@@ -11,6 +11,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 
+	"gnorm.org/gnorm/database/drivers"
 	"gnorm.org/gnorm/environ"
 	"gnorm.org/gnorm/run"
 )
@@ -66,18 +67,12 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		ExcludeTables:   exclude,
 		IncludeTables:   include,
 	}
-
-	switch strings.ToLower(c.DBType) {
-	case "":
-		return nil, errors.New("no DBType specificed")
-	case "postgres":
-		cfg.DBType = run.Postgres
-	case "mysql":
-		cfg.DBType = run.Mysql
-	default:
-		return nil, errors.Errorf("unsupported dbtype %q", c.DBType)
+	cfg.DBType = strings.ToLower(c.DBType)
+	d, err := drivers.Get(cfg.DBType)
+	if err != nil {
+		return nil, err
 	}
-
+	cfg.Driver = d
 	t, err := template.New("NameConversion").Funcs(environ.FuncMap).Parse(c.NameConversion)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing NameConversion template")
