@@ -22,6 +22,55 @@ gnorm uses the official dep tool for managing dependencies.
 
 If you add a dependency to the binary, make sure to update the vendor directory by running `dep ensure` and adding the resulting files to the repo.
 
+## Setting up development environment
+
+Imports points to `gnorm.org/gnorm` instead of `github.com/gnormal/gnorm` so a safer way to set this up is to follow these simple steps.
+
+```shell
+mkdir $GOPATH/src/gnorm.org
+
+cd $GOPATH/src/gnorm.org
+
+git clone git@github.com:gnormal/gnorm.git
+
+cd gnorm 
+```
+
+Afer this, you need to make sure that the dep tool is installed, and `$GOPATH/bin` is in your system `PATH`. Proceed to run the following commands
+
+```shell
+dep ensure
+```
+
+Build the binary just to be sure everything is working
+
+```
+go run make.go
+```
+
+Running `gnorm` command should give you something like this, then you are all set up and good to `go`.
+
+```
+$ gnorm
+A flexible code generator that turns your DB schema into
+runnable code.  See full docs at https://gnorm.org
+
+Usage:
+  gnorm [command]
+
+Available Commands:
+  gen         Generate code from DB schema
+  help        Help about any command
+  init        Generates the files needed to run GNORM.
+  preview     Preview the data that will be sent to your templates
+  version     Displays the version of GNORM.
+
+Flags:
+  -h, --help   help for gnorm
+
+Use "gnorm [command] --help" for more information about a command.
+```
+
 ## Formatting
 
 - All code *must* be go-formatted.
