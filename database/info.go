@@ -1,6 +1,7 @@
 package database // import "gnorm.org/gnorm/database"
 import (
 	"fmt"
+	"strings"
 )
 
 // Info is the collection of schema info from a database.
@@ -110,4 +111,9 @@ func (s Strings) Sprintf(format string) Strings {
 		ret[x] = fmt.Sprintf(format, s[x])
 	}
 	return ret
+}
+
+// Join uses strings.Join to join the string values with separator sep.
+func (s Strings) Join(sep string) string {
+	return strings.Join(s, sep)
 }
