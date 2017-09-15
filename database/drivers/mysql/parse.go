@@ -18,7 +18,7 @@ import (
 // MySQL implements drivers.Driver interface for MySQL database.
 type MySQL struct{}
 
-// Parse reads the postgres schemas for the given schemas and converts them into
+// Parse reads the mysql schemas for the given schemas and converts them into
 // database.Info structs.
 func (MySQL) Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
 	return parse(log, conn, schemaNames, filterTables)
