@@ -86,7 +86,7 @@ type Config struct {
 	NullableTypeMap map[string]string
 
 	// Driver holds a reference to the current database driver that was
-	// registered for the DBType and can connect using ConnStr
+	// registered for the DBType and can connect using ConnStr.
 	Driver database.Driver
 }
 
