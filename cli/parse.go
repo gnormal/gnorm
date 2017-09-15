@@ -11,7 +11,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 
-	"gnorm.org/gnorm/database/drivers"
+	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/database/drivers/mysql"
 	"gnorm.org/gnorm/database/drivers/postgres"
 	"gnorm.org/gnorm/environ"
@@ -106,7 +106,7 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	return cfg, nil
 }
 
-func getDriver(name string) (drivers.Driver, error) {
+func getDriver(name string) (database.Driver, error) {
 	switch name {
 	case "postgres":
 		return &postgres.PG{}, nil

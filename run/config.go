@@ -3,7 +3,7 @@ package run
 import (
 	"text/template"
 
-	"gnorm.org/gnorm/database/drivers"
+	"gnorm.org/gnorm/database"
 )
 
 // Config holds the schema that is expected to exist in the gnorm.toml file.
@@ -91,7 +91,7 @@ type Config struct {
 
 	// Driver holds a reference to the current database driver that was
 	// registered for the DBType and can connect using ConnStr
-	Driver drivers.Driver
+	Driver database.Driver
 }
 
 // OutputTarget contains a template that generates a filename to write to, and
