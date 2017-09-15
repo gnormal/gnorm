@@ -1,14 +1,9 @@
 package run
 
-import "text/template"
+import (
+	"text/template"
 
-// DBType defines the list of supported databases.
-type DBType int
-
-// Supported DB Types.
-const (
-	Postgres DBType = iota
-	Mysql
+	"gnorm.org/gnorm/database"
 )
 
 // Config holds the schema that is expected to exist in the gnorm.toml file.
@@ -16,10 +11,6 @@ type Config struct {
 	// ConnStr is the connection string for the database.  Environment variables
 	// in $FOO form will be expanded.
 	ConnStr string
-
-	// The type of DB you're connecting to.  Currently the possible values are
-	// "postgres" or "mysql".
-	DBType DBType
 
 	// Schemas holds the names of schemas to generate code for.
 	Schemas []string
@@ -93,6 +84,10 @@ type Config struct {
 	// TypeMap and NullableTypeMap must be at the end of your configuration
 	// file.
 	NullableTypeMap map[string]string
+
+	// Driver holds a reference to the current database driver that was
+	// registered for the DBType and can connect using ConnStr.
+	Driver database.Driver
 }
 
 // OutputTarget contains a template that generates a filename to write to, and

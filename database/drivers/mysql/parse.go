@@ -15,9 +15,16 @@ import (
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/tables"
 )
 
-// Parse reads the postgres schemas for the given schemas and converts them into
+// MySQL implements drivers.Driver interface for MySQL database.
+type MySQL struct{}
+
+// Parse reads the mysql schemas for the given schemas and converts them into
 // database.Info structs.
-func Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
+func (MySQL) Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
+	return parse(log, conn, schemaNames, filterTables)
+}
+
+func parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
 	log.Println("connecting to mysql with DSN", conn)
 	db, err := sql.Open("mysql", conn)
 	if err != nil {

@@ -11,6 +11,9 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 
+	"gnorm.org/gnorm/database"
+	"gnorm.org/gnorm/database/drivers/mysql"
+	"gnorm.org/gnorm/database/drivers/postgres"
 	"gnorm.org/gnorm/environ"
 	"gnorm.org/gnorm/run"
 )
@@ -66,18 +69,11 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		ExcludeTables:   exclude,
 		IncludeTables:   include,
 	}
-
-	switch strings.ToLower(c.DBType) {
-	case "":
-		return nil, errors.New("no DBType specificed")
-	case "postgres":
-		cfg.DBType = run.Postgres
-	case "mysql":
-		cfg.DBType = run.Mysql
-	default:
-		return nil, errors.Errorf("unsupported dbtype %q", c.DBType)
+	d, err := getDriver(strings.ToLower(c.DBType))
+	if err != nil {
+		return nil, err
 	}
-
+	cfg.Driver = d
 	t, err := template.New("NameConversion").Funcs(environ.FuncMap).Parse(c.NameConversion)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing NameConversion template")
@@ -107,6 +103,17 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		return env.Env[s]
 	})
 	return cfg, nil
+}
+
+func getDriver(name string) (database.Driver, error) {
+	switch name {
+	case "postgres":
+		return postgres.PG{}, nil
+	case "mysql":
+		return mysql.MySQL{}, nil
+	default:
+		return nil, errors.Errorf("unknown database type: %v", name)
+	}
 }
 
 // parseTables takes a list of tablenames in "<schema.>table" format and spits

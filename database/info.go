@@ -1,6 +1,7 @@
 package database // import "gnorm.org/gnorm/database"
 import (
 	"fmt"
+	"log"
 )
 
 // Info is the collection of schema info from a database.
@@ -110,4 +111,9 @@ func (s Strings) Sprintf(format string) Strings {
 		ret[x] = fmt.Sprintf(format, s[x])
 	}
 	return ret
+}
+
+// Driver defines the base interface for databases that are supported by gnorm
+type Driver interface {
+	Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*Info, error)
 }
