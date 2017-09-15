@@ -17,8 +17,11 @@ import (
 // Generate reads your database, gets the schema for it, and then generates
 // files based on your templates and your configuration.
 func Generate(env environ.Values, cfg *Config) error {
-	info, err := getDBInfo(env, cfg)
+	info, err := cfg.Driver.Parse(env.Log, cfg.ConnStr, cfg.Schemas, makeFilter(cfg.IncludeTables, cfg.ExcludeTables))
 	if err != nil {
+		return err
+	}
+	if err := convertNames(env.Log, info, cfg); err != nil {
 		return err
 	}
 	if len(cfg.SchemaPaths) == 0 {

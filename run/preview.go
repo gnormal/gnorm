@@ -32,8 +32,11 @@ Table: {{.Name}}({{$schema}}.{{.DBName}})
 // Preview displays the database info that woudl be passed to your template
 // based on your configuration.
 func Preview(env environ.Values, cfg *Config, useYaml bool) error {
-	info, err := getDBInfo(env, cfg)
+	info, err := cfg.Driver.Parse(env.Log, cfg.ConnStr, cfg.Schemas, makeFilter(cfg.IncludeTables, cfg.ExcludeTables))
 	if err != nil {
+		return err
+	}
+	if err := convertNames(env.Log, info, cfg); err != nil {
 		return err
 	}
 	if useYaml {
