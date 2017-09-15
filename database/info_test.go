@@ -14,11 +14,3 @@ func TestStringsSprintf(t *testing.T) {
 		}
 	}
 }
-
-func TestStringsJoin(t *testing.T) {
-	s := Strings{"one", "two", "three"}.Join(", ")
-	expected := "one, two, three"
-	if s != expected {
-		t.Fatalf("Expected %q but got %q", expected, s)
-	}
-}
