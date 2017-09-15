@@ -115,6 +115,5 @@ func (s Strings) Sprintf(format string) Strings {
 
 // Driver defines the base interface for databases that are supported by gnorm
 type Driver interface {
-	Name() string
 	Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*Info, error)
 }
