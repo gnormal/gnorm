@@ -13,7 +13,7 @@ import (
     "gnorm.org/gnorm/environ"
 )
 func main() {
-    fmt.Println("```")
+    fmt.Println("```\ngnorm preview\n")
     os.Stderr = os.Stdout
     x := cli.ParseAndRun(environ.Values{
         Stderr: os.Stdout,
@@ -25,6 +25,9 @@ func main() {
 }
 gocog}}} -->
 ```
+```
+gnorm preview
+
 Reads your gnorm.toml file and connects to your database, translating the schema
 just as it would be during a full run.  It is then printed out in an
 easy-to-read format.

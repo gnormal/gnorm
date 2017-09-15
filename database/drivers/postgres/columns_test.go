@@ -22,7 +22,7 @@ var (
 		UdtCatalog:           sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:            sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:              sql.NullString{String: "uuid", Valid: true},
-		DtdIDentifier:        sql.NullString{String: "2", Valid: true},
+		DtdIdentifier:        sql.NullString{String: "2", Valid: true},
 		IsGenerated:          sql.NullString{String: "NEVER", Valid: true},
 		GenerationExpression: sql.NullString{String: "", Valid: false},
 		IsUpdatable:          sql.NullString{String: "YES", Valid: true},
@@ -42,7 +42,7 @@ var (
 		UdtCatalog:             sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:              sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:                sql.NullString{String: "bpchar", Valid: true},
-		DtdIDentifier:          sql.NullString{String: "3", Valid: true},
+		DtdIdentifier:          sql.NullString{String: "3", Valid: true},
 		IsGenerated:            sql.NullString{String: "NEVER", Valid: true},
 		IsUpdatable:            sql.NullString{String: "YES", Valid: true},
 	}
@@ -63,7 +63,7 @@ var (
 		UdtCatalog:            sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:             sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:               sql.NullString{String: "int4", Valid: true},
-		DtdIDentifier:         sql.NullString{String: "1", Valid: true},
+		DtdIdentifier:         sql.NullString{String: "1", Valid: true},
 		IsGenerated:           sql.NullString{String: "NEVER", Valid: true},
 		IsUpdatable:           sql.NullString{String: "YES", Valid: true},
 	}
@@ -82,7 +82,7 @@ var (
 		UdtCatalog:        sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:         sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:           sql.NullString{String: "timestamptz", Valid: true},
-		DtdIDentifier:     sql.NullString{String: "9", Valid: true},
+		DtdIdentifier:     sql.NullString{String: "9", Valid: true},
 		IsGenerated:       sql.NullString{String: "NEVER", Valid: true},
 		IsUpdatable:       sql.NullString{String: "YES", Valid: true},
 	}
@@ -100,7 +100,7 @@ var (
 		UdtCatalog:           sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:            sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:              sql.NullString{String: "text", Valid: true},
-		DtdIDentifier:        sql.NullString{String: "9", Valid: true},
+		DtdIdentifier:        sql.NullString{String: "9", Valid: true},
 		IsGenerated:          sql.NullString{String: "NEVER", Valid: true},
 		IsUpdatable:          sql.NullString{String: "YES", Valid: true},
 	}
@@ -117,7 +117,7 @@ var (
 		UdtCatalog:      sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:       sql.NullString{String: "pg_catalog", Valid: true},
 		UdtName:         sql.NullString{String: "_int4", Valid: true},
-		DtdIDentifier:   sql.NullString{String: "7", Valid: true},
+		DtdIdentifier:   sql.NullString{String: "7", Valid: true},
 		IsGenerated:     sql.NullString{String: "NEVER", Valid: true},
 		IsUpdatable:     sql.NullString{String: "YES", Valid: true},
 	}
@@ -134,8 +134,8 @@ var (
 		UdtCatalog:      sql.NullString{String: "gnorm-db", Valid: true},
 		UdtSchema:       sql.NullString{String: "public", Valid: true},
 		UdtName:         sql.NullString{String: "book_type", Valid: true},
-		DtdIDentifier:   sql.NullString{String: "4", Valid: true},
-		IDentityCycle:   sql.NullString{String: "NO", Valid: true}, IsGenerated: sql.NullString{String: "NEVER", Valid: true},
+		DtdIdentifier:   sql.NullString{String: "4", Valid: true},
+		IdentityCycle:   sql.NullString{String: "NO", Valid: true}, IsGenerated: sql.NullString{String: "NEVER", Valid: true},
 		IsUpdatable: sql.NullString{String: "YES", Valid: true},
 	}
 )

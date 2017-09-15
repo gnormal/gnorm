@@ -13,7 +13,8 @@ import (
     "gnorm.org/gnorm/environ"
 )
 func main() {
-    fmt.Println("```")
+    fmt.Println("```\ngnorm init\n")
+
     os.Stderr = os.Stdout
     x := cli.ParseAndRun(environ.Values{
         Stderr: os.Stdout,
@@ -25,6 +26,9 @@ func main() {
 }
 gocog}}} -->
 ```
+```
+gnorm init
+
 Creates a default gnorm.toml and the various template files needed to run GNORM.
 
 Usage:

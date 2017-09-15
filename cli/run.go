@@ -38,7 +38,6 @@ func getenv(env []string) map[string]string {
 // ParseAndRun parses the environment and runs the command.
 func ParseAndRun(env environ.Values) int {
 	// the return code from the executed command
-	var code int
 	rootCmd := &cobra.Command{
 		Use:   "gnorm",
 		Short: "GNORM is Not an ORM, it's a db schema->code generator",
@@ -49,13 +48,26 @@ runnable code.  See full docs at https://gnorm.org`[1:],
 	rootCmd.SetArgs(env.Args)
 	rootCmd.SetOutput(env.Stderr)
 
-	rootCmd.AddCommand(previewCmd(env, &code))
-	rootCmd.AddCommand(genCmd(env, &code))
+	rootCmd.AddCommand(previewCmd(env))
+	rootCmd.AddCommand(genCmd(env))
 	rootCmd.AddCommand(versionCmd(env))
-	rootCmd.AddCommand(initCmd(env, &code))
-	if err := rootCmd.Execute(); err != nil {
-		// cobra outputs the error itself.
-		return 2
+	rootCmd.AddCommand(initCmd(env))
+	return code(rootCmd.Execute())
+}
+
+// code returns 0 if the error is nil, err.Code() if such a function exists,
+// otherwise 2 (because the only other errors that should be returned are cobra
+// parsing errors.
+func code(err error) int {
+	if err == nil {
+		return 0
 	}
-	return code
+	type coder interface {
+		Code() int
+	}
+	if c, ok := err.(coder); ok {
+		return c.Code()
+	}
+	// we always return codeErrs, so this must be a cobra parsing failure.
+	return 2
 }

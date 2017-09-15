@@ -1,0 +1,14 @@
+language: go
+
+go_import_path: gnorm.org/gnorm
+
+go:
+  - 1.9
+
+script: go test ./...
+
+env:
+  - GOOS=linux
+  - GOOS=windows
+  - GOOS=darwin
+  
