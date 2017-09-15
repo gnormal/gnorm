@@ -69,8 +69,7 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		ExcludeTables:   exclude,
 		IncludeTables:   include,
 	}
-	cfg.DBType = strings.ToLower(c.DBType)
-	d, err := getDriver(cfg.DBType)
+	d, err := getDriver(strings.ToLower(c.DBType))
 	if err != nil {
 		return nil, err
 	}

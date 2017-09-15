@@ -12,10 +12,6 @@ type Config struct {
 	// in $FOO form will be expanded.
 	ConnStr string
 
-	// The type of DB you're connecting to.  Currently the possible values are
-	// "postgres" or "mysql".
-	DBType string
-
 	// Schemas holds the names of schemas to generate code for.
 	Schemas []string
 
