@@ -108,9 +108,9 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 func getDriver(name string) (database.Driver, error) {
 	switch name {
 	case "postgres":
-		return &postgres.PG{}, nil
+		return postgres.PG{}, nil
 	case "mysql":
-		return &mysql.MySQL{}, nil
+		return mysql.MySQL{}, nil
 	default:
 		return nil, errors.Errorf("unknown database type: %v", name)
 	}
