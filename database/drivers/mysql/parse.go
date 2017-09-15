@@ -15,18 +15,12 @@ import (
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/tables"
 )
 
-// MySQL implements drivers.Driver interface for MySQL database
-type MySQL struct {
-}
-
-// Name returns the current driver name
-func (db *MySQL) Name() string {
-	return "mysql"
-}
+// MySQL implements drivers.Driver interface for MySQL database.
+type MySQL struct{}
 
 // Parse reads the postgres schemas for the given schemas and converts them into
 // database.Info structs.
-func (db *MySQL) Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
+func (MySQL) Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
 	return parse(log, conn, schemaNames, filterTables)
 }
 

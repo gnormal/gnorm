@@ -16,18 +16,12 @@ import (
 )
 
 // PG implements drivers.Driver interface for interacting with postgresql
-// database
-type PG struct {
-}
-
-// Name returns the current driver name which is postgres
-func (db *PG) Name() string {
-	return "postgres"
-}
+// database.
+type PG struct{}
 
 // Parse reads the postgres schemas for the given schemas and converts them into
 // database.Info structs.
-func (db *PG) Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
+func (PG) Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
 	return parse(log, conn, schemaNames, filterTables)
 }
 
