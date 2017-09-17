@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/natefinch/atomic"
 	"github.com/pkg/errors"
 
 	"gnorm.org/gnorm/database"
@@ -51,38 +52,12 @@ func Generate(env environ.Values, cfg *Config) error {
 func generateSchemas(env environ.Values, cfg *Config, info *database.Info) error {
 	for _, schema := range info.Schemas {
 		for _, target := range cfg.SchemaPaths {
-			if err := generateSchema(env, schema, target, cfg.PostRun); err != nil {
-				return err
+			env.Log.Printf("Generating output for schema %v", schema.Name)
+			fileData := struct{ Schema string }{Schema: schema.Name}
+			if err := genFile(env, fileData, schema, target, cfg.PostRun); err != nil {
+				return errors.WithMessage(err, "generating file for schema "+schema.Name)
 			}
 		}
-	}
-	return nil
-}
-
-func generateSchema(env environ.Values, schema *database.Schema, target OutputTarget, postrun []string) error {
-	env.Log.Printf("Generating output for schema %v", schema.Name)
-	buf := &bytes.Buffer{}
-	err := target.Filename.Execute(buf, struct{ Schema string }{Schema: schema.Name})
-	if err != nil {
-		return errors.WithMessage(err, "failed to run SchemaPath Filename template with schema "+schema.Name)
-	}
-	outputPath := buf.String()
-	if err := os.MkdirAll(filepath.Dir(outputPath), 0700); err != nil {
-		return errors.WithMessage(err, "error creating output directory for schema "+schema.Name)
-	}
-	f, err := os.OpenFile(outputPath, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0600)
-	if err != nil {
-		return errors.WithMessage(err, "failed to create output file for schema "+schema.Name)
-	}
-	defer f.Close()
-	if err := target.Contents.Execute(f, schema); err != nil {
-		return errors.WithMessage(err, "failed to run schema template over schema "+schema.Name)
-	}
-	if err := f.Close(); err != nil {
-		return errors.Wrapf(err, "error closing generated file %q", outputPath)
-	}
-	if len(postrun) > 0 {
-		return doPostRun(env, outputPath, postrun)
 	}
 	return nil
 }
@@ -91,39 +66,13 @@ func generateEnums(env environ.Values, cfg *Config, info *database.Info) error {
 	for _, schema := range info.Schemas {
 		for _, enum := range schema.Enums {
 			for _, target := range cfg.EnumPaths {
-				if err := generateEnum(env, enum, target, cfg.PostRun); err != nil {
-					return err
+				fileData := struct{ Schema, Enum string }{Schema: enum.Schema, Enum: enum.Name}
+				if err := genFile(env, fileData, enum, target, cfg.PostRun); err != nil {
+					env.Log.Printf("Generating output for enum %v", enum.Name)
+					return errors.WithMessage(err, "generating file for enum "+enum.Name)
 				}
 			}
 		}
-	}
-	return nil
-}
-
-func generateEnum(env environ.Values, enum *database.Enum, target OutputTarget, postrun []string) error {
-	env.Log.Printf("Generating output for enum %v", enum.Name)
-	buf := &bytes.Buffer{}
-	err := target.Filename.Execute(buf, struct{ Schema, Enum string }{Schema: enum.Schema, Enum: enum.Name})
-	if err != nil {
-		return errors.Wrapf(err, "failed to run enum filename template with enum %v.%v"+enum.Schema, enum.Name)
-	}
-	outputPath := buf.String()
-	if err := os.MkdirAll(filepath.Dir(outputPath), 0700); err != nil {
-		return errors.Wrapf(err, "error creating output directory for enum %v.%v "+enum.Schema, enum.Name)
-	}
-	f, err := os.OpenFile(outputPath, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0600)
-	if err != nil {
-		return errors.Wrapf(err, "failed to create output file for enum %v.%v"+enum.Schema, enum.Name)
-	}
-	defer f.Close()
-	if err := target.Contents.Execute(f, enum); err != nil {
-		return errors.Wrapf(err, "failed to run enum contents template over enum %v.%v"+enum.Schema, enum.Name)
-	}
-	if err := f.Close(); err != nil {
-		return errors.Wrapf(err, "error closing generated file %q", outputPath)
-	}
-	if len(postrun) > 0 {
-		return doPostRun(env, outputPath, postrun)
 	}
 	return nil
 }
@@ -132,8 +81,10 @@ func generateTables(env environ.Values, cfg *Config, info *database.Info) error 
 	for _, schema := range info.Schemas {
 		for _, table := range schema.Tables {
 			for _, target := range cfg.TablePaths {
-				if err := generateTable(env, table, target, cfg.PostRun); err != nil {
-					return err
+				fileData := struct{ Schema, Table string }{Schema: table.Schema, Table: table.Name}
+				if err := genFile(env, fileData, table, target, cfg.PostRun); err != nil {
+					env.Log.Printf("Generating output for table %v", table.Name)
+					return errors.WithMessage(err, "generating file for table "+table.Name)
 				}
 			}
 		}
@@ -141,27 +92,24 @@ func generateTables(env environ.Values, cfg *Config, info *database.Info) error 
 	return nil
 }
 
-func generateTable(env environ.Values, table *database.Table, target OutputTarget, postrun []string) error {
-	env.Log.Printf("Generating output for table %v", table.Name)
+func genFile(env environ.Values, filedata, contents interface{}, target OutputTarget, postrun []string) error {
 	buf := &bytes.Buffer{}
-	err := target.Filename.Execute(buf, struct{ Schema, Table string }{Schema: table.Schema, Table: table.Name})
+	err := target.Filename.Execute(buf, filedata)
 	if err != nil {
-		return errors.Wrapf(err, "failed to run table filename template with table %v.%v"+table.Schema, table.Name)
+		return errors.WithMessage(err, "failed to run Filename template")
 	}
 	outputPath := buf.String()
+
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0700); err != nil {
-		return errors.Wrapf(err, "error creating output directory for table %v.%v "+table.Schema, table.Name)
+		return errors.WithMessage(err, "error creating template output directory")
 	}
-	f, err := os.OpenFile(outputPath, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0600)
-	if err != nil {
-		return errors.Wrapf(err, "failed to create output file for table %v.%v"+table.Schema, table.Name)
+
+	outbuf := &bytes.Buffer{}
+	if err := target.Contents.Execute(outbuf, contents); err != nil {
+		return errors.WithMessage(err, "failed to run contents template")
 	}
-	defer f.Close()
-	if err := target.Contents.Execute(f, table); err != nil {
-		return errors.Wrapf(err, "failed to run table contents template over table %v.%v"+table.Schema, table.Name)
-	}
-	if err := f.Close(); err != nil {
-		return errors.Wrapf(err, "error closing generated file %q", outputPath)
+	if err := atomic.WriteFile(outputPath, outbuf); err != nil {
+		return errors.Wrapf(err, "error writing generated file %q", outputPath)
 	}
 	if len(postrun) > 0 {
 		return doPostRun(env, outputPath, postrun)
