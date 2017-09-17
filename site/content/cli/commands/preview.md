@@ -25,7 +25,6 @@ func main() {
 }
 gocog}}} -->
 ```
-```
 gnorm preview
 
 Reads your gnorm.toml file and connects to your database, translating the schema
