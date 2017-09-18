@@ -173,7 +173,7 @@ func TestPreviewYaml(t *testing.T) {
 		Driver: dummyDriver{},
 	}
 	// with yaml
-	if err := Preview(env, cfg, true); err != nil {
+	if err := Preview(env, cfg, true, false); err != nil {
 		t.Fatal(err)
 	}
 	v := out.String()
@@ -204,18 +204,66 @@ func TestPreviewTabular(t *testing.T) {
 	}
 
 	// tabular
-	if err := Preview(env, cfg, false); err != nil {
+	if err := Preview(env, cfg, false, false); err != nil {
 		t.Fatal(err)
 	}
 
 	//without yaml
 	out.Reset()
 	errOut.Reset()
-	if err := Preview(env, cfg, false); err != nil {
+	if err := Preview(env, cfg, false, false); err != nil {
 		t.Fatal(err)
 	}
 	v := out.String()
 	if v != expectTabular {
 		t.Errorf("tabular format differs from expected: %s", cmp.Diff(expectTabular, v))
+	}
+}
+
+const typesOut = `+---------------+----------------+
+| ORIGINAL TYPE | CONVERTED TYPE |
++---------------+----------------+
+| int           | INTEGER        |
++---------------+----------------+
+| *int          | *INTEGER       |
++---------------+----------------+
+| string        |                |
++---------------+----------------+
+| *string       |                |
++---------------+----------------+
+`
+
+func TestPreviewTypes(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	env := environ.Values{
+		Stdout: &out,
+		Log:    log.New(&errOut, "test: ", log.Lshortfile),
+	}
+
+	cfg := &Config{
+		NameConversion: template.Must(template.New("").Funcs(environ.FuncMap).Parse(`{{print "abc " .}}`)),
+		ConfigData: data.ConfigData{
+			NullableTypeMap: map[string]string{
+				"*int": "*INTEGER",
+			},
+			TypeMap: map[string]string{
+				"int": "INTEGER",
+			},
+		},
+		Driver: dummyDriver{},
+	}
+	info, err := cfg.Driver.Parse(env.Log, cfg.ConnStr, cfg.Schemas, makeFilter(cfg.IncludeTables, cfg.ExcludeTables))
+	if err != nil {
+		t.Fatal(err)
+	}
+	data, err := makeData(env.Log, info, cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	displayTypes(env, data)
+	v := out.String()
+	if v != typesOut {
+		t.Errorf("expected %s got %s", typesOut, v)
 	}
 }
