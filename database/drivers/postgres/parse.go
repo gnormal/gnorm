@@ -97,11 +97,11 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
 		s := &database.Schema{
-			DBName: schema,
-			Enums:  enums[schema],
+			Name:  schema,
+			Enums: enums[schema],
 		}
 		for tname, columns := range tables {
-			s.Tables = append(s.Tables, &database.Table{DBName: tname, DBSchema: schema, Columns: columns})
+			s.Tables = append(s.Tables, &database.Table{Name: tname, Columns: columns})
 		}
 		res.Schemas = append(res.Schemas, s)
 	}
@@ -111,7 +111,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 
 func toDBColumn(c *columns.Row, log *log.Logger) *database.Column {
 	col := &database.Column{
-		DBName:     c.ColumnName.String,
+		Name:       c.ColumnName.String,
 		Nullable:   c.IsNullable.String == "YES",
 		HasDefault: c.ColumnDefault.String != "",
 		Length:     int(c.CharacterMaximumLength.Int64),
@@ -131,7 +131,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) *database.Column {
 		typ = c.UdtName.String
 	}
 
-	col.DBType = typ
+	col.Type = typ
 
 	return col
 }
@@ -168,9 +168,8 @@ func queryEnums(log *log.Logger, db *sql.DB, schemas []string) (map[string][]*da
 			return nil, err
 		}
 		enum := &database.Enum{
-			DBName:   name,
-			DBSchema: schema,
-			Values:   vals,
+			Name:   name,
+			Values: vals,
 		}
 		ret[schema] = append(ret[schema], enum)
 	}
@@ -201,7 +200,7 @@ func queryValues(log *log.Logger, db *sql.DB, schema, enum string) ([]*database.
 		if err := rows.Scan(&name, &val); err != nil {
 			return nil, errors.Wrapf(err, "failed reading enum values for %s.%s", schema, enum)
 		}
-		vals = append(vals, &database.EnumValue{DBName: name.String, Value: int(val.Int64)})
+		vals = append(vals, &database.EnumValue{Name: name.String, Value: int(val.Int64)})
 	}
 	log.Printf("found %d values for enum %v.%v", len(vals), schema, enum)
 	return vals, nil

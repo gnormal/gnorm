@@ -6,9 +6,10 @@ import (
 
 	"github.com/pkg/errors"
 	"gnorm.org/gnorm/database"
+	"gnorm.org/gnorm/run/data"
 )
 
-func convertNames(log *log.Logger, info *database.Info, cfg *Config) error {
+func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, error) {
 	convert := func(s string) (string, error) {
 		buf := &bytes.Buffer{}
 		err := cfg.NameConversion.Execute(buf, s)
@@ -17,52 +18,88 @@ func convertNames(log *log.Logger, info *database.Info, cfg *Config) error {
 		}
 		return buf.String(), nil
 	}
+
+	db := &data.DBData{
+		SchemasByName: make(map[string]*data.Schema, len(info.Schemas)),
+	}
 	var err error
 	for _, s := range info.Schemas {
-		s.Name, err = convert(s.DBName)
+		sch := &data.Schema{
+			DBName:       s.Name,
+			TablesByName: make(map[string]*data.Table, len(s.Tables)),
+		}
+		db.Schemas = append(db.Schemas, sch)
+		db.SchemasByName[sch.DBName] = sch
+
+		sch.Name, err = convert(s.Name)
 		if err != nil {
-			return errors.WithMessage(err, "schema")
+			return nil, errors.WithMessage(err, "schema")
 		}
 		for _, e := range s.Enums {
-			e.Schema = s.Name
-			e.DBSchema = s.DBName
-			e.Name, err = convert(e.DBName)
+			enum := &data.Enum{
+				DBName: e.Name,
+				Schema: sch,
+			}
+			sch.Enums = append(sch.Enums, enum)
+			enum.Name, err = convert(e.Name)
 			if err != nil {
-				return errors.WithMessage(err, "enum")
+				return nil, errors.WithMessage(err, "enum")
 			}
 			for _, v := range e.Values {
-				v.Name, err = convert(v.DBName)
+				val := &data.EnumValue{
+					DBName: v.Name,
+					Value:  v.Value,
+				}
+				enum.Values = append(enum.Values, val)
+				val.Name, err = convert(v.Name)
 				if err != nil {
-					return errors.WithMessage(err, "enum value")
+					return nil, errors.WithMessage(err, "enum value")
 				}
 			}
 		}
 		for _, t := range s.Tables {
-			t.Schema = s.Name
-			t.DBSchema = s.DBName
-			t.Name, err = convert(t.DBName)
+			table := &data.Table{
+				DBName:        t.Name,
+				Schema:        sch,
+				ColumnsByName: make(map[string]*data.Column, len(t.Columns)),
+			}
+			sch.Tables = append(sch.Tables, table)
+			sch.TablesByName[table.DBName] = table
+			table.Name, err = convert(t.Name)
 			if err != nil {
-				return errors.WithMessage(err, "table")
+				return nil, errors.WithMessage(err, "table")
 			}
 			for _, c := range t.Columns {
-				c.Name, err = convert(c.DBName)
+				col := &data.Column{
+					DBName:      c.Name,
+					DBType:      c.Type,
+					IsArray:     c.IsArray,
+					Length:      c.Length,
+					UserDefined: c.UserDefined,
+					Nullable:    c.Nullable,
+					HasDefault:  c.HasDefault,
+					Orig:        c.Orig,
+				}
+				table.Columns = append(table.Columns, col)
+				table.ColumnsByName[col.DBName] = col
+				col.Name, err = convert(c.Name)
 				if err != nil {
-					return errors.WithMessage(err, "column")
+					return nil, errors.WithMessage(err, "column")
 				}
 				var ok bool
 				if c.Nullable {
-					c.Type, ok = cfg.NullableTypeMap[c.DBType]
+					col.Type, ok = cfg.NullableTypeMap[c.Type]
 					if !ok {
-						log.Println("Unmapped nullable type:", c.DBType)
+						log.Println("Unmapped nullable type:", c.Type)
 					}
 				} else {
-					c.Type, ok = cfg.TypeMap[c.DBType]
+					col.Type, ok = cfg.TypeMap[c.Type]
 					if !ok {
-						log.Println("Unmapped type:", c.DBType)
+						log.Println("Unmapped type:", c.Type)
 					}
 				}
 			}
 		}
 	}
-	return nil
+	return db, nil
 }

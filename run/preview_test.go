@@ -9,6 +9,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/environ"
+	"gnorm.org/gnorm/run/data"
 )
 
 func TestMakeTable(t *testing.T) {
@@ -48,31 +49,29 @@ type dummyDriver struct{}
 func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, filterTables func(schema, table string) bool) (*database.Info, error) {
 	return &database.Info{
 		Schemas: []*database.Schema{{
-			DBName: "schema",
+			Name: "schema",
 			Tables: []*database.Table{{
-				DBSchema: "schema",
-				DBName:   "table",
+				Name: "table",
 				Columns: []*database.Column{{
-					DBName: "col1",
-					DBType: "int",
+					Name: "col1",
+					Type: "int",
 				}, {
-					DBName:   "col2",
-					DBType:   "*int",
+					Name:     "col2",
+					Type:     "*int",
 					Nullable: true,
 				}, {
-					DBName: "col3",
-					DBType: "string",
+					Name: "col3",
+					Type: "string",
 				}, {
-					DBName:   "col4",
-					DBType:   "*string",
+					Name:     "col4",
+					Type:     "*string",
 					Nullable: true,
 				}},
 			}},
 			Enums: []*database.Enum{{
-				DBSchema: "schema",
-				DBName:   "enum",
+				Name: "enum",
 				Values: []*database.EnumValue{{
-					DBName: "enumvalue",
+					Name: "enumvalue",
 				}},
 			}},
 		}},
@@ -83,9 +82,7 @@ const expectYaml = `schemas:
 - name: abc schema
   dbname: schema
   tables:
-  - schema: abc schema
-    dbschema: schema
-    name: abc table
+  - name: abc table
     dbname: table
     columns:
     - name: abc col1
@@ -125,11 +122,7 @@ const expectYaml = `schemas:
       nullable: true
       hasdefault: false
   enums:
-  - schema: abc schema
-    dbschema: schema
-    table: ""
-    dbtable: ""
-    name: abc enum
+  - name: abc enum
     dbname: enum
     values:
     - name: abc enumvalue
@@ -137,7 +130,7 @@ const expectYaml = `schemas:
       value: 0
 `
 
-const expectNoYaml = `Schema: abc schema(schema)
+const expectTabular = `Schema: abc schema(schema)
 
 Enum: abc enum(schema.enum)
 +---------------+-----------+-------+
@@ -159,7 +152,7 @@ Table: abc table(schema.table)
 
 `
 
-func TestPreview(t *testing.T) {
+func TestPreviewYaml(t *testing.T) {
 	var out bytes.Buffer
 	var errOut bytes.Buffer
 	env := environ.Values{
@@ -169,11 +162,13 @@ func TestPreview(t *testing.T) {
 
 	cfg := &Config{
 		NameConversion: template.Must(template.New("").Funcs(environ.FuncMap).Parse(`{{print "abc " .}}`)),
-		NullableTypeMap: map[string]string{
-			"*int": "*INTEGER",
-		},
-		TypeMap: map[string]string{
-			"int": "INTEGER",
+		ConfigData: data.ConfigData{
+			NullableTypeMap: map[string]string{
+				"*int": "*INTEGER",
+			},
+			TypeMap: map[string]string{
+				"int": "INTEGER",
+			},
 		},
 		Driver: dummyDriver{},
 	}
@@ -183,7 +178,34 @@ func TestPreview(t *testing.T) {
 	}
 	v := out.String()
 	if v != expectYaml {
-		t.Errorf("expected %s got %s", expectYaml, v)
+		t.Errorf(cmp.Diff(expectYaml, v))
+	}
+}
+
+func TestPreviewTabular(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	env := environ.Values{
+		Stdout: &out,
+		Log:    log.New(&errOut, "test: ", log.Lshortfile),
+	}
+
+	cfg := &Config{
+		NameConversion: template.Must(template.New("").Funcs(environ.FuncMap).Parse(`{{print "abc " .}}`)),
+		ConfigData: data.ConfigData{
+			NullableTypeMap: map[string]string{
+				"*int": "*INTEGER",
+			},
+			TypeMap: map[string]string{
+				"int": "INTEGER",
+			},
+		},
+		Driver: dummyDriver{},
+	}
+
+	// tabular
+	if err := Preview(env, cfg, false); err != nil {
+		t.Fatal(err)
 	}
 
 	//without yaml
@@ -192,8 +214,8 @@ func TestPreview(t *testing.T) {
 	if err := Preview(env, cfg, false); err != nil {
 		t.Fatal(err)
 	}
-	v = out.String()
-	if v != expectNoYaml {
-		t.Errorf("expected %s got %s", expectNoYaml, v)
+	v := out.String()
+	if v != expectTabular {
+		t.Errorf("tabular format differs from expected: %s", cmp.Diff(expectTabular, v))
 	}
 }

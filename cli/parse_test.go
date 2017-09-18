@@ -1,6 +1,10 @@
 package cli
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/BurntSushi/toml"
+)
 
 func TestParseTables(t *testing.T) {
 	tables := []string{"table", "schema.table2"}
@@ -32,6 +36,18 @@ func TestParseTables(t *testing.T) {
 	}
 	if !contains(list2, "table") {
 		t.Error(`"schema" table list should have included schema-unspecified "table", but did not`)
+	}
+}
+
+func TestParseGnormTolm(t *testing.T) {
+	c := Config{}
+	m, err := toml.DecodeFile("gnorm.toml", &c)
+	if err != nil {
+		t.Fatal(err)
+	}
+	undec := m.Undecoded()
+	if len(undec) > 0 {
+		t.Fatalf("unknown values present in config file: %s", undec)
 	}
 }
 

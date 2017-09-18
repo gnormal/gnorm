@@ -16,6 +16,7 @@ import (
 	"gnorm.org/gnorm/database/drivers/postgres"
 	"gnorm.org/gnorm/environ"
 	"gnorm.org/gnorm/run"
+	"gnorm.org/gnorm/run/data"
 )
 
 func parseFile(env environ.Values, file string) (*run.Config, error) {
@@ -61,13 +62,14 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	}
 
 	cfg := &run.Config{
-		ConnStr:         c.ConnStr,
-		Schemas:         c.Schemas,
-		NullableTypeMap: c.NullableTypeMap,
-		TypeMap:         c.TypeMap,
-		PostRun:         c.PostRun,
-		ExcludeTables:   exclude,
-		IncludeTables:   include,
+		ConfigData: data.ConfigData{
+			Schemas:         c.Schemas,
+			NullableTypeMap: c.NullableTypeMap,
+			TypeMap:         c.TypeMap,
+			PostRun:         c.PostRun,
+			ExcludeTables:   exclude,
+			IncludeTables:   include,
+		},
 	}
 	d, err := getDriver(strings.ToLower(c.DBType))
 	if err != nil {

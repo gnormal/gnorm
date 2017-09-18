@@ -26,7 +26,6 @@ func main() {
 }
 gocog}}} -->
 ```
-```
 gnorm init
 
 Creates a default gnorm.toml and the various template files needed to run GNORM.

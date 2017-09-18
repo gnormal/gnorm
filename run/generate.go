@@ -11,8 +11,8 @@ import (
 	"github.com/natefinch/atomic"
 	"github.com/pkg/errors"
 
-	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/environ"
+	"gnorm.org/gnorm/run/data"
 )
 
 // Generate reads your database, gets the schema for it, and then generates
@@ -22,39 +22,46 @@ func Generate(env environ.Values, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	if err := convertNames(env.Log, info, cfg); err != nil {
+	db, err := makeData(env.Log, info, cfg)
+	if err != nil {
 		return err
 	}
 	if len(cfg.SchemaPaths) == 0 {
 		env.Log.Println("No SchemaPaths specified, skipping schemas.")
 	} else {
-		if err := generateSchemas(env, cfg, info); err != nil {
+		if err := generateSchemas(env, cfg, db); err != nil {
 			return err
 		}
 	}
 	if len(cfg.EnumPaths) == 0 {
 		env.Log.Println("No EnumPath specified, skipping enums.")
 	} else {
-		if err := generateEnums(env, cfg, info); err != nil {
+		if err := generateEnums(env, cfg, db); err != nil {
 			return err
 		}
 	}
 	if len(cfg.TablePaths) == 0 {
 		env.Log.Println("No table path specified, skipping tables.")
 	} else {
-		if err := generateTables(env, cfg, info); err != nil {
+		if err := generateTables(env, cfg, db); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func generateSchemas(env environ.Values, cfg *Config, info *database.Info) error {
-	for _, schema := range info.Schemas {
+func generateSchemas(env environ.Values, cfg *Config, db *data.DBData) error {
+	for _, schema := range db.Schemas {
+		fileData := struct{ Schema string }{Schema: schema.Name}
+		contents := data.SchemaData{
+			Schema: schema,
+			DB:     db,
+			Config: cfg.ConfigData,
+			Params: cfg.Params,
+		}
 		for _, target := range cfg.SchemaPaths {
 			env.Log.Printf("Generating output for schema %v", schema.Name)
-			fileData := struct{ Schema string }{Schema: schema.Name}
-			if err := genFile(env, fileData, schema, target, cfg.PostRun); err != nil {
+			if err := genFile(env, fileData, contents, target, cfg.PostRun); err != nil {
 				return errors.WithMessage(err, "generating file for schema "+schema.Name)
 			}
 		}
@@ -62,12 +69,18 @@ func generateSchemas(env environ.Values, cfg *Config, info *database.Info) error
 	return nil
 }
 
-func generateEnums(env environ.Values, cfg *Config, info *database.Info) error {
-	for _, schema := range info.Schemas {
+func generateEnums(env environ.Values, cfg *Config, db *data.DBData) error {
+	for _, schema := range db.Schemas {
 		for _, enum := range schema.Enums {
+			fileData := struct{ Schema, Enum string }{Schema: schema.Name, Enum: enum.Name}
+			contents := data.EnumData{
+				Enum:   enum,
+				DB:     db,
+				Config: cfg.ConfigData,
+				Params: cfg.Params,
+			}
 			for _, target := range cfg.EnumPaths {
-				fileData := struct{ Schema, Enum string }{Schema: enum.Schema, Enum: enum.Name}
-				if err := genFile(env, fileData, enum, target, cfg.PostRun); err != nil {
+				if err := genFile(env, fileData, contents, target, cfg.PostRun); err != nil {
 					env.Log.Printf("Generating output for enum %v", enum.Name)
 					return errors.WithMessage(err, "generating file for enum "+enum.Name)
 				}
@@ -77,12 +90,18 @@ func generateEnums(env environ.Values, cfg *Config, info *database.Info) error {
 	return nil
 }
 
-func generateTables(env environ.Values, cfg *Config, info *database.Info) error {
-	for _, schema := range info.Schemas {
+func generateTables(env environ.Values, cfg *Config, db *data.DBData) error {
+	for _, schema := range db.Schemas {
 		for _, table := range schema.Tables {
+			contents := data.TableData{
+				Table:  table,
+				DB:     db,
+				Config: cfg.ConfigData,
+				Params: cfg.Params,
+			}
+			fileData := struct{ Schema, Table string }{Schema: schema.Name, Table: table.Name}
 			for _, target := range cfg.TablePaths {
-				fileData := struct{ Schema, Table string }{Schema: table.Schema, Table: table.Name}
-				if err := genFile(env, fileData, table, target, cfg.PostRun); err != nil {
+				if err := genFile(env, fileData, contents, target, cfg.PostRun); err != nil {
 					env.Log.Printf("Generating output for table %v", table.Name)
 					return errors.WithMessage(err, "generating file for table "+table.Name)
 				}

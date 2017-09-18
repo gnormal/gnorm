@@ -36,9 +36,9 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		return nil, err
 	}
 
-	schemas := make(map[string]map[string]database.Columns, len(schemaNames))
+	schemas := make(map[string]map[string][]*database.Column, len(schemaNames))
 	for _, name := range schemaNames {
-		schemas[name] = map[string]database.Columns{}
+		schemas[name] = map[string][]*database.Column{}
 	}
 
 	for _, t := range tables {
@@ -80,9 +80,8 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		}
 		schema[c.TableName] = append(schema[c.TableName], col)
 		if enum != nil {
-			enum.DBTable = c.TableName
-			enum.DBSchema = c.TableSchema
-			enums[enum.DBSchema] = append(enums[enum.DBSchema], enum)
+			enum.Table = c.TableName
+			enums[c.TableSchema] = append(enums[c.TableSchema], enum)
 		}
 	}
 
@@ -90,11 +89,11 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
 		s := &database.Schema{
-			DBName: schema,
-			Enums:  enums[schema],
+			Name:  schema,
+			Enums: enums[schema],
 		}
 		for tname, columns := range tables {
-			s.Tables = append(s.Tables, &database.Table{DBName: tname, DBSchema: schema, Columns: columns})
+			s.Tables = append(s.Tables, &database.Table{Name: tname, Columns: columns})
 		}
 		res.Schemas = append(res.Schemas, s)
 	}
@@ -104,10 +103,10 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 
 func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.Enum, error) {
 	col := &database.Column{
-		DBName:     c.ColumnName,
+		Name:       c.ColumnName,
 		Nullable:   c.IsNullable == "YES",
 		HasDefault: c.ColumnDefault.String != "",
-		DBType:     c.DataType,
+		Type:       c.DataType,
 		Orig:       *c,
 	}
 
@@ -132,7 +131,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.En
 	// we'll call the enum the same as the column name.
 	// the function above will set the table name etc
 	enum := &database.Enum{
-		DBName: col.DBName,
+		Name: col.Name,
 	}
 	// strip off the enum and parens
 	s := c.ColumnType[5 : len(c.ColumnType)-1]
@@ -141,7 +140,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.En
 	for x := range vals {
 		enum.Values[x] = &database.EnumValue{
 			// strip off the quotes
-			DBName: vals[x][1 : len(vals[x])-1],
+			Name: vals[x][1 : len(vals[x])-1],
 			// enum values start at 1 in mysql
 			Value: x + 1,
 		}

@@ -7,6 +7,8 @@ Of course, contributions are more than welcome. Please read these guidelines for
 Development discussion should take place on the #gnorm channel of [gopher
 slack](https://gophers.slack.com/).
 
+There is a separate #gnorm-dev channel that has the github app to post github activity to the channel, to make it easy to follow.
+
 ## Tasks
 
 See the [Nearterm Todos](https://github.com/gnormal/gnorm/projects/1) github
