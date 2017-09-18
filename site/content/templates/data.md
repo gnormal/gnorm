@@ -6,103 +6,164 @@ alwaysopen=true
 
 The data passed to the templates is defined below.
 
-<!-- {{{gocog
-package main
+## __Schema Data__
 
-import (
-	"fmt"
-	"os"
-	"os/exec"
-)
+Data passed to each schema template:
 
-func main() {
-	fmt.Println("```")
-	for _, s := range []string{"Schema", "Table", "Tables", "Column", "Columns", "Enum", "EnumValue", "Strings"} {
-		c := exec.Command("go", "doc", "gnorm.org/gnorm/database."+s)
-		b, err := c.CombinedOutput()
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
-		fmt.Println(string(b))
-	}
-	fmt.Println("```")
-}
-gocog}}} -->
-```
-type Schema struct {
-	Name   string  // the converted name of this schema
-	DBName string  // the original name of the schema in the DB
-	Tables Tables  // the list of tables in this schema
-	Enums  []*Enum // the list of enums in this schema
-}
-    Schema is the information on a single named schema in the database.
+| Property | Type | Description |
+| --- | ---- | --- |
+| Schema | [Schema](#schema) | The schema being rendered 
+| DB | [DB](#db) | The data for the whole DB 
+| Config | [Config](#config) | Gnorm config values from the gnorm.toml file 
+| Params | map[string]anything | the values from the Params entry in the config file 
 
 
-type Table struct {
-	Schema   string  // the converted name of the schema this table is in
-	DBSchema string  // the original name of the schema in the DB
-	Name     string  // the name of the table
-	DBName   string  // the original name of the table in the DB
-	Columns  Columns // ordered list of columns in this table
-}
-    Table contains the definiiton of a database table.
+## __Table Data__
+
+Data passed to each table template:
+
+| Property | Type | Description |
+| --- | ---- | --- |
+| Table | [Table](#table) | the table being rendered
+| DB | [DB](#db) | The data for the whole DB 
+| Config | [Config](#config) | Gnorm config values from the gnorm.toml file 
+| Params | map[string]anything | the values from the Params entry in the config file 
 
 
-type Tables []*Table
-    Tables is a list of tables in this schema.
+
+## __Enum Data__
+
+Data passed to each enum template:
+
+| Property | Type | Description |
+| --- | ---- | --- |
+| Enum | [Enum](#enum) | the enum being rendered
+| DB | [DB](#db) | The data for the whole DB 
+| Config | [Config](#config) | Gnorm config values from the gnorm.toml file 
+| Params | map[string]anything | the values from the Params entry in the config file 
 
 
-func (t Tables) DBNames() Strings
-func (t Tables) Names() Strings
+## __Type Definitions__
+-----
+These are the definitions of all the complex types referenced by the above.
 
-type Column struct {
-	Name        string      // the converted name of the column
-	DBName      string      // the original name of the column in the DB
-	Type        string      // the mapped type of the column
-	DBType      string      // the original type of the column in the DB
-	IsArray     bool        // true if the column type is an array
-	Length      int         // non-zero if the type has a length (e.g. varchar[16])
-	UserDefined bool        // true if the type is user-defined
-	Nullable    bool        // true if the column is not NON NULL
-	HasDefault  bool        // true if the column has a default
-	Orig        interface{} `yaml:"-"` // the raw database column data
-}
-    Column contains data about a column in a table.
+### DB
+
+Data representing the entire DB schema(s).
+
+| Property | Type | Description |
+| --- | ---- | --- |
+| Schemas | list of [Schemas](#schema) | all the schemas parsed by gnorm
+| SchemasByName | map[string][Schema](#schema) | map of schema DBName to Schema
 
 
-type Columns []*Column
-    Columns represents the ordered list of columns in a table.
+### Column
+
+Column is the data about a DB column of a table.
+
+| Property | Type | Description |
+| --- | ---- | --- |
+| Name  | string | the converted name of the column
+| DBName | string | the original name of the column in the DB
+| Type |string | the converted name of the type
+| DBType | string | the original type name of the column in the DB 
+| IsArray | boolean | true if the column type is an array 
+| Length | integer | non-zero if the type has a length (e.g. varchar[16])
+| UserDefined | boolean | true if the type is user-defined
+| Nullable | boolean | true if the column is not NON NULL
+| HasDefault | boolean | true if the column has a default
+| Orig | db-specific | the raw database column data (different per db type)
 
 
-func (c Columns) DBNames() Strings
-func (c Columns) Names() Strings
 
-type Enum struct {
-	Schema   string       // the converted name of the schema this enum is in
-	DBSchema string       // the original name of the schema in the DB
-	Table    string       // (mysql) the converted name of the table this enum is in
-	DBTable  string       // (mysql) the original name of the table in the DB
-	Name     string       // the converted name of the enum
-	DBName   string       // the original name of the enum in the DB
-	Values   []*EnumValue // the list of possible values for this enum
-}
-    Enum represents a type that has a set of allowed values.
+### Columns
 
+Columns is an ordered list of [Column](#column) values from a table.  Columns
+have the following properties:
 
-type EnumValue struct {
-	Name   string // the converted name for this enum value
-	DBName string // the original label of the enum in the DB
-	Value  int    // the value for this enum value (order)
-}
-    EnumValue is one of the named values for an enum.
+| Property | Type | Description |
+| --- | ---- | --- |
+| DBNames | [Strings](#strings) | the ordered list of DBNames of all the columns 
+| Names | [Strings](#stings) | the ordered list of Names of all the columns
 
+### ConfigData
 
-type Strings []string
-    Strings is a named type of []string to allow us to put methods on it.
+| Property | Type | Description |
+| --- | ---- | --- |
+| ConnStr | string | the connection string for the database
+| Schemas | list of string | the schema names to generate files for
+| IncludeTables | map[string] list of string | whitelist map of schema names to table names in that schema to generate files for.
+| ExcludeTables | map[string] list of string | blacklist map of schema names to table names in that schema to not generate files for.
+| PostRun | list of string | the command to run on files after generation
+| TypeMap | map[string]string | map of DBNames to converted names for column types
+| NullableTypeMap | map[string]string | map of DBNames to converted names for column types (used when Nullable=true)
 
+### Enum
 
-func (s Strings) Sprintf(format string) Strings
+An enum is a user-defined column type that has a set of allowable values.
 
-```
-<!-- {{{end}}} -->
+| Property | Type | Description |
+| --- | ---- | --- |
+| Name  | string | the converted name of the enum
+| DBName | string | the original name of the enum in the DB
+| Schema | [Schema](#schema) | the schema the enum is in
+| Table |  [Table](#table)  | (mysql only) the table this enum is part of
+| Values | list of [EnumValue](#enumvalue)| the list of possible values for this enum
+
+### Enums
+
+Enums is a list of [Enum](#enum) values from a schem. Enums
+have the following properties:
+
+| Property | Type | Description |
+| --- | ---- | --- |
+| DBNames | [Strings](#strings) | the ordered list of DBNames of all the enums 
+| Names | [Strings](#stings) | the ordered list of Names of all the enums
+
+### EnumValue
+
+| Property | Type | Description |
+| --- | ---- | --- |
+|Name |   string | the converted label of the enum
+|DBName | string | the original label of the enum in the DB
+|Value |  int | the value for this enum value (order)
+
+### Schema
+
+A schema represents a namespace of tables and enums in a database.
+
+| Property | Type | Description |
+| --- | ---- | --- |
+| Name | string the converted name of the schema
+| DBName | string | the original name of the schema in the DB 
+| Tables | [Tables](#tables) | the list of [Table](#table) values in this schema 
+| Enums | [Enums](#enums) | the list of [Enum](#enum) values in this schema
+| TablesByName | map\[string\][Table](#table) | map of DBName to Table.
+
+### Strings
+
+Strings is a list of string values with the following methods
+
+| Method | Arguments | Description |
+| --- | ---- | --- |
+| Sprintf | format (string) | Sprintf calls [fmt.Sprintf](https://golang.org/pkg/fmt/#Sprintf)(format, str) for every string in this value and returns the results as a new Strings value.
+
+### Table
+
+| Property | Type | Description |
+| --- | ---- | --- |
+| Name | string   | the converted name of the table
+| DBName | string | the original name of the table in the DB
+| Schema | [Schema](#schema)  | the schema this table is in
+| Columns | [Columns](#columns) | ordered list of Database columns
+| ColumnsByName | map[string][Column](#column) | map of column dbname to column
+
+### Tables
+
+Tables is list of [Table](#table) values from a schema.  Tables
+have the following properties:
+
+| Property | Type | Description |
+| --- | ---- | --- |
+| DBNames | [Strings](#strings) | the list of DBNames of all the tables
+| Names | [Strings](#stings) | the list of Names of all the tables

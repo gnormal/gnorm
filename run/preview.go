@@ -36,18 +36,19 @@ func Preview(env environ.Values, cfg *Config, useYaml bool) error {
 	if err != nil {
 		return err
 	}
-	if err := convertNames(env.Log, info, cfg); err != nil {
+	data, err := makeData(env.Log, info, cfg)
+	if err != nil {
 		return err
 	}
 	if useYaml {
-		b, err := yaml.Marshal(info)
+		b, err := yaml.Marshal(data)
 		if err != nil {
 			return errors.WithMessage(err, "couldn't convert data to yaml")
 		}
 		_, err = env.Stdout.Write(b)
 		return err
 	}
-	return previewTpl.Execute(env.Stdout, info)
+	return previewTpl.Execute(env.Stdout, data)
 }
 
 // makeTable makes a nice-looking textual table from the given data using the

@@ -97,4 +97,10 @@ type Config struct {
 	// TypeMap and NullableTypeMap must be at the end of your configuration
 	// file.
 	NullableTypeMap map[string]string
+
+	// Params contains any data you may want to pass to your templates.  This is
+	// a good way to make templates reusable with different configuration values
+	// for different situations.  The values in this field will be available in
+	// the .Params value for all templates.
+	Params map[string]interface{}
 }

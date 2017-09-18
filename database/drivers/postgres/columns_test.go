@@ -192,8 +192,8 @@ func TestUserDefined(t *testing.T) {
 	if !col.UserDefined {
 		t.Error("user defined enum not marked as UserDefined")
 	}
-	if col.DBType != BookTypeCol.UdtName.String {
-		t.Errorf("Expected column to have UdtName %q as DBType, but instead got %s", BookTypeCol.UdtName.String, col.DBType)
+	if col.Type != BookTypeCol.UdtName.String {
+		t.Errorf("Expected column to have UdtName %q as Type, but instead got %s", BookTypeCol.UdtName.String, col.Type)
 	}
 }
 
@@ -248,14 +248,14 @@ func TestHasDefault(t *testing.T) {
 
 func TestDBType(t *testing.T) {
 	col := toDBColumn(SummaryCol, tLog(t))
-	if col.DBType != SummaryCol.DataType.String {
-		t.Errorf("Column should have name %q but is %q.", SummaryCol.DataType.String, col.DBType)
+	if col.Type != SummaryCol.DataType.String {
+		t.Errorf("Column should have name %q but is %q.", SummaryCol.DataType.String, col.Type)
 	}
 
 	// User-defined columns are different, their data type is USER-DEFINED which
 	// is less than useful, so we copy the UdtName into the column Type.
 	col = toDBColumn(BookTypeCol, tLog(t))
-	if col.DBType != BookTypeCol.UdtName.String {
-		t.Errorf("Expected column to have UdtName %q as DBType, but instead got %s", BookTypeCol.UdtName.String, col.DBType)
+	if col.Type != BookTypeCol.UdtName.String {
+		t.Errorf("Expected column to have UdtName %q as Type, but instead got %s", BookTypeCol.UdtName.String, col.Type)
 	}
 }

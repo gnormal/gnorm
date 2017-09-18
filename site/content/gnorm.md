@@ -47,6 +47,7 @@ aliases = [
 "/gnorm/database/drivers/postgres/templates",
 "/gnorm/environ",
 "/gnorm/run",
+"/gnorm/run/data",
 # [[[end]]]
 ]
 +++

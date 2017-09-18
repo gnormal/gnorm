@@ -36,25 +36,24 @@ func main() {
 gocog}}} -->
 ```
 # ConnStr is the connection string for the database.
-# Postgres example:
-# ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 # MySQL example:
 # ConnStr = "root:admin@tcp/"
-ConnStr = ""
+# Postgres example:
+ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 
 # DBType holds the type of db you're connecting to.  Possible values are
 # "postgres" or "mysql". 
-DBType = ""
+DBType = "postgres"
 
 # Schemas holds the names of schemas to generate code for.
-Schemas = []
+Schemas = ["public"]
 
 # NameConversion defines how the DBName of tables, schemas, and enums are
 # converted into their Name value.  This is a template that may use all the
 # regular functions.  The "." value is the DB name of the item. Thus, to make an
 # item's Name the same as its DBName, you'd use a template of "{{.}}". To make
 # the Name the PascalCase version, you'd use "{{pascal .}}".
-NameConversion = ""
+NameConversion = "{{.}}"
 
 # IncludeTables is a whitelist of tables to generate data for. Tables not
 # in this list will not be included in data geenrated by gnorm. You cannot
@@ -156,5 +155,13 @@ PostRun = []
 # "integer" = "sql.NullInt64"
 # "numeric" = "sql.NullFloat64"
 [NullableTypeMap]
+
+
+# Params contains any data you may want to pass to your templates.  This is a
+# good way to make templates reusable with different configuration values for
+# different situations.  The values in this field will be available in the
+# .Params value for all templates.
+[Params]
+# mySpecalValue = "some value"
 ```
 <!-- {{{end}}} -->
