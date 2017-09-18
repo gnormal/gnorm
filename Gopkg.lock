@@ -45,6 +45,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/natefinch/atomic"
+  packages = ["."]
+  revision = "a62ce929ffcc871a51e98c6eba7b20321e3ed62d"
+
+[[projects]]
+  branch = "master"
   name = "github.com/olekukonko/tablewriter"
   packages = ["."]
   revision = "be5337e7b39e64e5f91445ce7e721888dbab7387"
@@ -76,6 +82,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "31f509215ba63ba95032e45813352dc5716858f5a6c1bbea8e9e764cffeae493"
+  inputs-digest = "0ddb4a7c5d25d545c99a842937dc69633db1fe70a17e56f25ddf7105166ceedf"
   solver-name = "gps-cdcl"
   solver-version = 1
