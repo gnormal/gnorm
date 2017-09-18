@@ -3,6 +3,11 @@ language: go
 # vanity url support
 go_import_path: gnorm.org/gnorm
 
+# prevent double test runs for PRs
+branches:
+  only:
+    - "master"
+
 # In theory, older versions would probably work fine, but since this isn't a 
 # library, I'm not going to worry about older versions for now.
 go:
