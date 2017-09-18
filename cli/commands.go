@@ -20,6 +20,7 @@ func previewCmd(env environ.Values) *cobra.Command {
 	var cfgFile string
 	var useYaml bool
 	var verbose bool
+	var showTypes bool
 	preview := &cobra.Command{
 		Use:   "preview",
 		Short: "Preview the data that will be sent to your templates",
@@ -33,7 +34,7 @@ easy-to-read format.`[1:],
 			if err != nil {
 				return codeErr{err, 2}
 			}
-			if err := run.Preview(env, cfg, useYaml); err != nil {
+			if err := run.Preview(env, cfg, useYaml, showTypes); err != nil {
 				return codeErr{err, 1}
 			}
 			return nil
@@ -43,6 +44,7 @@ easy-to-read format.`[1:],
 	preview.Flags().StringVarP(&cfgFile, "config", "c", "gnorm.toml", "relative path to gnorm config file")
 	preview.Flags().BoolVar(&useYaml, "yaml", false, "show output in yaml instead of tabular")
 	preview.Flags().BoolVarP(&verbose, "verbose", "v", false, "show debugging output")
+	preview.Flags().BoolVarP(&showTypes, "types", "t", false, "show column types")
 	return preview
 }
 

@@ -9,6 +9,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	"gnorm.org/gnorm/environ"
+	"gnorm.org/gnorm/run/data"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -31,7 +32,7 @@ Table: {{.Name}}({{$schema}}.{{.DBName}})
 
 // Preview displays the database info that woudl be passed to your template
 // based on your configuration.
-func Preview(env environ.Values, cfg *Config, useYaml bool) error {
+func Preview(env environ.Values, cfg *Config, useYaml, showTypes bool) error {
 	info, err := cfg.Driver.Parse(env.Log, cfg.ConnStr, cfg.Schemas, makeFilter(cfg.IncludeTables, cfg.ExcludeTables))
 	if err != nil {
 		return err
@@ -39,6 +40,9 @@ func Preview(env environ.Values, cfg *Config, useYaml bool) error {
 	data, err := makeData(env.Log, info, cfg)
 	if err != nil {
 		return err
+	}
+	if showTypes {
+		return displayTypes(env, data)
 	}
 	if useYaml {
 		b, err := yaml.Marshal(data)
@@ -91,4 +95,27 @@ func makeTable(data interface{}, templateStr string, columnTitles ...string) (st
 	table.SetAutoFormatHeaders(false)
 	table.Render()
 	return output.String(), nil
+}
+
+func displayTypes(env environ.Values, info *data.DBData) error {
+	lookUp := make(map[string]bool)
+	var cols []*data.Column
+	for _, v := range info.Schemas {
+		for _, t := range v.Tables {
+			for _, c := range t.Columns {
+				if _, ok := lookUp[c.DBType]; !ok {
+					cols = append(cols, c)
+					lookUp[c.DBType] = true
+				}
+			}
+		}
+	}
+	table := tablewriter.NewWriter(env.Stdout)
+	table.SetHeader([]string{"Original type", "Converted type"})
+	table.SetRowLine(true)
+	for _, v := range cols {
+		table.Append([]string{v.DBType, v.Type})
+	}
+	table.Render()
+	return nil
 }
