@@ -9,6 +9,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	"gnorm.org/gnorm/environ"
+	"gnorm.org/gnorm/run/data"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -29,9 +30,9 @@ Table: {{.Name}}({{$schema}}.{{.DBName}})
 {{end -}}
 `))
 
-// Preview displays the database info that woudl be passed to your template
+// Preview displays the database info that would be passed to your template
 // based on your configuration.
-func Preview(env environ.Values, cfg *Config, useYaml bool) error {
+func Preview(env environ.Values, cfg *Config, format string) error {
 	info, err := cfg.Driver.Parse(env.Log, cfg.ConnStr, cfg.Schemas, makeFilter(cfg.IncludeTables, cfg.ExcludeTables))
 	if err != nil {
 		return err
@@ -40,15 +41,19 @@ func Preview(env environ.Values, cfg *Config, useYaml bool) error {
 	if err != nil {
 		return err
 	}
-	if useYaml {
+	switch format {
+	case "types":
+		return displayTypes(env, data)
+	case "yaml":
 		b, err := yaml.Marshal(data)
 		if err != nil {
 			return errors.WithMessage(err, "couldn't convert data to yaml")
 		}
 		_, err = env.Stdout.Write(b)
 		return err
+	default:
+		return previewTpl.Execute(env.Stdout, data)
 	}
-	return previewTpl.Execute(env.Stdout, data)
 }
 
 // makeTable makes a nice-looking textual table from the given data using the
@@ -91,4 +96,27 @@ func makeTable(data interface{}, templateStr string, columnTitles ...string) (st
 	table.SetAutoFormatHeaders(false)
 	table.Render()
 	return output.String(), nil
+}
+
+func displayTypes(env environ.Values, info *data.DBData) error {
+	lookUp := make(map[string]bool)
+	var cols []*data.Column
+	for _, v := range info.Schemas {
+		for _, t := range v.Tables {
+			for _, c := range t.Columns {
+				if _, ok := lookUp[c.DBType]; !ok {
+					cols = append(cols, c)
+					lookUp[c.DBType] = true
+				}
+			}
+		}
+	}
+	table := tablewriter.NewWriter(env.Stdout)
+	table.SetHeader([]string{"Original type", "Converted type"})
+	table.SetRowLine(true)
+	for _, v := range cols {
+		table.Append([]string{v.DBType, v.Type})
+	}
+	table.Render()
+	return nil
 }
