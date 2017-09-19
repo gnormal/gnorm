@@ -23,14 +23,22 @@ commands:
 `
 
 func main() {
+	pack()
+	// commented for debugging purposes
+	//defer mustRemove("./site/public")
+
 	switch len(os.Args) {
 	case 1:
-		fmt.Print(run("go", "install", "--ldflags="+flags(), "gnorm.org/gnorm"))
+		// (default)
+		pack()
+		fmt.Print(run("packr", "install", "--ldflags="+flags(), "gnorm.org/gnorm"))
 	case 2:
 		switch os.Args[1] {
 		case "install":
-			fmt.Print(run("go", "install", "--ldflags="+flags(), "gnorm.org/gnorm"))
+			pack()
+			fmt.Print(run("packr", "install", "--ldflags="+flags(), "gnorm.org/gnorm"))
 		case "all":
+			pack()
 			ldf := flags()
 			for _, OS := range []string{"windows", "darwin", "linux"} {
 				if err := os.Setenv("GOOS", OS); err != nil {
@@ -42,7 +50,7 @@ func main() {
 						fmt.Println(err)
 						os.Exit(1)
 					}
-					fmt.Print(run("go", "build", "-o", "gnorm_"+OS+"_"+ARCH, "--ldflags="+ldf, "gnorm.org/gnorm"))
+					fmt.Print(run("packr", "build", "-o", "gnorm_"+OS+"_"+ARCH, "--ldflags="+ldf, "gnorm.org/gnorm"))
 				}
 			}
 		case "help":
@@ -86,4 +94,21 @@ func gitTag() string {
 	}
 
 	return strings.TrimSuffix(string(b), "\n")
+}
+
+func pack() {
+	run("go", "get", "github.com/gobuffalo/packr/...")
+	mustRemove("./site/public")
+	run("hugo", "-s", "./site")
+	// fonts are BIG
+	mustRemove("./site/public/fonts")
+	mustRemove("./site/public/revealjs/lib/font")
+}
+
+func mustRemove(s string) {
+	err := os.RemoveAll(s)
+	if !os.IsNotExist(err) && err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }

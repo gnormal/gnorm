@@ -20,6 +20,12 @@
   version = "v1.3"
 
 [[projects]]
+  name = "github.com/gobuffalo/packr"
+  packages = ["."]
+  revision = "e660c985f2baed8aaf35d8a4b40ceb32658fcc7d"
+  version = "v1.1.0"
+
+[[projects]]
   name = "github.com/google/go-cmp"
   packages = ["cmp","cmp/internal/diff","cmp/internal/function","cmp/internal/value"]
   revision = "8099a9787ce5dc5984ed879a3bda47dc730a8e97"
@@ -56,6 +62,12 @@
   revision = "be5337e7b39e64e5f91445ce7e721888dbab7387"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/pkg/browser"
+  packages = ["."]
+  revision = "c90ca0c84f15f81c982e32665bffd8d7aac8f097"
+
+[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -82,6 +94,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0ddb4a7c5d25d545c99a842937dc69633db1fe70a17e56f25ddf7105166ceedf"
+  inputs-digest = "21cec88a5409efa20daad053e93232fca8d9cd99bc5c3ce843f33edc2d2a0e92"
   solver-name = "gps-cdcl"
   solver-version = 1

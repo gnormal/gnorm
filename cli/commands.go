@@ -2,10 +2,14 @@ package cli
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 
+	"github.com/gobuffalo/packr"
+	"github.com/pkg/browser"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+
 	"gnorm.org/gnorm/environ"
 	"gnorm.org/gnorm/run"
 )
@@ -111,6 +115,19 @@ Creates a default gnorm.toml and the various template files needed to run GNORM.
 	}
 }
 
+func docCmd(env environ.Values) *cobra.Command {
+	return &cobra.Command{
+		Use:   "docs",
+		Short: "Runs a local webserver serving gnorm documentation.",
+		Long: `
+Starts a web server running at localhost:8080 that serves docs for this version
+of Gnorm.`[1:],
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return showDocs(env, cmd, args)
+		},
+	}
+}
+
 func createFile(name, contents string) error {
 	f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
 	if err != nil {
@@ -128,4 +145,18 @@ type codeErr struct {
 
 func (c codeErr) Code() int {
 	return c.code
+}
+
+func showDocs(env environ.Values, cmd *cobra.Command, args []string) error {
+	box := packr.NewBox("../site/public")
+
+	http.Handle("/", http.FileServer(box))
+	fmt.Fprintln(env.Stdout, "serving docs at http://localhost:8080")
+	fmt.Fprintln(env.Stdout, "hit ctrl-C to cancel")
+	go browser.OpenURL("http://localhost:8080")
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		return codeErr{errors.WithMessage(err, "can't serve docs"), 1}
+	}
+	return nil
 }
