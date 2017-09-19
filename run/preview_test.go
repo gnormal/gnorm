@@ -204,7 +204,7 @@ func TestPreviewTabular(t *testing.T) {
 	}
 
 	// tabular
-	if err := Preview(env, cfg, "false, false"); err != nil {
+	if err := Preview(env, cfg, "tabular"); err != nil {
 		t.Fatal(err)
 	}
 
@@ -217,13 +217,13 @@ func TestPreviewTabular(t *testing.T) {
 const typesOut = `+---------------+----------------+
 | ORIGINAL TYPE | CONVERTED TYPE |
 +---------------+----------------+
-| int           | INTEGER        |
-+---------------+----------------+
 | *int          | *INTEGER       |
 +---------------+----------------+
-| string        |                |
-+---------------+----------------+
 | *string       |                |
++---------------+----------------+
+| int           | INTEGER        |
++---------------+----------------+
+| string        |                |
 +---------------+----------------+
 `
 

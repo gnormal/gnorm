@@ -3,6 +3,7 @@ package run
 import (
 	"bytes"
 	"encoding/csv"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -116,6 +117,9 @@ func displayTypes(env environ.Values, info *data.DBData) error {
 	table := tablewriter.NewWriter(env.Stdout)
 	table.SetHeader([]string{"Original type", "Converted type"})
 	table.SetRowLine(true)
+	sort.SliceStable(cols, func(i, j int) bool {
+		return cols[i].DBType < cols[j].DBType
+	})
 	for _, v := range cols {
 		table.Append([]string{v.DBType, v.Type})
 	}
