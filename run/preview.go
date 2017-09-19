@@ -51,8 +51,10 @@ func Preview(env environ.Values, cfg *Config, format string) error {
 		}
 		_, err = env.Stdout.Write(b)
 		return err
-	default:
+	case "tabular":
 		return previewTpl.Execute(env.Stdout, data)
+	default:
+		return errors.New("Unsupported format")
 	}
 }
 
