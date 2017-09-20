@@ -4,12 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"reflect"
 	"testing"
 	"text/template"
 )
+
+const testEnv = "GO_TEST_ENV"
 
 func TestPlugin(t *testing.T) {
 	table := []struct {
@@ -75,32 +78,36 @@ func testRunner(name string, args ...string) ([]byte, error) {
 }
 
 func helperCMD(args ...string) *exec.Cmd {
-	cs := []string{"-test.run=TestHelperProcess", "--"}
-	cs = append(cs, args...)
-	return exec.Command(os.Args[0], cs...)
+	cmd := exec.Command(os.Args[0], args...)
+	cmd.Env = []string{"GO_TEST_ENV=command"}
+	return cmd
 }
 
-func TestHelperProcess(t *testing.T) {
-	defer os.Exit(0)
-	args := os.Args[3:]
-	switch args[0] {
-	case "nix":
-		switch args[1] {
-		case "echo":
-			fmt.Println(args[2])
-		case "echoPlugin":
-			c := args[2]
-			d := make(map[string]interface{})
-			if err := json.Unmarshal([]byte(c), &d); err != nil {
-				t.Fatal(err)
+func TestMain(t *testing.M) {
+	switch os.Getenv(testEnv) {
+	case "command":
+		args := os.Args[1:]
+		switch args[0] {
+		case "nix":
+			switch args[1] {
+			case "echo":
+				fmt.Println(args[2])
+			case "echoPlugin":
+				c := args[2]
+				d := make(map[string]interface{})
+				if err := json.Unmarshal([]byte(c), &d); err != nil {
+					log.Fatal(err)
+				}
+				data := d["data"].(string)
+				d["data"] = data + "nix echoPlugin"
+				v, err := toJSON(d)
+				if err != nil {
+					log.Fatal(err)
+				}
+				fmt.Println(string(v))
 			}
-			data := d["data"].(string)
-			d["data"] = data + "nix echoPlugin"
-			v, err := toJSON(d)
-			if err != nil {
-				t.Fatal(err)
-			}
-			fmt.Println(string(v))
 		}
+	default:
+		os.Exit(t.Run())
 	}
 }
