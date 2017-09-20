@@ -3,12 +3,16 @@ package run
 import (
 	"bytes"
 	"encoding/csv"
+	"encoding/json"
+	"fmt"
+	"sort"
 	"strings"
 	"text/template"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
 	"gnorm.org/gnorm/environ"
+	"gnorm.org/gnorm/run/data"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -29,9 +33,23 @@ Table: {{.Name}}({{$schema}}.{{.DBName}})
 {{end -}}
 `))
 
-// Preview displays the database info that woudl be passed to your template
+// PreviewFormat defines the types of output that Preview can return.
+type PreviewFormat int
+
+const (
+	// PreviewTabular shows the data in textual tables.
+	PreviewTabular PreviewFormat = iota
+	// PreviewYAML shows the data in YAML.
+	PreviewYAML
+	// PreviewJSON shows the data in JSON.
+	PreviewJSON
+	// PreviewTypes just prints out the column types used by the DB.
+	PreviewTypes
+)
+
+// Preview displays the database info that would be passed to your template
 // based on your configuration.
-func Preview(env environ.Values, cfg *Config, useYaml bool) error {
+func Preview(env environ.Values, cfg *Config, format PreviewFormat) error {
 	info, err := cfg.Driver.Parse(env.Log, cfg.ConnStr, cfg.Schemas, makeFilter(cfg.IncludeTables, cfg.ExcludeTables))
 	if err != nil {
 		return err
@@ -40,15 +58,29 @@ func Preview(env environ.Values, cfg *Config, useYaml bool) error {
 	if err != nil {
 		return err
 	}
-	if useYaml {
+	switch format {
+	case PreviewTypes:
+		displayTypes(env, data)
+		return nil
+	case PreviewYAML:
 		b, err := yaml.Marshal(data)
 		if err != nil {
 			return errors.WithMessage(err, "couldn't convert data to yaml")
 		}
 		_, err = env.Stdout.Write(b)
 		return err
+	case PreviewJSON:
+		b, err := json.MarshalIndent(data, "", "  ")
+		if err != nil {
+			return errors.WithMessage(err, "couldn't convert data to json")
+		}
+		_, err = env.Stdout.Write(b)
+		return err
+	case PreviewTabular:
+		return previewTpl.Execute(env.Stdout, data)
+	default:
+		return errors.Errorf("Unsupported format: %v", format)
 	}
-	return previewTpl.Execute(env.Stdout, data)
 }
 
 // makeTable makes a nice-looking textual table from the given data using the
@@ -91,4 +123,45 @@ func makeTable(data interface{}, templateStr string, columnTitles ...string) (st
 	table.SetAutoFormatHeaders(false)
 	table.Render()
 	return output.String(), nil
+}
+
+func displayTypes(env environ.Values, info *data.DBData) {
+	var nullCols []*data.Column
+	var cols []*data.Column
+	lookUp := make(map[string]bool)
+	nullLookUp := make(map[string]bool)
+	for _, v := range info.Schemas {
+		for _, t := range v.Tables {
+			for _, c := range t.Columns {
+				if c.Nullable {
+					if !nullLookUp[c.DBType] {
+						nullCols = append(nullCols, c)
+						nullLookUp[c.DBType] = true
+					}
+				} else {
+					if !lookUp[c.DBType] {
+						cols = append(cols, c)
+						lookUp[c.DBType] = true
+					}
+				}
+			}
+		}
+	}
+	sort.SliceStable(cols, func(i, j int) bool {
+		return cols[i].DBType < cols[j].DBType
+	})
+	sort.SliceStable(nullCols, func(i, j int) bool {
+		return nullCols[i].DBType < nullCols[j].DBType
+	})
+
+	fmt.Fprintln(env.Stdout, "[TypeMap]")
+	for _, c := range cols {
+		fmt.Fprintf(env.Stdout, "%q = %q\n", c.DBType, c.Type)
+	}
+	fmt.Fprintln(env.Stdout)
+
+	fmt.Fprintln(env.Stdout, "[NullableTypeMap]")
+	for _, c := range nullCols {
+		fmt.Fprintf(env.Stdout, "%q = %q\n", c.DBType, c.Type)
+	}
 }

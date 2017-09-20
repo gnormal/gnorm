@@ -10,7 +10,7 @@ import (
 // DBData is all the data about a database that we know.
 type DBData struct {
 	Schemas       []*Schema
-	SchemasByName map[string]*Schema `yaml:"-"` // dbname to schema
+	SchemasByName map[string]*Schema `yaml:"-" json:"-"` // dbname to schema
 }
 
 // SchemaData is the data passed to schema templates.
@@ -43,16 +43,16 @@ type Schema struct {
 	DBName       string            // the original name of the schema in the DB
 	Tables       Tables            // the list of tables in this schema
 	Enums        Enums             // the list of enums in this schema
-	TablesByName map[string]*Table `yaml:"-"` // dbnames to tables
+	TablesByName map[string]*Table `yaml:"-" json:"-"` // dbnames to tables
 }
 
 // Table is the data about a DB Table.
 type Table struct {
 	Name          string             // the converted name of the table
 	DBName        string             // the original name of the table in the DB
-	Schema        *Schema            `yaml:"-"` // the schema this table is in
+	Schema        *Schema            `yaml:"-" json:"-"` // the schema this table is in
 	Columns       Columns            // Database columns
-	ColumnsByName map[string]*Column `yaml:"-"` // dbname to column
+	ColumnsByName map[string]*Column `yaml:"-" json:"-"` // dbname to column
 }
 
 // Column is the data about a DB column of a table.
@@ -66,15 +66,15 @@ type Column struct {
 	UserDefined bool        // true if the type is user-defined
 	Nullable    bool        // true if the column is not NON NULL
 	HasDefault  bool        // true if the column has a default
-	Orig        interface{} `yaml:"-"` // the raw database column data
+	Orig        interface{} `yaml:"-" json:"-"` // the raw database column data
 }
 
 // Enum represents a type that has a set of allowed values.
 type Enum struct {
 	Name   string       // the converted name of the enum
 	DBName string       // the original name of the enum in the DB
-	Schema *Schema      `yaml:"-"` // the schema the enum is in
-	Table  *Table       `yaml:"-"` // (mysql) the table this enum is part of
+	Schema *Schema      `yaml:"-" json:"-"` // the schema the enum is in
+	Table  *Table       `yaml:"-" json:"-"` // (mysql) the table this enum is part of
 	Values []*EnumValue // the list of possible values for this enum
 }
 

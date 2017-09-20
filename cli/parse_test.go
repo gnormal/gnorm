@@ -39,7 +39,7 @@ func TestParseTables(t *testing.T) {
 	}
 }
 
-func TestParseGnormTolm(t *testing.T) {
+func TestParseGnormToml(t *testing.T) {
 	c := Config{}
 	m, err := toml.DecodeFile("gnorm.toml", &c)
 	if err != nil {
