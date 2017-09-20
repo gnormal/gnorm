@@ -32,7 +32,7 @@ go get gnorm.org/gnorm
 ```
 
 However, using go get to install will mean that `gnorm version` doesn't report
-the correct data. 
+the correct data, and `gnorm docs` won't show you the docs in your browser. 
 
 For best results, use the go "makefile" in the root of the repo, which will do
 all the build-time magic:

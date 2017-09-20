@@ -52,6 +52,7 @@ runnable code.  See full docs at https://gnorm.org`[1:],
 	rootCmd.AddCommand(genCmd(env))
 	rootCmd.AddCommand(versionCmd(env))
 	rootCmd.AddCommand(initCmd(env))
+	rootCmd.AddCommand(docCmd(env))
 	return code(rootCmd.Execute())
 }
 

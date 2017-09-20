@@ -29,6 +29,7 @@ Usage:
   gnorm [command]
 
 Available Commands:
+  docs        Runs a local webserver serving gnorm documentation.
   gen         Generate code from DB schema
   help        Help about any command
   init        Generates the files needed to run GNORM.

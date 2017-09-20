@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+
 	"gnorm.org/gnorm/environ"
 	"gnorm.org/gnorm/run"
 )
@@ -108,6 +109,19 @@ Creates a default gnorm.toml and the various template files needed to run GNORM.
 			return nil
 		},
 		Args: cobra.ExactArgs(0),
+	}
+}
+
+func docCmd(env environ.Values) *cobra.Command {
+	return &cobra.Command{
+		Use:   "docs",
+		Short: "Runs a local webserver serving gnorm documentation.",
+		Long: `
+Starts a web server running at localhost:8080 that serves docs for this version
+of Gnorm.`[1:],
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return showDocs(env, cmd, args)
+		},
 	}
 }
 

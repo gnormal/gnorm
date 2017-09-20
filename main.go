@@ -16,6 +16,7 @@ import (
 //go:generate gocog ./site/content/cli/commands/version.md --startmark={{{ --endmark=}}}
 //go:generate gocog ./site/content/cli/commands/init.md --startmark={{{ --endmark=}}}
 //go:generate gocog ./site/content/cli/commands/gen.md --startmark={{{ --endmark=}}}
+//go:generate gocog ./site/content/cli/commands/docs.md --startmark={{{ --endmark=}}}
 //go:generate gocog ./site/content/templates/functions.md --startmark={{{ --endmark=}}}
 //go:generate gocog ./site/content/cli/configuration.md --startmark={{{ --endmark=}}}
 
