@@ -20,12 +20,6 @@
   version = "v1.3"
 
 [[projects]]
-  name = "github.com/gobuffalo/packr"
-  packages = ["."]
-  revision = "e660c985f2baed8aaf35d8a4b40ceb32658fcc7d"
-  version = "v1.1.0"
-
-[[projects]]
   name = "github.com/google/go-cmp"
   packages = ["cmp","cmp/internal/diff","cmp/internal/function","cmp/internal/value"]
   revision = "8099a9787ce5dc5984ed879a3bda47dc730a8e97"
@@ -74,6 +68,12 @@
   version = "v0.8.0"
 
 [[projects]]
+  name = "github.com/rakyll/statik"
+  packages = ["fs"]
+  revision = "fd36b3595eb2ec8da4b8153b107f7ea08504899d"
+  version = "v0.1.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -94,6 +94,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "21cec88a5409efa20daad053e93232fca8d9cd99bc5c3ce843f33edc2d2a0e92"
+  inputs-digest = "3e2c6e437a2a7fc43e67d6734a90b7c916987de190ed20d4ae74d3e8be4c6910"
   solver-name = "gps-cdcl"
   solver-version = 1

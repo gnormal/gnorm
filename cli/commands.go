@@ -2,11 +2,8 @@ package cli
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 
-	"github.com/gobuffalo/packr"
-	"github.com/pkg/browser"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
@@ -145,18 +142,4 @@ type codeErr struct {
 
 func (c codeErr) Code() int {
 	return c.code
-}
-
-func showDocs(env environ.Values, cmd *cobra.Command, args []string) error {
-	box := packr.NewBox("../site/public")
-
-	http.Handle("/", http.FileServer(box))
-	fmt.Fprintln(env.Stdout, "serving docs at http://localhost:8080")
-	fmt.Fprintln(env.Stdout, "hit ctrl-C to cancel")
-	go browser.OpenURL("http://localhost:8080")
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		return codeErr{errors.WithMessage(err, "can't serve docs"), 1}
-	}
-	return nil
 }
