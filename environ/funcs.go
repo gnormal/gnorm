@@ -149,6 +149,11 @@ func simpleRunner(name string, args ...string) *exec.Cmd {
 	return exec.Command(name, args...)
 }
 
+// execJSON executes the plugin name with arguments args. It creates a io.Pipe
+// to stdin of the command and writes the data into the pipe in a separate
+// goroutine.
+//
+// The output is decoded as json data into a map[string]interface{}
 func execJSON(runner cmdRunner, name string, data []byte, args ...string) (map[string]interface{}, error) {
 	cmd := runner(name, args...)
 	stdin, err := cmd.StdinPipe()
