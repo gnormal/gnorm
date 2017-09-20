@@ -18,19 +18,39 @@ RPC API that exposes the data in your database.
 
 [https://gnorm.org](https://gnorm.org)
 
+## Installing
+
+Gnorm has no dependencies, just download and run the executable for your
+operating system.  See our [latest release](https://github.com/gnormal/gnorm/releases/latest).
+
 ## Building
 
-Gnorm uses a build script called make.go.  To install gnorm, just run 
+__Note:__ Gnorm uses a go vanity url.  To install with go get, run 
 
-`go run make.go`
+```
+go get gnorm.org/gnorm
+```
 
-You can also just run `go get` or `go install`, but the output of gnorm -version
-will not reflect the build environment.
+However, using go get to install will mean that `gnorm version` doesn't report
+the correct data. 
+
+For best results, use the go "makefile" in the root of the repo, which will do
+all the build-time magic:
+
+```
+go run make.go
+```
+
+If you want to git clone instead (which should work fine since we vendor all
+dependencies), make sure you git clone into `$GOPATH/src/gnorm.org/gnorm`.
 
 ## Discussion 
 
-If you have questions about Gnorm or want to hack on it, meet the devs on the #gnorm 
-channel of [gopher slack](https://gophers.slack.com/).
+If you have questions about Gnorm or want to hack on it, meet the devs on the
+`#gnorm` channel of [gopher slack](https://gophers.slack.com/).
+
+There's also the `#gnorm-dev` channel which has github integrations showing the
+work going on.
 
 ## Contributing
 
