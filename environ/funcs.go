@@ -136,23 +136,35 @@ func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (inter
 	if err != nil {
 		return nil, err
 	}
-	o, err := execJSON(runner, name, function, string(b))
+	o, err := execJSON(runner, name, b, function)
 	if err != nil {
 		return nil, err
 	}
 	return o["data"], nil
 }
 
-type cmdRunner func(name string, args ...string) ([]byte, error)
+type cmdRunner func(name string, args ...string) *exec.Cmd
 
-func simpleRunner(name string, args ...string) ([]byte, error) {
-	return exec.Command(name, args...).CombinedOutput()
+func simpleRunner(name string, args ...string) *exec.Cmd {
+	return exec.Command(name, args...)
 }
 
-func execJSON(runner cmdRunner, name string, args ...string) (map[string]interface{}, error) {
-	v, err := runner(name, args...)
+func execJSON(runner cmdRunner, name string, data []byte, args ...string) (map[string]interface{}, error) {
+	cmd := runner(name, args...)
+	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
+	}
+	go func() {
+		defer stdin.Close()
+		stdin.Write(data)
+	}()
+	if err != nil {
+		return nil, err
+	}
+	v, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, errors.New(err.Error() + string(v))
 	}
 	o := make(map[string]interface{})
 	if err = json.Unmarshal(v, &o); err != nil {

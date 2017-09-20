@@ -1,6 +1,7 @@
 package environ
 
 import (
+	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -11,8 +12,6 @@ import (
 	"testing"
 	"text/template"
 )
-
-const testEnv = "GO_TEST_ENV"
 
 func TestPlugin(t *testing.T) {
 	table := []struct {
@@ -33,7 +32,7 @@ func TestPlugin(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		o, err := execJSON(testRunner, v.cmd, v.function, string(i))
+		o, err := execJSON(testRunner, v.cmd, i, v.function)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -72,9 +71,9 @@ func toJSON(ctx interface{}) ([]byte, error) {
 	return json.Marshal(d)
 }
 
-func testRunner(name string, args ...string) ([]byte, error) {
+func testRunner(name string, args ...string) *exec.Cmd {
 	v := []string{name}
-	return helperCMD(append(v, args...)...).CombinedOutput()
+	return helperCMD(append(v, args...)...)
 }
 
 func helperCMD(args ...string) *exec.Cmd {
@@ -84,18 +83,22 @@ func helperCMD(args ...string) *exec.Cmd {
 }
 
 func TestMain(t *testing.M) {
-	switch os.Getenv(testEnv) {
+	switch os.Getenv("GO_TEST_ENV") {
 	case "command":
 		args := os.Args[1:]
 		switch args[0] {
 		case "nix":
+			r := bufio.NewReader(os.Stdin)
+			c, err := r.ReadBytes('\n')
+			if err != nil && c == nil {
+				log.Fatal(err)
+			}
 			switch args[1] {
 			case "echo":
-				fmt.Println(args[2])
+				fmt.Println(string(c))
 			case "echoPlugin":
-				c := args[2]
 				d := make(map[string]interface{})
-				if err := json.Unmarshal([]byte(c), &d); err != nil {
+				if err := json.Unmarshal(c, &d); err != nil {
 					log.Fatal(err)
 				}
 				data := d["data"].(string)
