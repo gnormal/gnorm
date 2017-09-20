@@ -1,7 +1,9 @@
 package environ
 
 import (
+	"encoding/json"
 	"fmt"
+	"os/exec"
 	"strings"
 
 	"github.com/codemodus/kace"
@@ -32,6 +34,7 @@ var FuncMap = map[string]interface{}{
 	"makeMap":      makeMap,
 	"makeSlice":    makeSlice,
 	"pascal":       kace.Pascal,
+	"plugin":       plugin,
 	"repeat":       strings.Repeat,
 	"replace":      strings.Replace,
 	"sliceString":  sliceString,
@@ -120,4 +123,40 @@ func sub(x int, vals ...int) int {
 		x -= v
 	}
 	return x
+}
+
+func plugin(name, function string, ctx interface{}) (interface{}, error) {
+	return callPlugin(simpleRunner, name, function, ctx)
+}
+
+func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (interface{}, error) {
+	d := make(map[string]interface{})
+	d["data"] = ctx
+	b, err := json.Marshal(d)
+	if err != nil {
+		return nil, err
+	}
+	o, err := execJSON(runner, name, function, string(b))
+	if err != nil {
+		return nil, err
+	}
+	return o["data"], nil
+}
+
+type cmdRunner func(name string, args ...string) ([]byte, error)
+
+func simpleRunner(name string, args ...string) ([]byte, error) {
+	return exec.Command(name, args...).CombinedOutput()
+}
+
+func execJSON(runner cmdRunner, name string, args ...string) (map[string]interface{}, error) {
+	v, err := runner(name, args...)
+	if err != nil {
+		return nil, err
+	}
+	o := make(map[string]interface{})
+	if err = json.Unmarshal(v, &o); err != nil {
+		return nil, err
+	}
+	return o, nil
 }
