@@ -36,9 +36,9 @@ Usage:
 
 Flags:
   -c, --config string   relative path to gnorm config file (default "gnorm.toml")
+  -f, --format string   Specify output format e.g yaml, types or tabular (default "tabular")
   -h, --help            help for preview
   -v, --verbose         show debugging output
-      --yaml            show output in yaml instead of tabular
 ```
 <!-- {{{end}}} -->
 
