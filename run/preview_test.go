@@ -152,7 +152,7 @@ Table: abc table(schema.table)
 
 `
 
-func TestPreviewYaml(t *testing.T) {
+func TestPreviewYAML(t *testing.T) {
 	var out bytes.Buffer
 	var errOut bytes.Buffer
 	env := environ.Values{
@@ -173,12 +173,117 @@ func TestPreviewYaml(t *testing.T) {
 		Driver: dummyDriver{},
 	}
 	// with yaml
-	if err := Preview(env, cfg, "yaml"); err != nil {
+	if err := Preview(env, cfg, PreviewYAML); err != nil {
 		t.Fatal(err)
 	}
 	v := out.String()
 	if v != expectYaml {
 		t.Errorf(cmp.Diff(expectYaml, v))
+	}
+}
+
+var expectJSON = `
+{
+  "Schemas": [
+    {
+      "Name": "abc schema",
+      "DBName": "schema",
+      "Tables": [
+        {
+          "Name": "abc table",
+          "DBName": "table",
+          "Columns": [
+            {
+              "Name": "abc col1",
+              "DBName": "col1",
+              "Type": "INTEGER",
+              "DBType": "int",
+              "IsArray": false,
+              "Length": 0,
+              "UserDefined": false,
+              "Nullable": false,
+              "HasDefault": false
+            },
+            {
+              "Name": "abc col2",
+              "DBName": "col2",
+              "Type": "*INTEGER",
+              "DBType": "*int",
+              "IsArray": false,
+              "Length": 0,
+              "UserDefined": false,
+              "Nullable": true,
+              "HasDefault": false
+            },
+            {
+              "Name": "abc col3",
+              "DBName": "col3",
+              "Type": "",
+              "DBType": "string",
+              "IsArray": false,
+              "Length": 0,
+              "UserDefined": false,
+              "Nullable": false,
+              "HasDefault": false
+            },
+            {
+              "Name": "abc col4",
+              "DBName": "col4",
+              "Type": "",
+              "DBType": "*string",
+              "IsArray": false,
+              "Length": 0,
+              "UserDefined": false,
+              "Nullable": true,
+              "HasDefault": false
+            }
+          ]
+        }
+      ],
+      "Enums": [
+        {
+          "Name": "abc enum",
+          "DBName": "enum",
+          "Values": [
+            {
+              "Name": "abc enumvalue",
+              "DBName": "enumvalue",
+              "Value": 0
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}`[1:]
+
+func TestPreviewJSON(t *testing.T) {
+	var out bytes.Buffer
+	var errOut bytes.Buffer
+	env := environ.Values{
+		Stdout: &out,
+		Log:    log.New(&errOut, "test: ", log.Lshortfile),
+	}
+
+	cfg := &Config{
+		NameConversion: template.Must(template.New("").Funcs(environ.FuncMap).Parse(`{{print "abc " .}}`)),
+		ConfigData: data.ConfigData{
+			NullableTypeMap: map[string]string{
+				"*int": "*INTEGER",
+			},
+			TypeMap: map[string]string{
+				"int": "INTEGER",
+			},
+		},
+		Driver: dummyDriver{},
+	}
+	// with json
+	if err := Preview(env, cfg, PreviewJSON); err != nil {
+		t.Fatal(err)
+	}
+	v := out.String()
+	if v != expectJSON {
+		t.Errorf(cmp.Diff(expectJSON, v))
 	}
 }
 
@@ -204,7 +309,7 @@ func TestPreviewTabular(t *testing.T) {
 	}
 
 	// tabular
-	if err := Preview(env, cfg, "tabular"); err != nil {
+	if err := Preview(env, cfg, PreviewTabular); err != nil {
 		t.Fatal(err)
 	}
 
@@ -214,18 +319,15 @@ func TestPreviewTabular(t *testing.T) {
 	}
 }
 
-const typesOut = `+---------------+----------------+
-| ORIGINAL TYPE | CONVERTED TYPE |
-+---------------+----------------+
-| *int          | *INTEGER       |
-+---------------+----------------+
-| *string       |                |
-+---------------+----------------+
-| int           | INTEGER        |
-+---------------+----------------+
-| string        |                |
-+---------------+----------------+
-`
+var typesOut = `
+[TypeMap]
+"int" = "INTEGER"
+"string" = ""
+
+[NullableTypeMap]
+"*int" = "*INTEGER"
+"*string" = ""
+`[1:]
 
 func TestPreviewTypes(t *testing.T) {
 	var out bytes.Buffer
@@ -247,7 +349,7 @@ func TestPreviewTypes(t *testing.T) {
 		},
 		Driver: dummyDriver{},
 	}
-	if err := Preview(env, cfg, "types"); err != nil {
+	if err := Preview(env, cfg, PreviewTypes); err != nil {
 		t.Fatal(err)
 	}
 	v := out.String()

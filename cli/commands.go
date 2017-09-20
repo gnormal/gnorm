@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -26,14 +27,32 @@ func previewCmd(env environ.Values) *cobra.Command {
 		Long: `
 Reads your gnorm.toml file and connects to your database, translating the schema
 just as it would be during a full run.  It is then printed out in an
-easy-to-read format.`[1:],
+easy-to-read format.  By default it prints out the data in a human-readable
+plaintext tabular format.  You may specify a different format using the -format
+flag, in which case you can print json, yaml, or types, where types is a list of
+all types used by columns in your database.  The latter is useful when setting
+up TypeMaps.
+`[1:],
 		RunE: func(cmd *cobra.Command, args []string) error {
 			env.InitLog(verbose)
+			pformat := run.PreviewTabular
+			switch strings.ToLower(format) {
+			case "tabular":
+				pformat = run.PreviewTabular
+			case "yaml":
+				pformat = run.PreviewYAML
+			case "json":
+				pformat = run.PreviewJSON
+			case "types":
+				pformat = run.PreviewTypes
+			default:
+				return codeErr{errors.Errorf("unknown preview format %q", format), 2}
+			}
 			cfg, err := parseFile(env, cfgFile)
 			if err != nil {
 				return codeErr{err, 2}
 			}
-			if err := run.Preview(env, cfg, format); err != nil {
+			if err := run.Preview(env, cfg, pformat); err != nil {
 				return codeErr{err, 1}
 			}
 			return nil
@@ -41,7 +60,7 @@ easy-to-read format.`[1:],
 		Args: cobra.ExactArgs(0),
 	}
 	preview.Flags().StringVarP(&cfgFile, "config", "c", "gnorm.toml", "relative path to gnorm config file")
-	preview.Flags().StringVarP(&format, "format", "f", "tabular", "Specify output format e.g yaml, types or tabular")
+	preview.Flags().StringVarP(&format, "format", "f", "tabular", "Specify output format: tabular, yaml, json, or types")
 	preview.Flags().BoolVarP(&verbose, "verbose", "v", false, "show debugging output")
 	return preview
 }

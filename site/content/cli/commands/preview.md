@@ -29,14 +29,18 @@ gnorm preview
 
 Reads your gnorm.toml file and connects to your database, translating the schema
 just as it would be during a full run.  It is then printed out in an
-easy-to-read format.
+easy-to-read format.  By default it prints out the data in a human-readable
+plaintext tabular format.  You may specify a different format using the -format
+flag, in which case you can print json, yaml, or types, where types is a list of
+all types used by columns in your database.  The latter is useful when setting
+up TypeMaps.
 
 Usage:
   gnorm preview [flags]
 
 Flags:
   -c, --config string   relative path to gnorm config file (default "gnorm.toml")
-  -f, --format string   Specify output format e.g yaml, types or tabular (default "tabular")
+  -f, --format string   Specify output format: tabular, yaml, json, or types (default "tabular")
   -h, --help            help for preview
   -v, --verbose         show debugging output
 ```
