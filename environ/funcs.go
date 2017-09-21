@@ -3,7 +3,9 @@ package environ
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/codemodus/kace"
@@ -176,4 +178,20 @@ func execJSON(runner cmdRunner, name string, data []byte, args ...string) (map[s
 		return nil, err
 	}
 	return o, nil
+}
+
+// AddDirsToPath prepends  the dirs to $PATH environment variables.
+func AddDirsToPath(dirs []string) error {
+	if dirs == nil || len(dirs) == 0 {
+		return nil
+	}
+	p := ""
+	for _, v := range append(dirs, filepath.SplitList(os.Getenv("PATH"))...) {
+		if p == "" {
+			p = v
+		} else {
+			p += string(filepath.ListSeparator) + v
+		}
+	}
+	return os.Setenv("PATH", p)
 }

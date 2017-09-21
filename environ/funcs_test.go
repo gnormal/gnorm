@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"reflect"
 	"testing"
 	"text/template"
@@ -112,5 +113,21 @@ func TestMain(t *testing.M) {
 		}
 	default:
 		os.Exit(t.Run())
+	}
+}
+
+func TestAddDirsToPath(t *testing.T) {
+	p := os.Args[0]
+	dir := filepath.Dir(p)
+	err := AddDirsToPath([]string{dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	name, err := exec.LookPath(filepath.Base(p))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if name != p {
+		t.Errorf("expected %s got %s", p, name)
 	}
 }
