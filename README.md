@@ -34,11 +34,13 @@ go get gnorm.org/gnorm
 However, using go get to install will mean that `gnorm version` doesn't report
 the correct data, and `gnorm docs` won't show you the docs in your browser. 
 
-For best results, use the go "makefile" in the root of the repo, which will do
-all the build-time magic:
+For best results, use the [magefile](https://github.com/magefile/mage) in the
+root of the repo, which will do all the build-time magic.  To run it, install
+mage, then just run mage build.
 
 ```
-go run make.go
+$ go get github.com/magefile/mage
+$ mage build
 ```
 
 If you want to git clone instead (which should work fine since we vendor all
