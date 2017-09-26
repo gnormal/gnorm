@@ -104,8 +104,7 @@ type Config struct {
 	// the .Params value for all templates.
 	Params map[string]interface{}
 
-	// PluginDirs a set of absolute paths that will be added for plugin lookup.
-	// These takes precedence over the paths set in PATH environment variables.
-	// $PWD/plugins is the default and will be added automatically.
+	// PluginDirs a set of absolute/relative  paths that will be used for
+	// plugin lookup.
 	PluginDirs []string
 }
