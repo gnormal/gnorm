@@ -164,7 +164,7 @@ func execJSON(runner cmdRunner, name string, data []byte, args ...string) (map[s
 	}()
 	v, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, errors.New(err.Error() + string(v))
+		return nil, errors.Wrapf(err, "error running plugin %q: ", string(v))
 	}
 	o := make(map[string]interface{})
 	if err = json.Unmarshal(v, &o); err != nil {
