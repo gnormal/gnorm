@@ -7,18 +7,26 @@ package main
 
 import (
 	"log"
-	"os"
+
+	"github.com/magefile/mage/mg"
 )
 
 // Runs go install for gnorm.  This generates the embedded docs and the version
 // info into the binary.
 func Build() error {
-	Deps()
-	cleanup := genSite()
+	mg.Deps(installHugo, installStatik)
+	if err := genSite(); err != nil {
+		return err
+	}
 	defer cleanup()
 
+	ldf, err := flags()
+	if err != nil {
+		return err
+	}
+
 	log.Print("running go install")
-	return run("go", "install", "-tags", "make", "--ldflags="+flags(), "gnorm.org/gnorm")
+	return run("go", "install", "-tags", "make", "--ldflags="+ldf, "gnorm.org/gnorm")
 }
 
 // Generates binaries for all supported versions.  Currently that means a
@@ -26,33 +34,39 @@ func Build() error {
 // files will be dumped in the local directory with names according to their
 // supported platform.
 func All() error {
-	Deps()
-	cleanup := genSite()
+	mg.Deps(installHugo, installStatik)
+	if err := genSite(); err != nil {
+		return err
+	}
 	defer cleanup()
 
-	ldf := flags()
+	ldf, err := flags()
+	if err != nil {
+		return err
+	}
 	for _, OS := range []string{"windows", "darwin", "linux"} {
-		if err := os.Setenv("GOOS", OS); err != nil {
-			return err
-		}
 		for _, ARCH := range []string{"amd64", "386"} {
-			if err := os.Setenv("GOOS", OS); err != nil {
-				return err
-			}
 			log.Printf("running go build for GOOS=%s GOARCH=%s", OS, ARCH)
-			err := run("go", "build", "-tags", "make", "-o", "gnorm_"+OS+"_"+ARCH, "--ldflags="+ldf)
-			if err != nil {
+			env := []string{"GOOS=" + OS, "GOARCH=" + ARCH}
+			if err := runWith(env, "go", "build", "-tags", "make", "-o", "gnorm_"+OS+"_"+ARCH, "--ldflags="+ldf); err != nil {
 				return err
 			}
 		}
 	}
-	return nil
+	return err
 }
 
-// Downloads commands needed to build gnorm.
-func Deps() {
+func installHugo() error {
 	log.Print("downloading hugo")
-	must(run("go", "get", "github.com/gohugoio/hugo"))
+	return run("go", "get", "github.com/gohugoio/hugo")
+}
+func installStatik() error {
 	log.Print("downloading statik")
-	must(run("go", "get", "github.com/rakyll/statik"))
+	return run("go", "get", "github.com/rakyll/statik")
+}
+
+// Removes generated cruft.  This target shouldn't ever be necessary, since the
+// cleanup should happen automatically, but it's here just in case.
+func Clean() error {
+	return cleanup()
 }

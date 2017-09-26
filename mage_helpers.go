@@ -9,82 +9,102 @@ import (
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
-func flags() string {
+func flags() (string, error) {
 	timestamp := time.Now().Format(time.RFC3339)
-	hash := output("git", "rev-parse", "HEAD")
-	version := gitTag()
-	return fmt.Sprintf(`-X "gnorm.org/gnorm/cli.timestamp=%s" -X "gnorm.org/gnorm/cli.commitHash=%s" -X "gnorm.org/gnorm/cli.version=%s"`, timestamp, hash, version)
+	hash, err := output("git", "rev-parse", "HEAD")
+	if err != nil {
+		return "", err
+	}
+	version, err := gitTag()
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf(`-X "gnorm.org/gnorm/cli.timestamp=%s" -X "gnorm.org/gnorm/cli.commitHash=%s" -X "gnorm.org/gnorm/cli.version=%s"`, timestamp, hash, version), nil
 }
 
-func gitTag() string {
-	c := exec.Command("git", "describe", "--tags")
-	c.Stderr = os.Stderr
-	b, err := c.Output()
+func gitTag() (string, error) {
+	s, err := output("git", "describe", "--tags")
 	if err != nil {
-		exit, ok := err.(*exec.ExitError)
-		if ok && exit.Exited() {
+		ee, ok := errors.Cause(err).(*exec.ExitError)
+		if ok && ee.Exited() {
 			// probably no git tag
-			return "dev"
+			return "dev", nil
 		}
-		must(err)
+		return "", err
 	}
 
-	return strings.TrimSuffix(string(b), "\n")
+	return strings.TrimSuffix(s, "\n"), nil
 }
 
-func genSite() (cleanup func()) {
+func cleanup() error {
+	log.Print("removing generated hugo site")
+	err := rm("./cli/public")
+	log.Print("removing generated statik package")
+	if err2 := rm("./cli/statik"); err2 != nil {
+		return err2
+	}
+	return err
+}
+
+func genSite() error {
 	log.Print("cleaning up any existing hugo generated files")
-	mustRemove("./cli/public")
+
+	if err := rm("./cli/public"); err != nil {
+		return err
+	}
 	log.Print("generating docs site")
-	must(run("hugo", "-s", "./site", "-d", "../cli/public"))
+	if err := run("hugo", "-s", "./site", "-d", "../cli/public"); err != nil {
+		return err
+	}
 	log.Print("removing fonts from generated site")
 	// fonts are BIG
-	mustRemove("./cli/public/fonts")
-	mustRemove("./cli/public/revealjs/lib/font")
+	if err := rm("./cli/public/fonts"); err != nil {
+		return err
+	}
+	if err := rm("./cli/public/revealjs/lib/font"); err != nil {
+		return err
+	}
 
 	log.Print("generating statik embedded files")
-	must(run("statik", "-f", "-src", "./cli/public", "-dest", "./cli"))
-	return func() {
-		log.Print("removing generated hugo site")
-		mustRemove("./cli/public")
-		log.Print("removing generated statik package")
-		mustRemove("./cli/statik")
-	}
+	return run("statik", "-f", "-src", "./cli/public", "-dest", "./cli")
 }
 
-func mustRemove(s string) {
+func rm(s string) error {
 	err := os.RemoveAll(s)
-	if !os.IsNotExist(err) && err != nil {
-		log.Fatal(err)
+	if os.IsNotExist(err) {
+		return nil
 	}
+	return errors.Wrapf(err, `failed to remove %s`, s)
 }
 
 func run(cmd string, args ...string) error {
+	return runWith(nil, cmd, args...)
+}
+
+func runWith(env []string, cmd string, args ...string) error {
 	c := exec.Command(cmd, args...)
+	c.Env = os.Environ()
+	for _, v := range env {
+		c.Env = append(c.Env, v)
+	}
 	c.Stderr = os.Stderr
 	if os.Getenv("MAGEFILE_VERBOSE") != "" {
 		c.Stdout = os.Stdout
 	}
-	err := c.Run()
-	if err != nil {
-		return err
-	}
-	return nil
+	return errors.Wrapf(c.Run(), `failed to run %v %q`, cmd, args)
 }
 
-func must(err error) {
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-}
-
-func output(cmd string, args ...string) string {
+func output(cmd string, args ...string) (string, error) {
 	c := exec.Command(cmd, args...)
+	c.Env = os.Environ()
 	c.Stderr = os.Stderr
 	b, err := c.Output()
-	must(err)
-	return string(b)
+	if err != nil {
+		return "", errors.Wrapf(err, `failed to run %v %q`, cmd, args)
+	}
+	return string(b), nil
 }
