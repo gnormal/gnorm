@@ -128,7 +128,7 @@ func sub(x int, vals ...int) int {
 }
 
 func plugin(name, function string, ctx interface{}) (interface{}, error) {
-	return callPlugin(simpleRunner, name, function, ctx)
+	return callPlugin(exec.Command, name, function, ctx)
 }
 
 func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (interface{}, error) {
@@ -146,10 +146,6 @@ func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (inter
 }
 
 type cmdRunner func(name string, args ...string) *exec.Cmd
-
-func simpleRunner(name string, args ...string) *exec.Cmd {
-	return exec.Command(name, args...)
-}
 
 // execJSON executes the plugin name with arguments args. It creates a io.Pipe
 // to stdin of the command and writes the data into the pipe in a separate
