@@ -166,9 +166,6 @@ func execJSON(runner cmdRunner, name string, data []byte, args ...string) (map[s
 		defer stdin.Close()
 		stdin.Write(data)
 	}()
-	if err != nil {
-		return nil, err
-	}
 	v, err := cmd.CombinedOutput()
 	if err != nil {
 		return nil, errors.New(err.Error() + string(v))
