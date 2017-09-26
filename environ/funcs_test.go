@@ -1,10 +1,10 @@
 package environ
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -89,9 +89,8 @@ func TestMain(t *testing.M) {
 		args := os.Args[1:]
 		switch args[0] {
 		case "nix":
-			r := bufio.NewReader(os.Stdin)
-			c, err := r.ReadBytes('\n')
-			if err != nil && c == nil {
+			c, err := ioutil.ReadAll(os.Stdin)
+			if err != nil {
 				log.Fatal(err)
 			}
 			switch args[1] {
