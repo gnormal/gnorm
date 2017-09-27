@@ -3,12 +3,12 @@ package run // import "gnorm.org/gnorm/run"
 import (
 	"bytes"
 	"context"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"time"
 
-	"github.com/natefinch/atomic"
 	"github.com/pkg/errors"
 
 	"gnorm.org/gnorm/environ"
@@ -127,7 +127,7 @@ func genFile(env environ.Values, filedata, contents interface{}, target OutputTa
 	if err := target.Contents.Execute(outbuf, contents); err != nil {
 		return errors.WithMessage(err, "failed to run contents template")
 	}
-	if err := atomic.WriteFile(outputPath, outbuf); err != nil {
+	if err := ioutil.WriteFile(outputPath, outbuf.Bytes(), 0600); err != nil {
 		return errors.Wrapf(err, "error writing generated file %q", outputPath)
 	}
 	if len(postrun) > 0 {
