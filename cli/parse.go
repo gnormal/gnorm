@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -78,16 +77,7 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	}
 	cfg.Driver = d
 
-	// Add plugin lookup directories to $PATH. We add the directory named plugin
-	// found in the project root by default.
-	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
-	err = environ.AddDirsToPath(append(c.PluginDirs, filepath.Join(wd, "plugins")))
-	if err != nil {
-		return nil, err
-	}
+	environ.FuncMap["plugin"] = environ.Plugin(c.PluginDirs)
 
 	t, err := template.New("NameConversion").Funcs(environ.FuncMap).Parse(c.NameConversion)
 	if err != nil {

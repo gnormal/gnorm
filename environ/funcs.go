@@ -3,7 +3,6 @@ package environ
 import (
 	"encoding/json"
 	"fmt"
-	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -36,7 +35,6 @@ var FuncMap = map[string]interface{}{
 	"makeMap":      makeMap,
 	"makeSlice":    makeSlice,
 	"pascal":       kace.Pascal,
-	"plugin":       plugin,
 	"repeat":       strings.Repeat,
 	"replace":      strings.Replace,
 	"sliceString":  sliceString,
@@ -127,8 +125,26 @@ func sub(x int, vals ...int) int {
 	return x
 }
 
-func plugin(name, function string, ctx interface{}) (interface{}, error) {
-	return callPlugin(exec.Command, name, function, ctx)
+// Plugin returns a function which can be used in templates for excuting plugins,
+// dirs is the list of directories which are used fo plugin lookup.
+func Plugin(dirs []string) func(string, string, interface{}) (interface{}, error) {
+	return func(name, function string, ctx interface{}) (interface{}, error) {
+		name, err := lookUpPlugin(dirs, name)
+		if err != nil {
+			return nil, err
+		}
+		return callPlugin(exec.Command, name, function, ctx)
+	}
+}
+
+func lookUpPlugin(dirs []string, name string) (p string, err error) {
+	for _, v := range dirs {
+		p, err = exec.LookPath(filepath.Join(v, name))
+		if err == nil {
+			return
+		}
+	}
+	return
 }
 
 func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (interface{}, error) {
@@ -171,20 +187,4 @@ func execJSON(runner cmdRunner, name string, data []byte, args ...string) (map[s
 		return nil, err
 	}
 	return o, nil
-}
-
-// AddDirsToPath prepends  the dirs to $PATH environment variables.
-func AddDirsToPath(dirs []string) error {
-	if dirs == nil || len(dirs) == 0 {
-		return nil
-	}
-	p := ""
-	for _, v := range append(dirs, filepath.SplitList(os.Getenv("PATH"))...) {
-		if p == "" {
-			p = v
-		} else {
-			p += string(filepath.ListSeparator) + v
-		}
-	}
-	return os.Setenv("PATH", p)
 }

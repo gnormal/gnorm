@@ -118,11 +118,8 @@ func TestMain(t *testing.M) {
 func TestAddDirsToPath(t *testing.T) {
 	p := os.Args[0]
 	dir := filepath.Dir(p)
-	err := AddDirsToPath([]string{dir})
-	if err != nil {
-		t.Fatal(err)
-	}
-	name, err := exec.LookPath(filepath.Base(p))
+
+	name, err := lookUpPlugin([]string{dir}, filepath.Base(p))
 	if err != nil {
 		t.Fatal(err)
 	}
