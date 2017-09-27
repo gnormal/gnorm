@@ -125,7 +125,7 @@ func sub(x int, vals ...int) int {
 	return x
 }
 
-// Plugin returns a function which can be used in templates for excuting plugins,
+// Plugin returns a function which can be used in templates for executing plugins,
 // dirs is the list of directories which are used fo plugin lookup.
 func Plugin(dirs []string) func(string, string, interface{}) (interface{}, error) {
 	return func(name, function string, ctx interface{}) (interface{}, error) {
