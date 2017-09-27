@@ -36,24 +36,18 @@ message when executing templates.
 
 
 ## Configuration
-By default ngorm looks for the plugin in the following order
 
-- `$PWD/plugins`
-- System `$PATH`
+Set `PluginDirs` configuration value to the desired directories for plugin
+lookup
 
-However there is an option to specify custom directories to look for plugins  via the configuration file.
-
-Note that, at the moment only absolute paths are supported. For example
 
 ```
 ## Add this to ngorm.toml
 PluginDirs = ["/path/to/plugin/one" , "/path/to/plugin/two"]
 ```
 
-So, say you call plugin `foo`, gnorm will look for foo binary in the following
-order
+So, say you call plugin `foo`, gnorm will look for foo binary in the specified
+directories.
 
-- `/path/to/plugin/one`
-- `/path/to/plugin/two`
-- `$PWD/plugins`
-- System `$PATH`
+
+
