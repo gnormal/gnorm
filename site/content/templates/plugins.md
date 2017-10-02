@@ -4,13 +4,13 @@ weight=3
 alwaysopen=true
 +++
 
-You can call external applications as template functions. ngorm provides a
+You can call external applications as template functions. gnorm provides a
 helper function for calling external functions called `plugin`.
 
 Take for instance the following template extracted from the tests.
 
 ```
-{{range plugin "nix" "echoPlugin" . }}{{.}}{{end}}
+{{plugin "nix" "echoPlugin" . }}
 ```
 
 The snippet says call plugin `nix` and pass  `echoPlugin` as the first argument,
@@ -47,7 +47,8 @@ PluginDirs = ["/path/to/plugin/one" , "/path/to/plugin/two"]
 ```
 
 So, say you call plugin `foo`, gnorm will look for foo binary in the specified
-directories.
+directories.The lookup is done in the same order as the directories are
+specified.
 
 
 
