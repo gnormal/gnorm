@@ -103,4 +103,8 @@ type Config struct {
 	// for different situations.  The values in this field will be available in
 	// the .Params value for all templates.
 	Params map[string]interface{}
+
+	// PluginDirs a set of absolute/relative  paths that will be used for
+	// plugin lookup.
+	PluginDirs []string
 }

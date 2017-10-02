@@ -76,6 +76,9 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		return nil, err
 	}
 	cfg.Driver = d
+
+	environ.FuncMap["plugin"] = environ.Plugin(c.PluginDirs)
+
 	t, err := template.New("NameConversion").Funcs(environ.FuncMap).Parse(c.NameConversion)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing NameConversion template")

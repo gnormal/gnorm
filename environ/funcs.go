@@ -1,7 +1,10 @@
 package environ
 
 import (
+	"encoding/json"
 	"fmt"
+	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/codemodus/kace"
@@ -120,4 +123,68 @@ func sub(x int, vals ...int) int {
 		x -= v
 	}
 	return x
+}
+
+// Plugin returns a function which can be used in templates for executing plugins,
+// dirs is the list of directories which are used fo plugin lookup.
+func Plugin(dirs []string) func(string, string, interface{}) (interface{}, error) {
+	return func(name, function string, ctx interface{}) (interface{}, error) {
+		name, err := lookUpPlugin(dirs, name)
+		if err != nil {
+			return nil, err
+		}
+		return callPlugin(exec.Command, name, function, ctx)
+	}
+}
+
+func lookUpPlugin(dirs []string, name string) (p string, err error) {
+	for _, v := range dirs {
+		p, err = exec.LookPath(filepath.Join(v, name))
+		if err == nil {
+			return
+		}
+	}
+	return
+}
+
+func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (interface{}, error) {
+	d := make(map[string]interface{})
+	d["data"] = ctx
+	b, err := json.Marshal(d)
+	if err != nil {
+		return nil, err
+	}
+	o, err := execJSON(runner, name, b, function)
+	if err != nil {
+		return nil, err
+	}
+	return o["data"], nil
+}
+
+type cmdRunner func(name string, args ...string) *exec.Cmd
+
+// execJSON executes the plugin name with arguments args. It creates a io.Pipe
+// to stdin of the command and writes the data into the pipe in a separate
+// goroutine.
+//
+// The output is decoded as json data into a map[string]interface{}
+func execJSON(runner cmdRunner, name string, data []byte, args ...string) (map[string]interface{}, error) {
+	cmd := runner(name, args...)
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, err
+	}
+	go func() {
+		defer stdin.Close()
+		stdin.Write(data)
+	}()
+	v, err := cmd.CombinedOutput()
+	if err != nil {
+		return nil, errors.Wrapf(err, "error running plugin %q: ", string(v))
+	}
+	o := make(map[string]interface{})
+	if err = json.Unmarshal(v, &o); err != nil {
+		return nil, err
+	}
+	return o, nil
 }
