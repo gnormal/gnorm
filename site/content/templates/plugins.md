@@ -26,7 +26,7 @@ A plugin is a commandline executable with the following properties
   `stdin`
 - Writes the processed output to `stdout` in json format
 
-The conext send to plugins are of the shape `{ "data": SOME_VALUE}` where
+The context sent to plugins are of the shape `{ "data": SOME_VALUE}` where
 `SOME_VALUE` is any valid json object. It is up to the plugin author to decide
 how to  handle the shape and form of data.
 
@@ -42,7 +42,7 @@ lookup
 
 
 ```
-## Add this to ngorm.toml
+## Add this to gnorm.toml
 PluginDirs = ["/path/to/plugin/one" , "/path/to/plugin/two"]
 ```
 
