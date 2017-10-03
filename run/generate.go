@@ -3,6 +3,7 @@ package run // import "gnorm.org/gnorm/run"
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -174,7 +175,7 @@ func copyStaticFiles(env environ.Values, src string, dest string) error {
 		return err
 	}
 	if !stat.IsDir() {
-		return errors.Wrapf(err, "%s is not a directory", src)
+		return fmt.Errorf("%s is not a directory", dest)
 	}
 	var dstat os.FileInfo
 	dstat, err = os.Stat(dest)
@@ -190,7 +191,7 @@ func copyStaticFiles(env environ.Values, src string, dest string) error {
 		}
 	}
 	if !dstat.IsDir() {
-		return errors.Wrapf(err, "%s is not a directory", dest)
+		return fmt.Errorf("%s is not a directory", dest)
 	}
 	dirs := make(map[string]bool)
 	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
