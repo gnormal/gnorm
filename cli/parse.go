@@ -70,6 +70,8 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 			ExcludeTables:   exclude,
 			IncludeTables:   include,
 		},
+		OutputDir: c.OutputDir,
+		StaticDir: c.StaticDir,
 	}
 	d, err := getDriver(strings.ToLower(c.DBType))
 	if err != nil {

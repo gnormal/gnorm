@@ -47,7 +47,7 @@ func Generate(env environ.Values, cfg *Config) error {
 			return err
 		}
 	}
-	return nil
+	return copyStaticFiles(env, cfg.StaticDir, cfg.OutputDir)
 }
 
 func generateSchemas(env environ.Values, cfg *Config, db *data.DBData) error {
@@ -161,4 +161,62 @@ func doPostRun(env environ.Values, file string, postrun []string) error {
 		return errors.Wrapf(err, "error running postrun command %q", run)
 	}
 	return nil
+}
+
+// copyStaticFiles copies files recursively from src directory to dest directory
+// while preserving the directory structure
+func copyStaticFiles(env environ.Values, src string, dest string) error {
+	if src == "" || dest == "" {
+		return nil
+	}
+	stat, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if !stat.IsDir() {
+		return errors.Wrapf(err, "%s is not a directory", src)
+	}
+	var dstat os.FileInfo
+	dstat, err = os.Stat(dest)
+	if err != nil {
+		if os.IsNotExist(err) {
+			err = os.MkdirAll(dest, stat.Mode())
+			if err != nil {
+				return err
+			}
+			dstat = stat
+		} else {
+			return err
+		}
+	}
+	if !dstat.IsDir() {
+		return errors.Wrapf(err, "%s is not a directory", dest)
+	}
+	dirs := make(map[string]bool)
+	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		base := filepath.Dir(path)
+		rel, err := filepath.Rel(src, base)
+		if err != nil {
+			return err
+		}
+		o := filepath.Join(dest, rel)
+		if !dirs[o] {
+			err = os.MkdirAll(o, stat.Mode())
+			if err != nil {
+				return err
+			}
+			dirs[o] = true
+		}
+		d, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		return ioutil.WriteFile(filepath.Join(o, filepath.Base(path)), d, info.Mode())
+	})
 }
