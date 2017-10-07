@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -175,7 +176,7 @@ func copyStaticFiles(env environ.Values, src string, dest string) error {
 		return err
 	}
 	if !stat.IsDir() {
-		return fmt.Errorf("%s is not a directory", dest)
+		return fmt.Errorf("Outputdir specifies a directory path that already exists as file %s", dest)
 	}
 	var dstat os.FileInfo
 	dstat, err = os.Stat(dest)
@@ -193,7 +194,6 @@ func copyStaticFiles(env environ.Values, src string, dest string) error {
 	if !dstat.IsDir() {
 		return fmt.Errorf("%s is not a directory", dest)
 	}
-	dirs := make(map[string]bool)
 	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -207,17 +207,22 @@ func copyStaticFiles(env environ.Values, src string, dest string) error {
 			return err
 		}
 		o := filepath.Join(dest, rel)
-		if !dirs[o] {
-			err = os.MkdirAll(o, stat.Mode())
-			if err != nil {
-				return err
-			}
-			dirs[o] = true
-		}
-		d, err := ioutil.ReadFile(path)
+		err = os.MkdirAll(o, stat.Mode())
 		if err != nil {
 			return err
 		}
-		return ioutil.WriteFile(filepath.Join(o, filepath.Base(path)), d, info.Mode())
+		f, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		t, err := os.OpenFile(filepath.Join(o, filepath.Base(path)), os.O_RDWR|os.O_TRUNC|os.O_CREATE, info.Mode())
+		if err != nil {
+			return err
+		}
+		defer t.Close()
+		_, err = io.Copy(t, f)
+		return err
 	})
 }

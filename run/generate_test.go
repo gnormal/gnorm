@@ -46,40 +46,13 @@ func TestAtomicGenerate(t *testing.T) {
 }
 
 func TestCopyStaticFiles(t *testing.T) {
-	var originPaths []string
-	source := "static"
+	originPaths := []string{
+		"base/base.md",
+		"base/level_one/level_one.md",
+		"base/level_two/level_two.md",
+	}
+	source := "testdata"
 	dest := "static_asset"
-	src := []struct {
-		path string
-		name string
-	}{
-		{"static/base", "base.md"},
-		{"static/base/level_one", "level_one.md"},
-		{"static/base/level_two", "level_two.md"},
-	}
-
-	for _, v := range src {
-		err := os.MkdirAll(v.path, 0777)
-		if err != nil {
-			t.Fatal(err)
-		}
-		o := filepath.Join(v.path, v.name)
-		err = ioutil.WriteFile(o, []byte(v.name), 0600)
-		if err != nil {
-			t.Fatal(err)
-		}
-		r, err := filepath.Rel(source, o)
-		if err != nil {
-			t.Fatal(err)
-		}
-		originPaths = append(originPaths, r)
-	}
-	defer func() {
-		err := os.RemoveAll("static")
-		if err != nil {
-			t.Fatal(err)
-		}
-	}()
 
 	err := copyStaticFiles(environ.Values{}, source, dest)
 	if err != nil {

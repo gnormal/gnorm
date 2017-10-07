@@ -111,6 +111,9 @@ type Config struct {
 	// OutputDir is the directory relative to the project root (where the
 	// gnorm.toml file is located) in which all the generated files are written
 	// to.
+	//
+	// This defaults to the current working directory i.e the directory in which
+	// gnorm.toml is found.
 	OutputDir string
 
 	// StaticDir is the directory relative to the project root (where the
