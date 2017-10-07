@@ -51,11 +51,7 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		return nil, errors.New("both include tables and exclude tables")
 	}
 	if c.OutputDir == "" {
-		wd, err := os.Getwd()
-		if err != nil {
-			return nil, err
-		}
-		c.OutputDir = wd
+		c.OutputDir = "."
 	}
 
 	include, err := parseTables(c.IncludeTables, c.Schemas)
