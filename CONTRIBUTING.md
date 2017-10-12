@@ -38,16 +38,16 @@ git clone git@github.com:gnormal/gnorm.git
 cd gnorm 
 ```
 
-Afer this, you need to make sure that the dep tool is installed, and `$GOPATH/bin` is in your system `PATH`. Proceed to run the following commands
+After this, you need to make sure that the [dep](https://github.com/golang/dep) tool is installed, and `$GOPATH/bin` is in your system `PATH`. Once complete, proceed to run the following commands:
 
 ```shell
 dep ensure
 ```
 
-Build the binary just to be sure everything is working
+Next, make sure that [mage](https://github.com/magefile/mage) is installed. Mage will help you build the binary and ensure everything is working:
 
 ```
-go run make.go
+mage build
 ```
 
 Running `gnorm` command should give you something like this, then you are all set up and good to `go`.
