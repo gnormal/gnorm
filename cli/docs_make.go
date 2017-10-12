@@ -17,7 +17,7 @@ import (
 )
 
 func showDocs(env environ.Values, cmd *cobra.Command, args []string) error {
-	// this folder gets briefly copied here during go run make.go
+	// this folder gets briefly copied here during mage build
 	statikFS, err := fs.New()
 	if err != nil {
 		log.Fatal(err)

@@ -19,9 +19,8 @@ and all major platforms are supported.
 
 If you have a Go programming environment set up, you can `go get
 gnorm.org/gnorm`. Note that if you install this way, `gnorm version` will not
-output any build info.  If you'd like the build info to be correct, run `go run
-$GOPATH/src/gnorm.org/gnorm/make.go` which will compile the binary with the
-current git information.
+output any build info.  If you'd like the build info to be correct, run `mage build`,
+which will compile the binary with the current git information.
 
 ## Set up your config
 
