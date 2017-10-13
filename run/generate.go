@@ -3,6 +3,8 @@ package run // import "gnorm.org/gnorm/run"
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -47,7 +49,7 @@ func Generate(env environ.Values, cfg *Config) error {
 			return err
 		}
 	}
-	return nil
+	return copyStaticFiles(env, cfg.StaticDir, cfg.OutputDir)
 }
 
 func generateSchemas(env environ.Values, cfg *Config, db *data.DBData) error {
@@ -161,4 +163,66 @@ func doPostRun(env environ.Values, file string, postrun []string) error {
 		return errors.Wrapf(err, "error running postrun command %q", run)
 	}
 	return nil
+}
+
+// copyStaticFiles copies files recursively from src directory to dest directory
+// while preserving the directory structure
+func copyStaticFiles(env environ.Values, src string, dest string) error {
+	if src == "" || dest == "" {
+		return nil
+	}
+	stat, err := os.Stat(src)
+	if err != nil {
+		return err
+	}
+	if !stat.IsDir() {
+		return fmt.Errorf("Outputdir specifies a directory path that already exists as file %s", dest)
+	}
+	var dstat os.FileInfo
+	dstat, err = os.Stat(dest)
+	if err != nil {
+		if os.IsNotExist(err) {
+			err = os.MkdirAll(dest, stat.Mode())
+			if err != nil {
+				return err
+			}
+			dstat = stat
+		} else {
+			return err
+		}
+	}
+	if !dstat.IsDir() {
+		return fmt.Errorf("%s is not a directory", dest)
+	}
+	return filepath.Walk(src, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		base := filepath.Dir(path)
+		rel, err := filepath.Rel(src, base)
+		if err != nil {
+			return err
+		}
+		o := filepath.Join(dest, rel)
+		err = os.MkdirAll(o, stat.Mode())
+		if err != nil {
+			return err
+		}
+		f, err := os.Open(path)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		t, err := os.OpenFile(filepath.Join(o, filepath.Base(path)), os.O_RDWR|os.O_TRUNC|os.O_CREATE, info.Mode())
+		if err != nil {
+			return err
+		}
+		defer t.Close()
+		_, err = io.Copy(t, f)
+		return err
+	})
 }

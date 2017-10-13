@@ -52,6 +52,19 @@ type Config struct {
 	// for different situations.  The values in this field will be available in
 	// the .Params value for all templates.
 	Params map[string]interface{}
+
+	// OutputDir is the directory relative to the project root (where the
+	// gnorm.toml file is located) in which all the generated files are written
+	// to.
+	OutputDir string
+
+	// StaticDir is the directory relative to the project root (where the
+	// gnorm.toml file is located) in which all static files , which are
+	// intended to be copied to the OutputDir are found.
+	//
+	// The directory structure is preserved when copying the files to the
+	// OutputDir
+	StaticDir string
 }
 
 // OutputTarget contains a template that generates a filename to write to, and

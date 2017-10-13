@@ -50,6 +50,9 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	if len(c.ExcludeTables) > 0 && len(c.IncludeTables) > 0 {
 		return nil, errors.New("both include tables and exclude tables")
 	}
+	if c.OutputDir == "" {
+		c.OutputDir = "."
+	}
 
 	include, err := parseTables(c.IncludeTables, c.Schemas)
 	if err != nil {
@@ -70,6 +73,8 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 			ExcludeTables:   exclude,
 			IncludeTables:   include,
 		},
+		OutputDir: c.OutputDir,
+		StaticDir: c.StaticDir,
 	}
 	d, err := getDriver(strings.ToLower(c.DBType))
 	if err != nil {
