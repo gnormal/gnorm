@@ -67,6 +67,23 @@ ExcludeTables = []
 # PostRun = ["goimports", "-w", "$GNORMFILE"]
 PostRun = []
 
+# OutputDir is the directory relative to the project root (where the
+# gnorm.toml file is located) in which all the generated files are written
+# to.
+#
+# This defaults to the current working directory i.e the directory in which
+# gnorm.toml is found.
+OutputDir = "."
+
+# StaticDir is the directory relative to the project root (where the
+# gnorm.toml file is located) in which all static files , which are
+# intended to be copied to the OutputDir are found.
+#
+# The directory structure is preserved when copying the files to the
+# OutputDir
+StaticDir = "static"
+
+
 # TablePaths is a map of output paths to template paths that tells Gnorm how to
 # render and output its table info and where to save that output.  Each template
 # will be rendered with each table in turn and written out to the given output

@@ -17,7 +17,7 @@ import (
 func TestAtomicGenerate(t *testing.T) {
 	target := OutputTarget{
 		Filename: template.Must(template.New("").Parse("{{.}}")),
-		// the contents tempalte will fail to execute becase the contents will
+		// the contents tempalte will fail to execute because the contents will
 		// not have a .Name field.
 		Contents: template.Must(template.New("").Parse("{{.Name}}")),
 	}
@@ -32,7 +32,7 @@ func TestAtomicGenerate(t *testing.T) {
 	}
 	defer os.Remove(filename)
 	contents := "hello world"
-	err = genFile(env, filename, contents, target, nil)
+	err = genFile(env, filename, contents, target, nil, ".")
 	if err == nil {
 		t.Fatal("Unexpected nil error generating contents. Should have failed.")
 	}

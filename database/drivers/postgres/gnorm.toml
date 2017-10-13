@@ -14,11 +14,15 @@ IncludeTables = ["tables", "columns"]
 
 PostRun = ["goimports", "-w", "$GNORMFILE"]
 
+StaticDir = "_static"
+
+OutputDir = "gnorm"
+
 [TablePaths]
-"gnorm/{{toLower .Table}}/{{toLower .Table}}.go" = "templates/table.gotmpl"
+"{{toLower .Table}}/{{toLower .Table}}.go" = "templates/table.gotmpl"
 
 [SchemaPaths]
-"gnorm/fields.go" = "templates/schema.gotmpl"
+"fields.go" = "templates/schema.gotmpl"
 
 [TypeMap]
 "timestamp with time zone" = "time.Time"

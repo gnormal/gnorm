@@ -41,6 +41,7 @@ aliases = [
 "/gnorm/database/drivers/mysql/gnorm/tables",
 "/gnorm/database/drivers/mysql/templates",
 "/gnorm/database/drivers/postgres",
+"/gnorm/database/drivers/postgres/_static",
 "/gnorm/database/drivers/postgres/gnorm",
 "/gnorm/database/drivers/postgres/gnorm/columns",
 "/gnorm/database/drivers/postgres/gnorm/tables",
@@ -48,6 +49,10 @@ aliases = [
 "/gnorm/environ",
 "/gnorm/run",
 "/gnorm/run/data",
+"/gnorm/run/testdata",
+"/gnorm/run/testdata/base",
+"/gnorm/run/testdata/base/level_one",
+"/gnorm/run/testdata/base/level_two",
 # [[[end]]]
 ]
 +++
