@@ -73,7 +73,7 @@ PostRun = []
 #
 # This defaults to the current working directory i.e the directory in which
 # gnorm.toml is found.
-OutputDir = "."
+OutputDir = "gnorm"
 
 # StaticDir is the directory relative to the project root (where the
 # gnorm.toml file is located) in which all static files , which are
@@ -96,7 +96,7 @@ StaticDir = "static"
 # "tables.gotmpl" would render tables.gotmpl template with data from the the
 # "public.users" table to ./public/users/users.go.
 [TablePaths]
-"{{.Schema}}/tables/{{.Table}}.go" = "table.gotmpl"
+"{{.Schema}}/tables/{{.Table}}.go" = "templates/table.gotmpl"
 
 # SchemaPaths iis a map of output paths to template paths that tells Gnorm how
 # to render and output its schema info.  Each template will be rendered with
@@ -110,7 +110,7 @@ StaticDir = "static"
 # schemas.gotmpl template with the "public" schema and output to
 # ./schemas/public/public.go
 [SchemaPaths]
-"{{.Schema}}.go" = "schema.gotmpl"
+"{{.Schema}}.go" = "templates/schema.gotmpl"
 
 # EnumPaths is a is a map of output paths to template paths that tells Gnorm how
 # to render and output its enum info.  Each template will be rendered with each
