@@ -53,6 +53,7 @@ type Table struct {
 	Schema        *Schema            `yaml:"-" json:"-"` // the schema this table is in
 	Columns       Columns            // Database columns
 	ColumnsByName map[string]*Column `yaml:"-" json:"-"` // dbname to column
+	PrimaryKeys   Columns            // Primary Key Columns
 }
 
 // Column is the data about a DB column of a table.
@@ -66,6 +67,7 @@ type Column struct {
 	UserDefined bool        // true if the type is user-defined
 	Nullable    bool        // true if the column is not NON NULL
 	HasDefault  bool        // true if the column has a default
+	PrimaryKey  bool        // true if the column is a primary key
 	Orig        interface{} `yaml:"-" json:"-"` // the raw database column data
 }
 

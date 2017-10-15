@@ -108,6 +108,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.En
 		HasDefault: c.ColumnDefault.String != "",
 		Type:       c.DataType,
 		Orig:       *c,
+		PrimaryKey: strings.Contains(c.ColumnKey, "PRI"),
 	}
 
 	// MySQL always specifies length even if it's not a part of the type. We

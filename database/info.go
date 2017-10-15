@@ -28,10 +28,18 @@ type EnumValue struct {
 	Value int    // the value for this enum value (order)
 }
 
-// Table contains the definiiton of a database table.
+// Table contains the definition of a database table.
 type Table struct {
 	Name    string    // the original name of the table in the DB
 	Columns []*Column // ordered list of columns in this table
+}
+
+// PrimaryKey contains the definition of a database primary key.
+type PrimaryKey struct {
+	SchemaName string // the original name of the schema in the db
+	TableName  string // the original name of the table in the db
+	ColumnName string // the original name of the column in the db
+	Name       string // the original name of the key constraint in the db
 }
 
 // Column contains data about a column in a table.
@@ -43,6 +51,7 @@ type Column struct {
 	UserDefined bool        // true if the type is user-defined
 	Nullable    bool        // true if the column is not NON NULL
 	HasDefault  bool        // true if the column has a default
+	PrimaryKey  bool        // true if the column is a primary key
 	Orig        interface{} // the raw database column data
 }
 

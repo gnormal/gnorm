@@ -72,6 +72,7 @@ Column is the data about a DB column of a table.
 | UserDefined | boolean | true if the type is user-defined
 | Nullable | boolean | true if the column is not NON NULL
 | HasDefault | boolean | true if the column has a default
+| PrimaryKey | boolean | true if the column is a primary key
 | Orig | db-specific | the raw database column data (different per db type)
 
 
@@ -157,6 +158,7 @@ Strings is a list of string values with the following methods
 | Schema | [Schema](#schema)  | the schema this table is in
 | Columns | [Columns](#columns) | ordered list of Database columns
 | ColumnsByName | map[string][Column](#column) | map of column dbname to column
+| PrimaryKeys | [Columns](#columns) | primary key columns
 
 ### Tables
 

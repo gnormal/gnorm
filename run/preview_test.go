@@ -53,8 +53,9 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 			Tables: []*database.Table{{
 				Name: "table",
 				Columns: []*database.Column{{
-					Name: "col1",
-					Type: "int",
+					Name:       "col1",
+					Type:       "int",
+					PrimaryKey: true,
 				}, {
 					Name:     "col2",
 					Type:     "*int",
@@ -94,6 +95,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: false
       hasdefault: false
+      primarykey: true
     - name: abc col2
       dbname: col2
       type: '*INTEGER'
@@ -103,6 +105,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: true
       hasdefault: false
+      primarykey: false
     - name: abc col3
       dbname: col3
       type: ""
@@ -112,6 +115,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: false
       hasdefault: false
+      primarykey: false
     - name: abc col4
       dbname: col4
       type: ""
@@ -121,6 +125,18 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: true
       hasdefault: false
+      primarykey: false
+    primarykeys:
+    - name: abc col1
+      dbname: col1
+      type: INTEGER
+      dbtype: int
+      isarray: false
+      length: 0
+      userdefined: false
+      nullable: false
+      hasdefault: false
+      primarykey: true
   enums:
   - name: abc enum
     dbname: enum
@@ -141,14 +157,14 @@ Enum: abc enum(schema.enum)
 
 
 Table: abc table(schema.table)
-+----------+--------+----------+---------+---------+--------+-------------+----------+------------+
-|   Name   | DBName |   Type   | DBType  | IsArray | Length | UserDefined | Nullable | HasDefault |
-+----------+--------+----------+---------+---------+--------+-------------+----------+------------+
-| abc col1 | col1   | INTEGER  | int     | false   |      0 | false       | false    | false      |
-| abc col2 | col2   | *INTEGER | *int    | false   |      0 | false       | true     | false      |
-| abc col3 | col3   |          | string  | false   |      0 | false       | false    | false      |
-| abc col4 | col4   |          | *string | false   |      0 | false       | true     | false      |
-+----------+--------+----------+---------+---------+--------+-------------+----------+------------+
++----------+--------+----------+---------+---------+------------+--------+-------------+----------+------------+
+|   Name   | DBName |   Type   | DBType  | IsArray | PrimaryKey | Length | UserDefined | Nullable | HasDefault |
++----------+--------+----------+---------+---------+------------+--------+-------------+----------+------------+
+| abc col1 | col1   | INTEGER  | int     | false   | true       |      0 | false       | false    | false      |
+| abc col2 | col2   | *INTEGER | *int    | false   | false      |      0 | false       | true     | false      |
+| abc col3 | col3   |          | string  | false   | false      |      0 | false       | false    | false      |
+| abc col4 | col4   |          | *string | false   | false      |      0 | false       | true     | false      |
++----------+--------+----------+---------+---------+------------+--------+-------------+----------+------------+
 
 `
 
@@ -202,7 +218,8 @@ var expectJSON = `
               "Length": 0,
               "UserDefined": false,
               "Nullable": false,
-              "HasDefault": false
+              "HasDefault": false,
+              "PrimaryKey": true
             },
             {
               "Name": "abc col2",
@@ -213,7 +230,8 @@ var expectJSON = `
               "Length": 0,
               "UserDefined": false,
               "Nullable": true,
-              "HasDefault": false
+              "HasDefault": false,
+              "PrimaryKey": false
             },
             {
               "Name": "abc col3",
@@ -224,7 +242,8 @@ var expectJSON = `
               "Length": 0,
               "UserDefined": false,
               "Nullable": false,
-              "HasDefault": false
+              "HasDefault": false,
+              "PrimaryKey": false
             },
             {
               "Name": "abc col4",
@@ -235,7 +254,22 @@ var expectJSON = `
               "Length": 0,
               "UserDefined": false,
               "Nullable": true,
-              "HasDefault": false
+              "HasDefault": false,
+              "PrimaryKey": false
+            }
+          ],
+          "PrimaryKeys": [
+            {
+              "Name": "abc col1",
+              "DBName": "col1",
+              "Type": "INTEGER",
+              "DBType": "int",
+              "IsArray": false,
+              "Length": 0,
+              "UserDefined": false,
+              "Nullable": false,
+              "HasDefault": false,
+              "PrimaryKey": true
             }
           ]
         }
