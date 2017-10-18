@@ -114,7 +114,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			if pk.ColumnName != col.Name {
 				continue
 			}
-			col.PrimaryKey = true
+			col.IsPrimaryKey = true
 		}
 	}
 

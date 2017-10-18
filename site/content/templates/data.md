@@ -72,7 +72,7 @@ Column is the data about a DB column of a table.
 | UserDefined | boolean | true if the type is user-defined
 | Nullable | boolean | true if the column is not NON NULL
 | HasDefault | boolean | true if the column has a default
-| PrimaryKey | boolean | true if the column is a primary key
+| IsPrimaryKey | boolean | true if the column is a primary key
 | Orig | db-specific | the raw database column data (different per db type)
 
 
@@ -85,7 +85,7 @@ have the following properties:
 | Property | Type | Description |
 | --- | ---- | --- |
 | DBNames | [Strings](#strings) | the ordered list of DBNames of all the columns 
-| Names | [Strings](#stings) | the ordered list of Names of all the columns
+| Names | [Strings](#strings) | the ordered list of Names of all the columns
 
 ### ConfigData
 
@@ -119,7 +119,7 @@ have the following properties:
 | Property | Type | Description |
 | --- | ---- | --- |
 | DBNames | [Strings](#strings) | the ordered list of DBNames of all the enums 
-| Names | [Strings](#stings) | the ordered list of Names of all the enums
+| Names | [Strings](#strings) | the ordered list of Names of all the enums
 
 ### EnumValue
 
@@ -159,6 +159,7 @@ Strings is a list of string values with the following methods
 | Columns | [Columns](#columns) | ordered list of Database columns
 | ColumnsByName | map[string][Column](#column) | map of column dbname to column
 | PrimaryKeys | [Columns](#columns) | primary key columns
+| HasPrimaryKey | bool | does the column have at least one primary key
 
 ### Tables
 
@@ -168,4 +169,4 @@ have the following properties:
 | Property | Type | Description |
 | --- | ---- | --- |
 | DBNames | [Strings](#strings) | the list of DBNames of all the tables
-| Names | [Strings](#stings) | the list of Names of all the tables
+| Names | [Strings](#strings) | the list of Names of all the tables

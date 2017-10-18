@@ -34,7 +34,7 @@ type Table struct {
 	Columns []*Column // ordered list of columns in this table
 }
 
-// PrimaryKey contains the definition of a database primary key.
+// IsPrimaryKey contains the definition of a database primary key.
 type PrimaryKey struct {
 	SchemaName string // the original name of the schema in the db
 	TableName  string // the original name of the table in the db
@@ -44,15 +44,15 @@ type PrimaryKey struct {
 
 // Column contains data about a column in a table.
 type Column struct {
-	Name        string      // the original name of the column in the DB
-	Type        string      // the original type of the column in the DB
-	IsArray     bool        // true if the column type is an array
-	Length      int         // non-zero if the type has a length (e.g. varchar[16])
-	UserDefined bool        // true if the type is user-defined
-	Nullable    bool        // true if the column is not NON NULL
-	HasDefault  bool        // true if the column has a default
-	PrimaryKey  bool        // true if the column is a primary key
-	Orig        interface{} // the raw database column data
+	Name         string      // the original name of the column in the DB
+	Type         string      // the original type of the column in the DB
+	IsArray      bool        // true if the column type is an array
+	Length       int         // non-zero if the type has a length (e.g. varchar[16])
+	UserDefined  bool        // true if the type is user-defined
+	Nullable     bool        // true if the column is not NON NULL
+	HasDefault   bool        // true if the column has a default
+	IsPrimaryKey bool        // true if the column is a primary key
+	Orig         interface{} // the raw database column data
 }
 
 // Driver defines the base interface for databases that are supported by gnorm
