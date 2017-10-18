@@ -34,7 +34,7 @@ type Table struct {
 	Columns []*Column // ordered list of columns in this table
 }
 
-// IsPrimaryKey contains the definition of a database primary key.
+// PrimaryKey contains the definition of a database primary key.
 type PrimaryKey struct {
 	SchemaName string // the original name of the schema in the db
 	TableName  string // the original name of the table in the db
