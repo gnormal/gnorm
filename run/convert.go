@@ -71,14 +71,15 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 			}
 			for _, c := range t.Columns {
 				col := &data.Column{
-					DBName:      c.Name,
-					DBType:      c.Type,
-					IsArray:     c.IsArray,
-					Length:      c.Length,
-					UserDefined: c.UserDefined,
-					Nullable:    c.Nullable,
-					HasDefault:  c.HasDefault,
-					Orig:        c.Orig,
+					DBName:       c.Name,
+					DBType:       c.Type,
+					IsArray:      c.IsArray,
+					Length:       c.Length,
+					UserDefined:  c.UserDefined,
+					Nullable:     c.Nullable,
+					HasDefault:   c.HasDefault,
+					IsPrimaryKey: c.IsPrimaryKey,
+					Orig:         c.Orig,
 				}
 				table.Columns = append(table.Columns, col)
 				table.ColumnsByName[col.DBName] = col
@@ -99,7 +100,19 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 					}
 				}
 			}
+			table.PrimaryKeys = filterPrimaryKeyColumns(table.Columns)
 		}
 	}
 	return db, nil
+}
+
+func filterPrimaryKeyColumns(columns []*data.Column) []*data.Column {
+	var pkColumns []*data.Column
+	for _, column := range columns {
+		if column.IsPrimaryKey {
+			pkColumns = append(pkColumns, column)
+		}
+	}
+
+	return pkColumns
 }

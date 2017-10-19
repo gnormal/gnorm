@@ -88,6 +88,36 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		schema[c.TableName.String] = append(schema[c.TableName.String], col)
 	}
 
+	primaryKeys, err := queryPrimaryKeys(log, db, schemaNames)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("found %v primary keys", len(primaryKeys))
+	for _, pk := range primaryKeys {
+		if !filterTables(pk.SchemaName, pk.TableName) {
+			log.Printf("skipping constraint %q because it is for filtered-out table %v.%v", pk.Name, pk.SchemaName, pk.TableName)
+			continue
+		}
+
+		schema, ok := schemas[pk.SchemaName]
+		if !ok {
+			log.Printf("Should be impossible: constraint %q references unknown schema %q", pk.Name, pk.SchemaName)
+			continue
+		}
+		table, ok := schema[pk.TableName]
+		if !ok {
+			log.Printf("Should be impossible: constraint %q references unknown table %q in schema %q", pk.Name, pk.TableName, pk.SchemaName)
+			continue
+		}
+
+		for _, col := range table {
+			if pk.ColumnName != col.Name {
+				continue
+			}
+			col.IsPrimaryKey = true
+		}
+	}
+
 	enums, err := queryEnums(log, db, schemaNames)
 	if err != nil {
 		return nil, err
@@ -134,6 +164,40 @@ func toDBColumn(c *columns.Row, log *log.Logger) *database.Column {
 	col.Type = typ
 
 	return col
+}
+
+func queryPrimaryKeys(log *log.Logger, db *sql.DB, schemas []string) ([]*database.PrimaryKey, error) {
+	// TODO: make this work with Gnorm generated types
+	const q = `
+	SELECT k.table_schema, k.table_name, k.column_name, k.constraint_name
+	FROM information_schema.key_column_usage k
+	LEFT JOIN information_schema.table_constraints c
+    	ON k.table_schema = c.table_schema
+    	AND k.table_name = c.table_name
+    	AND k.constraint_name = c.constraint_name
+	WHERE c.constraint_type='PRIMARY KEY' AND k.table_schema IN (%s)`
+	spots := make([]string, len(schemas))
+	vals := make([]interface{}, len(schemas))
+	for x := range schemas {
+		spots[x] = fmt.Sprintf("$%v", x+1)
+		vals[x] = schemas[x]
+	}
+	query := fmt.Sprintf(q, strings.Join(spots, ", "))
+	rows, err := db.Query(query, vals...)
+	defer rows.Close()
+	if err != nil {
+		return nil, errors.WithMessage(err, "error querying keys")
+	}
+	var ret []*database.PrimaryKey
+
+	for rows.Next() {
+		kc := &database.PrimaryKey{}
+		if err := rows.Scan(&kc.SchemaName, &kc.TableName, &kc.ColumnName, &kc.Name); err != nil {
+			return nil, errors.WithMessage(err, "error scanning key constraint")
+		}
+		ret = append(ret, kc)
+	}
+	return ret, nil
 }
 
 func queryEnums(log *log.Logger, db *sql.DB, schemas []string) (map[string][]*database.Enum, error) {

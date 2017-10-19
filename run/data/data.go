@@ -53,20 +53,27 @@ type Table struct {
 	Schema        *Schema            `yaml:"-" json:"-"` // the schema this table is in
 	Columns       Columns            // Database columns
 	ColumnsByName map[string]*Column `yaml:"-" json:"-"` // dbname to column
+	PrimaryKeys   Columns            // Primary Key Columns
+}
+
+// Returns true if Table has one or more primary keys
+func (t *Table) HasPrimaryKey() bool {
+	return len(t.PrimaryKeys) > 0
 }
 
 // Column is the data about a DB column of a table.
 type Column struct {
-	Name        string      // the converted name of the column
-	DBName      string      // the original name of the column in the DB
-	Type        string      // the converted name of the type
-	DBType      string      // the original type of the column in the DB
-	IsArray     bool        // true if the column type is an array
-	Length      int         // non-zero if the type has a length (e.g. varchar[16])
-	UserDefined bool        // true if the type is user-defined
-	Nullable    bool        // true if the column is not NON NULL
-	HasDefault  bool        // true if the column has a default
-	Orig        interface{} `yaml:"-" json:"-"` // the raw database column data
+	Name         string      // the converted name of the column
+	DBName       string      // the original name of the column in the DB
+	Type         string      // the converted name of the type
+	DBType       string      // the original type of the column in the DB
+	IsArray      bool        // true if the column type is an array
+	Length       int         // non-zero if the type has a length (e.g. varchar[16])
+	UserDefined  bool        // true if the type is user-defined
+	Nullable     bool        // true if the column is not NON NULL
+	HasDefault   bool        // true if the column has a default
+	IsPrimaryKey bool        // true if the column is a primary key
+	Orig         interface{} `yaml:"-" json:"-"` // the raw database column data
 }
 
 // Enum represents a type that has a set of allowed values.

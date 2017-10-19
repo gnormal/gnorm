@@ -28,7 +28,7 @@ Enum: {{.Name}}({{$schema}}.{{.DBName}})
 {{end -}}
 {{range .Tables}}
 Table: {{.Name}}({{$schema}}.{{.DBName}})
-{{makeTable .Columns "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}" "Name" "DBName" "Type" "DBType" "IsArray" "Length" "UserDefined" "Nullable" "HasDefault"}}
+{{makeTable .Columns "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.IsPrimaryKey}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}" "Name" "DBName" "Type" "DBType" "IsArray" "IsPrimaryKey" "Length" "UserDefined" "Nullable" "HasDefault"}}
 {{end -}}
 {{end -}}
 `))
