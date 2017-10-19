@@ -59,10 +59,25 @@ If you changed anything here, re-run `gnorm preview` to see the results. The
 `NameConversion` field will change the Name of things, and the type maps will
 change the Type of a column.
 
+The final config value to look at is `OutputDir`.  This is the base directory
+where all your generated file will be created.  If it is not set, it defaults to
+the same directory where Gnorm is run, but it is often adviseable to use a
+subdirectory to keep generated code separate from the code that generates it.
+gnorm init creates a gnorm.toml file with `OutputDir = "gnorm"` which means your
+generated code will be created in a subdirectory of the directory where gnorm is
+run.  It's generally best to use a relative directory for OutputDir, as using an
+absolute directory may not work on other people's machines.
+
 ## Let's generate! 
 
 Gnorm init gives you very basic templates that do not really produce output that
 would be useful in any real application. To produce something you can use, you
-have to write or borrow templates to format the data.  If you've ever used Hugo,
-it's like creating or selecting a theme.
+have to write templates or use a pre-made gnorm solution to format the data.
+If you've ever used a static site generator like [Hugo](https://gohugo.io),
+solutions are like themes.
 
+## Learn More About Gnorm's Features
+
+The best place to start to learn more about what Gnorm can do is to read about
+the [configuration values](/cli/configuration/) in gnorm.toml that control how
+gnorm behaves.

@@ -62,9 +62,9 @@ func genSite() error {
 	}
 	log.Print("removing fonts from generated site")
 	// fonts are BIG
-	if err := rm("./cli/public/fonts"); err != nil {
-		return err
-	}
+	// if err := rm("./cli/public/fonts"); err != nil {
+	// 	return err
+	// }
 	if err := rm("./cli/public/revealjs/lib/font"); err != nil {
 		return err
 	}

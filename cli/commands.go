@@ -117,13 +117,14 @@ Creates a default gnorm.toml and the various template files needed to run GNORM.
 				fmt.Fprintf(env.Stdout, "Can't create gnorm.toml file: %v\n", err)
 				return codeErr{err, 1}
 			}
-			for _, name := range []string{"table", "schema", "enum"} {
-				if err := createFile(name+".gotmpl", "{{.Name}}"); err != nil {
-					return codeErr{
-						errors.WithMessage(err, fmt.Sprintf("Can't create template file %q", name)),
-						1,
-					}
-				}
+			if err := createFile("templates/table.gotmpl", "Table: {{.Table.Name}}\n{{printf \"%#v\" .}}"); err != nil {
+				return err
+			}
+			if err := createFile("templates/enum.gotmpl", "Enum: {{.Enum.Name}}\n{{printf \"%#v\" .}}"); err != nil {
+				return err
+			}
+			if err := createFile("templates/schema.gotmpl", "Schema: {{.Schema.Name}}\n{{printf \"%#v\" .}}"); err != nil {
+				return err
 			}
 			return nil
 		},
@@ -151,7 +152,10 @@ func createFile(name, contents string) error {
 	}
 	_, err = f.WriteString(contents)
 	f.Close()
-	return err
+	return codeErr{
+		errors.WithMessage(err, fmt.Sprintf("Can't create template file %q", name)),
+		1,
+	}
 }
 
 type codeErr struct {
