@@ -38,10 +38,10 @@
   revision = "e42267488fe361b9dc034be7a6bffef5b195bceb"
 
 [[projects]]
-  branch = "master"
   name = "github.com/magefile/mage"
   packages = ["mg"]
-  revision = "9dc8074005277d8aa3d82fbea656db09e10ee63d"
+  revision = "2060ed78534d0e013c04f3d53ec664c11df784fe"
+  version = "v2"
 
 [[projects]]
   name = "github.com/mattn/go-runewidth"

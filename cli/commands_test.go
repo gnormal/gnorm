@@ -2,9 +2,14 @@ package cli
 
 import (
 	"bytes"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
 
 	"gnorm.org/gnorm/environ"
 )
@@ -34,5 +39,44 @@ func TestPreviewBadFormat(t *testing.T) {
 	}
 	if !strings.Contains(err, `unknown preview format "abc123"`) {
 		t.Fatalf("unexpected error message from preview:\n%s", err)
+	}
+}
+
+func TestInitCmd(t *testing.T) {
+	d, err := ioutil.TempDir("", "gnormInitTest")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(d)
+	if err := initFunc(d); err != nil {
+		t.Fatalf("error running initfunc: %v", err)
+	}
+	b, err := ioutil.ReadFile(filepath.Join(d, "gnorm.toml"))
+	if err != nil {
+		t.Errorf("error reading gnorm.toml: %v", err)
+	} else {
+		if diff := cmp.Diff(sample, string(b)); diff != "" {
+			t.Fatal("gnorm.toml differs from expected data:\n" + diff)
+		}
+	}
+	fs, err := ioutil.ReadDir(filepath.Join(d, "templates"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(fs) != 3 {
+		t.Fatalf("expected 3 files in templates dir, but got %d", len(fs))
+	}
+	names := map[string]bool{}
+	for _, f := range fs {
+		names[f.Name()] = true
+	}
+	if !names["table.gotmpl"] {
+		t.Errorf("missing table template")
+	}
+	if !names["schema.gotmpl"] {
+		t.Errorf("missing schema template")
+	}
+	if !names["enum.gotmpl"] {
+		t.Errorf("missing enum template")
 	}
 }

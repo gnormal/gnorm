@@ -1,46 +1,88 @@
 package mg
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"runtime"
 	"strings"
 	"sync"
-
-	"github.com/pkg/errors"
 )
 
-var onces = &sync.Map{}
+type onceMap struct {
+	mu *sync.Mutex
+	m  map[string]*onceFun
+}
 
-// Deps runs the given functions as dependencies of the calling function.
-// Dependencies must only be func() or func() error.  The function calling Deps
-// is guaranteed that all dependent functions will be run exactly once when Deps
-// returns.  Dependent functions may in turn declare their own dependencies
-// using Deps. Each dependency is run in their own goroutines.
-func Deps(fns ...interface{}) {
-	for _, f := range fns {
-		switch f.(type) {
-		case func(), func() error:
-			// ok
-		default:
-			panic(errors.Errorf("Invalid type for dependent function: %T. Dependencies must be func() or func() error", f))
-		}
+func (o *onceMap) LoadOrStore(s string, one *onceFun) *onceFun {
+	defer o.mu.Unlock()
+	o.mu.Lock()
+
+	existing, ok := o.m[s]
+	if ok {
+		return existing
 	}
+	o.m[s] = one
+	return one
+}
+
+var onces = &onceMap{
+	mu: &sync.Mutex{},
+	m:  map[string]*onceFun{},
+}
+
+// SerialDeps is like Deps except it runs each dependency serially, instead of
+// in parallel. This can be useful for resource intensive dependencies that
+// shouldn't be run at the same time.
+func SerialDeps(fns ...interface{}) {
+	checkFns(fns)
+	ctx, _ := Context()
+	for _, f := range fns {
+		runDeps(ctx, f)
+	}
+}
+
+// SerialCtxDeps is like CtxDeps except it runs each dependency serially,
+// instead of in parallel. This can be useful for resource intensive
+// dependencies that shouldn't be run at the same time.
+func SerialCtxDeps(ctx context.Context, fns ...interface{}) {
+	checkFns(fns)
+	for _, f := range fns {
+		runDeps(ctx, f)
+	}
+}
+
+// CtxDeps runs the given functions as dependencies of the calling function.
+// Dependencies must only be of type: github.com/magefile/mage/types.FuncType.
+// The function calling Deps is guaranteed that all dependent functions will be
+// run exactly once when Deps returns.  Dependent functions may in turn declare
+// their own dependencies using Deps. Each dependency is run in their own
+// goroutines. Each function is given the context provided if the function
+// prototype allows for it.
+func CtxDeps(ctx context.Context, fns ...interface{}) {
+	checkFns(fns)
+	runDeps(ctx, fns...)
+}
+
+// runDeps assumes you've already called checkFns.
+func runDeps(ctx context.Context, fns ...interface{}) {
 	mu := &sync.Mutex{}
 	var errs []string
 	var exit int
 	wg := &sync.WaitGroup{}
 	for _, f := range fns {
-		fn := addDep(f)
+		fn := addDep(ctx, f)
 		wg.Add(1)
 		go func() {
 			defer func() {
-				if err := recover(); err != nil {
+				if v := recover(); v != nil {
 					mu.Lock()
-					if c, ok := err.(exitCoder); ok {
-						exit = changeExit(exit, c.ExitCode())
+					if err, ok := v.(error); ok {
+						exit = changeExit(exit, ExitStatus(err))
+					} else {
+						exit = changeExit(exit, 1)
 					}
-					errs = append(errs, fmt.Sprint(err))
+					errs = append(errs, fmt.Sprint(v))
 					mu.Unlock()
 				}
 				wg.Done()
@@ -48,7 +90,7 @@ func Deps(fns ...interface{}) {
 			if err := fn.run(); err != nil {
 				mu.Lock()
 				errs = append(errs, fmt.Sprint(err))
-				exit = 1
+				exit = changeExit(exit, ExitStatus(err))
 				mu.Unlock()
 			}
 		}()
@@ -56,11 +98,25 @@ func Deps(fns ...interface{}) {
 
 	wg.Wait()
 	if len(errs) > 0 {
-		panic(fatalErr{
-			msg:  strings.Join(errs, "\n"),
-			code: exit,
-		})
+		panic(Fatal(exit, strings.Join(errs, "\n")))
 	}
+}
+
+func checkFns(fns []interface{}) {
+	for _, f := range fns {
+		switch f.(type) {
+		case func(), func() error, func(context.Context), func(context.Context) error:
+			// ok
+		default:
+			panic(fmt.Errorf("Invalid type for dependent function: %T. Dependencies must be func(), func() error, func(context.Context) or func(context.Context) error", f))
+		}
+	}
+}
+
+// Deps runs the given functions with the default runtime context
+func Deps(fns ...interface{}) {
+	ctx, _ := Context()
+	CtxDeps(ctx, fns...)
 }
 
 func changeExit(old, new int) int {
@@ -78,20 +134,28 @@ func changeExit(old, new int) int {
 	return 1
 }
 
-func addDep(f interface{}) *onceFun {
-	var fn func() error
+func addDep(ctx context.Context, f interface{}) *onceFun {
+	var fn func(context.Context) error
 	switch f := f.(type) {
 	case func():
-		fn = func() error { f(); return nil }
+		fn = func(ctx context.Context) error { f(); return nil }
 	case func() error:
+		fn = func(ctx context.Context) error { return f() }
+	case func(context.Context):
+		fn = func(ctx context.Context) error { f(ctx); return nil }
+	case func(context.Context) error:
 		fn = f
+	default:
+		// should be impossible, since we already checked this
+		panic("attempted to add a dep that did not match required type")
 	}
 
 	n := name(f)
-	of, _ := onces.LoadOrStore(n, &onceFun{
-		fn: fn,
+	of := onces.LoadOrStore(n, &onceFun{
+		fn:  fn,
+		ctx: ctx,
 	})
-	return of.(*onceFun)
+	return of
 }
 
 func name(i interface{}) string {
@@ -100,30 +164,14 @@ func name(i interface{}) string {
 
 type onceFun struct {
 	once sync.Once
-	fn   func() error
+	fn   func(context.Context) error
+	ctx  context.Context
 }
 
 func (o *onceFun) run() error {
 	var err error
 	o.once.Do(func() {
-		err = o.fn()
+		err = o.fn(o.ctx)
 	})
 	return err
-}
-
-type exitCoder interface {
-	ExitCode() int
-}
-
-type fatalErr struct {
-	msg  string
-	code int
-}
-
-func (f fatalErr) Error() string {
-	return f.msg
-}
-
-func (f fatalErr) ExitCode() int {
-	return f.code
 }
