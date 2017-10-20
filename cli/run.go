@@ -53,6 +53,7 @@ runnable code.  See full docs at https://gnorm.org`[1:],
 	rootCmd.AddCommand(versionCmd(env))
 	rootCmd.AddCommand(initCmd(env))
 	rootCmd.AddCommand(docCmd(env))
+	rootCmd.SilenceUsage = true
 	return code(rootCmd.Execute())
 }
 

@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -113,20 +114,7 @@ func initCmd(env environ.Values) *cobra.Command {
 		Long: `
 Creates a default gnorm.toml and the various template files needed to run GNORM.`[1:],
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := createFile("gnorm.toml", sample); err != nil {
-				fmt.Fprintf(env.Stdout, "Can't create gnorm.toml file: %v\n", err)
-				return codeErr{err, 1}
-			}
-			if err := createFile("templates/table.gotmpl", "Table: {{.Table.Name}}\n{{printf \"%#v\" .}}"); err != nil {
-				return err
-			}
-			if err := createFile("templates/enum.gotmpl", "Enum: {{.Enum.Name}}\n{{printf \"%#v\" .}}"); err != nil {
-				return err
-			}
-			if err := createFile("templates/schema.gotmpl", "Schema: {{.Schema.Name}}\n{{printf \"%#v\" .}}"); err != nil {
-				return err
-			}
-			return nil
+			return initFunc(".")
 		},
 		Args: cobra.ExactArgs(0),
 	}
@@ -145,15 +133,43 @@ of Gnorm.`[1:],
 	}
 }
 
-func createFile(name, contents string) error {
-	f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
-	if err != nil {
+func initFunc(dir string) error {
+	if err := createFile(filepath.Join(dir, "gnorm.toml"), sample); err != nil {
 		return err
 	}
+	if err := createFile(filepath.Join(dir, "templates/table.gotmpl"), "Table: {{.Table.Name}}\n{{printf \"%#v\" .}}"); err != nil {
+		return err
+	}
+	if err := createFile(filepath.Join(dir, "templates/enum.gotmpl"), "Enum: {{.Enum.Name}}\n{{printf \"%#v\" .}}"); err != nil {
+		return err
+	}
+	return createFile(filepath.Join(dir, "templates/schema.gotmpl"), "Schema: {{.Schema.Name}}\n{{printf \"%#v\" .}}")
+}
+
+func createFile(name, contents string) error {
+	if dir := filepath.Dir(name); dir != "" {
+		if err := os.MkdirAll(dir, 0700); err != nil {
+			return codeErr{
+				errors.WithMessage(err, fmt.Sprintf("Can't create directory %q", dir)),
+				1,
+			}
+		}
+	}
+
+	f, err := os.OpenFile(name, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	if err != nil {
+		return codeErr{
+			errors.WithMessage(err, fmt.Sprintf("Can't create file %q", name)),
+			1,
+		}
+	}
+	defer f.Close()
 	_, err = f.WriteString(contents)
-	f.Close()
+	if err == nil {
+		return nil
+	}
 	return codeErr{
-		errors.WithMessage(err, fmt.Sprintf("Can't create template file %q", name)),
+		errors.WithMessage(err, fmt.Sprintf("Failed writing data to file %q", name)),
 		1,
 	}
 }
