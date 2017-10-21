@@ -135,7 +135,7 @@ StaticDir = "static"
 # "enums.gotmpl" would render the enums.gotmpl template with data from the
 # "public.book_type" enum to ./gnorm/public/enums/users.go.
 [EnumPaths]
-"{{.Schema}}/enums/{{.Enum}}.go" = "enum.gotmpl"
+"{{.Schema}}/enums/{{.Enum}}.go" = "templates/enum.gotmpl"
 
 # TypeMap is a mapping of database type names to replacement type names
 # (generally types from your language for deserialization), specifically for
