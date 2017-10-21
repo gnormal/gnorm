@@ -134,6 +134,9 @@ of Gnorm.`[1:],
 }
 
 func initFunc(dir string) error {
+	if err := os.MkdirAll(filepath.Join(dir, "static"), 0700); err != nil {
+		return codeErr{err, 1}
+	}
 	if err := createFile(filepath.Join(dir, "gnorm.toml"), sample); err != nil {
 		return err
 	}
