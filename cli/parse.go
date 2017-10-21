@@ -102,7 +102,7 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 
 	cfg.EnumPaths, err = parseOutputTargets(c.EnumPaths)
 	if err != nil {
-		return nil, errors.WithMessage(err, "error parsing RnumPaths")
+		return nil, errors.WithMessage(err, "error parsing EnumPaths")
 	}
 
 	if len(cfg.EnumPaths) == 0 && len(cfg.TablePaths) == 0 && len(cfg.SchemaPaths) == 0 {
