@@ -51,13 +51,17 @@ func TestInitCmd(t *testing.T) {
 	if err := initFunc(d); err != nil {
 		t.Fatalf("error running initfunc: %v", err)
 	}
-	b, err := ioutil.ReadFile(filepath.Join(d, "gnorm.toml"))
+	cfgFile := filepath.Join(d, "gnorm.toml")
+	b, err := ioutil.ReadFile(cfgFile)
 	if err != nil {
 		t.Errorf("error reading gnorm.toml: %v", err)
 	} else {
 		if diff := cmp.Diff(sample, string(b)); diff != "" {
 			t.Fatal("gnorm.toml differs from expected data:\n" + diff)
 		}
+	}
+	if _, err := os.Stat(filepath.Join(d, "static")); err != nil {
+		t.Errorf("error finding static dir: %v", err)
 	}
 	fs, err := ioutil.ReadDir(filepath.Join(d, "templates"))
 	if err != nil {
