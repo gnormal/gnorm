@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
+
+	"gnorm.org/gnorm/run/data"
 
 	"github.com/codemodus/kace"
 	"github.com/pkg/errors"
@@ -34,6 +37,7 @@ var FuncMap = map[string]interface{}{
 	"lastIndexAny": strings.LastIndexAny,
 	"makeMap":      makeMap,
 	"makeSlice":    makeSlice,
+	"numbers":      numbers,
 	"pascal":       kace.Pascal,
 	"repeat":       strings.Repeat,
 	"replace":      strings.Replace,
@@ -123,6 +127,15 @@ func sub(x int, vals ...int) int {
 		x -= v
 	}
 	return x
+}
+
+// numbers returns a slice of strings of the numbers start to end (inclusive).
+func numbers(start, end int) data.Strings {
+	var s data.Strings
+	for x := start; x <= end; x++ {
+		s = append(s, strconv.Itoa(x))
+	}
+	return s
 }
 
 // Plugin returns a function which can be used in templates for executing plugins,
