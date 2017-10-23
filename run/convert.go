@@ -59,9 +59,12 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 		}
 		for _, t := range s.Tables {
 			table := &data.Table{
-				DBName:        t.Name,
-				Schema:        sch,
-				ColumnsByName: make(map[string]*data.Column, len(t.Columns)),
+				DBName:                             t.Name,
+				Schema:                             sch,
+				ColumnsByName:                      make(map[string]*data.Column, len(t.Columns)),
+				ForeignColumnsByForeignKey:         map[string][]*data.ForeignColumn{},
+				ForeignTablesByForeignKey:          map[string]*data.ForeignTable{},
+				ForeignTablesByForeignKeyReference: map[string]*data.ForeignTable{},
 			}
 			sch.Tables = append(sch.Tables, table)
 			sch.TablesByName[table.DBName] = table
@@ -71,15 +74,18 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 			}
 			for _, c := range t.Columns {
 				col := &data.Column{
-					DBName:       c.Name,
-					DBType:       c.Type,
-					IsArray:      c.IsArray,
-					Length:       c.Length,
-					UserDefined:  c.UserDefined,
-					Nullable:     c.Nullable,
-					HasDefault:   c.HasDefault,
-					IsPrimaryKey: c.IsPrimaryKey,
-					Orig:         c.Orig,
+					Table:                               table,
+					DBName:                              c.Name,
+					DBType:                              c.Type,
+					IsArray:                             c.IsArray,
+					Length:                              c.Length,
+					UserDefined:                         c.UserDefined,
+					Nullable:                            c.Nullable,
+					HasDefault:                          c.HasDefault,
+					IsPrimaryKey:                        c.IsPrimaryKey,
+					IsForeignKey:                        c.IsForeignKey,
+					ForeignColumnsByForeignKeyReference: map[string]*data.ForeignColumn{},
+					Orig: c.Orig,
 				}
 				table.Columns = append(table.Columns, col)
 				table.ColumnsByName[col.DBName] = col
@@ -102,12 +108,15 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 			}
 			table.PrimaryKeys = filterPrimaryKeyColumns(table.Columns)
 		}
+		if err = mapSchemaForeignKeyReferences(s, sch); err != nil {
+			return nil, err
+		}
 	}
 	return db, nil
 }
 
-func filterPrimaryKeyColumns(columns []*data.Column) []*data.Column {
-	var pkColumns []*data.Column
+func filterPrimaryKeyColumns(columns data.Columns) data.Columns {
+	var pkColumns data.Columns
 	for _, column := range columns {
 		if column.IsPrimaryKey {
 			pkColumns = append(pkColumns, column)
@@ -115,4 +124,86 @@ func filterPrimaryKeyColumns(columns []*data.Column) []*data.Column {
 	}
 
 	return pkColumns
+}
+
+func mapSchemaForeignKeyReferences(isch *database.Schema, sch *data.Schema) error {
+	for _, t := range isch.Tables {
+		table, ok := sch.TablesByName[t.Name]
+		if !ok {
+			log.Printf("Unmapped table %v in %v", t.Name, isch.Name)
+			continue
+		}
+
+		distinctForeignColumnsByForeignKeyName := map[string]*data.ForeignColumn{}
+
+		for _, c := range t.Columns {
+			column, ok := table.ColumnsByName[c.Name]
+			if !ok {
+				log.Printf("Unmapped column %v in %v.%v", c.Name, isch.Name, t.Name)
+				continue
+			}
+
+			if column.IsForeignKey {
+				foreignTable, ok := sch.TablesByName[c.ForeignKey.ForeignTableName]
+				if !ok {
+					log.Printf("Unmapped foreign table %v in %v", c.ForeignKey.ForeignTableName, isch.Name)
+					continue
+				}
+				foreignColumn, ok := foreignTable.ColumnsByName[c.ForeignKey.ForeignColumnName]
+				if !ok {
+					log.Printf("Unmapped foreign column %v in %v.%v", c.ForeignKey.ForeignColumnName, isch.Name, c.ForeignKey.ForeignTableName)
+					continue
+				}
+
+				fc := &data.ForeignColumn{
+					Name:                     c.ForeignKey.Name,
+					ColumnName:               column.Name,
+					ForeignColumnName:        column.Name,
+					UniqueConstraintPosition: c.ForeignKey.UniqueConstraintPosition,
+					Column:        column,
+					ForeignColumn: foreignColumn,
+				}
+				column.ForeignColumn = fc
+
+				foreignColumn.IsForeignKeyReference = true
+				foreignColumn.ForeignKeyReferences = append(foreignColumn.ForeignKeyReferences, c.ForeignKey.Name)
+				foreignColumn.ForeignColumnsByForeignKeyReference[c.ForeignKey.Name] = column.ForeignColumn
+
+				if _, ok := table.ForeignColumnsByForeignKey[fc.Name]; !ok {
+					table.ForeignColumnsByForeignKey[fc.Name] = []*data.ForeignColumn{}
+				}
+				table.ForeignColumnsByForeignKey[fc.Name] = append(table.ForeignColumnsByForeignKey[fc.Name], fc)
+
+				if _, ok := distinctForeignColumnsByForeignKeyName[fc.Name]; !ok {
+					distinctForeignColumnsByForeignKeyName[fc.Name] = fc
+				}
+			}
+		}
+
+		for _, fc := range distinctForeignColumnsByForeignKeyName {
+			mapForeignTable(fc)
+		}
+	}
+
+	return nil
+}
+
+func mapForeignTable(fc *data.ForeignColumn) {
+	table := fc.Column.Table
+	fTable := fc.ForeignColumn.Table
+	ft := &data.ForeignTable{
+		Name:             fc.Name,
+		TableName:        table.Name,
+		ForeignTableName: fTable.Name,
+		Table:            table,
+		ForeignTable:     fTable,
+	}
+
+	table.ForeignKeys = append(table.ForeignKeys, fc.Name)
+	if _, ok := table.ForeignTablesByForeignKey[fc.Name]; !ok {
+		table.ForeignTablesByForeignKey[fc.Name] = ft
+	}
+
+	fTable.ForeignKeyReferences = append(fTable.ForeignKeyReferences, fc.Name)
+	fTable.ForeignTablesByForeignKeyReference[fc.Name] = ft
 }

@@ -85,6 +85,36 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		}
 	}
 
+	foreignKeys, err := queryForeignKeys(log, db, schemaNames)
+	if err != nil {
+		return nil, err
+	}
+	for _, fk := range foreignKeys {
+		if !filterTables(fk.SchemaName, fk.TableName) {
+			log.Printf("skipping constraint %q because it is for filtered-out table %v.%v", fk.Name, fk.SchemaName, fk.TableName)
+			continue
+		}
+
+		schema, ok := schemas[fk.SchemaName]
+		if !ok {
+			log.Printf("Should be impossible: constraint %q references unknown schema %q", fk.Name, fk.SchemaName)
+			continue
+		}
+		table, ok := schema[fk.TableName]
+		if !ok {
+			log.Printf("Should be impossible: constraint %q references unknown table %q in schema %q", fk.Name, fk.TableName, fk.SchemaName)
+			continue
+		}
+
+		for _, col := range table {
+			if fk.ColumnName != col.Name {
+				continue
+			}
+			col.IsForeignKey = true
+			col.ForeignKey = fk
+		}
+	}
+
 	res := &database.Info{Schemas: make([]*database.Schema, 0, len(schemas))}
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
@@ -148,4 +178,36 @@ func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.En
 	}
 
 	return col, enum, nil
+}
+
+func queryForeignKeys(log *log.Logger, db *sql.DB, schemas []string) ([]*database.ForeignKey, error) {
+	// TODO: make this work with Gnorm generated types
+	const q = `SELECT lkc.TABLE_SCHEMA, lkc.TABLE_NAME, lkc.COLUMN_NAME, lkc.CONSTRAINT_NAME, lkc.POSITION_IN_UNIQUE_CONSTRAINT, lkc.REFERENCED_TABLE_NAME, lkc.REFERENCED_COLUMN_NAME
+	  FROM information_schema.REFERENTIAL_CONSTRAINTS as rc
+  		LEFT JOIN information_schema.KEY_COLUMN_USAGE as lkc
+          ON lkc.CONSTRAINT_SCHEMA = rc.CONSTRAINT_SCHEMA
+            AND lkc.CONSTRAINT_NAME = rc.CONSTRAINT_NAME
+	  WHERE rc.CONSTRAINT_SCHEMA IN (%s)`
+	spots := make([]string, len(schemas))
+	vals := make([]interface{}, len(schemas))
+	for x := range schemas {
+		spots[x] = "?"
+		vals[x] = schemas[x]
+	}
+	query := fmt.Sprintf(q, strings.Join(spots, ", "))
+	rows, err := db.Query(query, vals...)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error querying keys")
+	}
+	defer rows.Close()
+	var ret []*database.ForeignKey
+
+	for rows.Next() {
+		fk := &database.ForeignKey{}
+		if err := rows.Scan(&fk.SchemaName, &fk.TableName, &fk.ColumnName, &fk.Name, &fk.UniqueConstraintPosition, &fk.ForeignTableName, &fk.ForeignColumnName); err != nil {
+			return nil, errors.WithMessage(err, "error scanning key constraint")
+		}
+		ret = append(ret, fk)
+	}
+	return ret, nil
 }

@@ -48,12 +48,17 @@ type Schema struct {
 
 // Table is the data about a DB Table.
 type Table struct {
-	Name          string             // the converted name of the table
-	DBName        string             // the original name of the table in the DB
-	Schema        *Schema            `yaml:"-" json:"-"` // the schema this table is in
-	Columns       Columns            // Database columns
-	ColumnsByName map[string]*Column `yaml:"-" json:"-"` // dbname to column
-	PrimaryKeys   Columns            // Primary Key Columns
+	Name                               string                      // the converted name of the table
+	DBName                             string                      // the original name of the table in the DB
+	Schema                             *Schema                     `yaml:"-" json:"-"` // the schema this table is in
+	Columns                            Columns                     // Database columns
+	ColumnsByName                      map[string]*Column          `yaml:"-" json:"-"` // dbname to column
+	ForeignColumnsByForeignKey         map[string][]*ForeignColumn // foreign key columns
+	PrimaryKeys                        Columns                     // Primary Key Columns
+	ForeignKeys                        []string                    // database names of this tables foreign keys
+	ForeignKeyReferences               []string                    // database names of foreign keys referencing this table
+	ForeignTablesByForeignKey          map[string]*ForeignTable    // tables referenced by foreign keys
+	ForeignTablesByForeignKeyReference map[string]*ForeignTable    // all tables referencing this table
 }
 
 // Returns true if Table has one or more primary keys
@@ -61,19 +66,54 @@ func (t *Table) HasPrimaryKey() bool {
 	return len(t.PrimaryKeys) > 0
 }
 
+// Returns true if Table has one or more foreign keys
+func (t *Table) HasForeignKeys() bool {
+	return len(t.ForeignColumnsByForeignKey) > 0
+}
+
+// Returns true if one or more foreign keys reference Table
+func (t *Table) HasForeignKeyReferences() bool {
+	return len(t.ForeignKeyReferences) > 0
+}
+
 // Column is the data about a DB column of a table.
 type Column struct {
-	Name         string      // the converted name of the column
-	DBName       string      // the original name of the column in the DB
-	Type         string      // the converted name of the type
-	DBType       string      // the original type of the column in the DB
-	IsArray      bool        // true if the column type is an array
-	Length       int         // non-zero if the type has a length (e.g. varchar[16])
-	UserDefined  bool        // true if the type is user-defined
-	Nullable     bool        // true if the column is not NON NULL
-	HasDefault   bool        // true if the column has a default
-	IsPrimaryKey bool        // true if the column is a primary key
-	Orig         interface{} `yaml:"-" json:"-"` // the raw database column data
+	Table                               *Table                    `yaml:"-" json:"-"` // the table this column is in
+	Name                                string                    // the converted name of the column
+	DBName                              string                    // the original name of the column in the DB
+	Type                                string                    // the converted name of the type
+	DBType                              string                    // the original type of the column in the DB
+	IsArray                             bool                      // true if the column type is an array
+	Length                              int                       // non-zero if the type has a length (e.g. varchar[16])
+	UserDefined                         bool                      // true if the type is user-defined
+	Nullable                            bool                      // true if the column is not NON NULL
+	HasDefault                          bool                      // true if the column has a default
+	IsPrimaryKey                        bool                      // true if the column is a primary key
+	IsForeignKey                        bool                      // true if the column is a foreign key
+	IsForeignKeyReference               bool                      // true if the column is referenced by a foreign key
+	ForeignColumn                       *ForeignColumn            // foreign key database definition
+	ForeignKeyReferences                []string                  // all database names of foreign keys referencing this column
+	ForeignColumnsByForeignKeyReference map[string]*ForeignColumn // all columns referring to this column
+	Orig                                interface{}               `yaml:"-" json:"-"` // the raw database column data
+}
+
+type ForeignTable struct {
+	Name             string
+	TableName        string
+	ForeignTableName string
+	Table            *Table `yaml:"-" json:"-"`
+	ForeignTable     *Table `yaml:"-" json:"-"`
+}
+
+// Foreign Column contains the definition of a database foreign key
+type ForeignColumn struct {
+	Name                     string // the original name of the foreign key constraint in the db
+	ColumnName               string
+	ForeignColumnName        string
+	UniqueConstraintPosition int     // the position of the unique constraint in the db
+	Column                   *Column `yaml:"-" json:"-"` // the foreign key column
+	ForeignColumn            *Column `yaml:"-" json:"-"` // the referenced column
+
 }
 
 // Enum represents a type that has a set of allowed values.

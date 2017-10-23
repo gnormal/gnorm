@@ -42,6 +42,17 @@ type PrimaryKey struct {
 	Name       string // the original name of the key constraint in the db
 }
 
+// Foreign Key contains the definition of a database foreign key
+type ForeignKey struct {
+	SchemaName               string // the original name of the schema in the db
+	TableName                string // the original name of the table in the db
+	ColumnName               string // the original name of the column in the db
+	Name                     string // the original name of the foreign key constraint in the db
+	UniqueConstraintPosition int    // the position of the unique constraint in the db
+	ForeignTableName         string // the original name of the table in the db for the referenced table
+	ForeignColumnName        string // the original name of the column in the db for the referenced column
+}
+
 // Column contains data about a column in a table.
 type Column struct {
 	Name         string      // the original name of the column in the DB
@@ -52,6 +63,8 @@ type Column struct {
 	Nullable     bool        // true if the column is not NON NULL
 	HasDefault   bool        // true if the column has a default
 	IsPrimaryKey bool        // true if the column is a primary key
+	IsForeignKey bool        // true if the column is a foreign key
+	ForeignKey   *ForeignKey // foreign key database definition
 	Orig         interface{} // the raw database column data
 }
 
