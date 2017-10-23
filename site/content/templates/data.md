@@ -148,6 +148,7 @@ Strings is a list of string values with the following methods
 | Method | Arguments | Description |
 | --- | ---- | --- |
 | Sprintf | format (string) | Sprintf calls [fmt.Sprintf](https://golang.org/pkg/fmt/#Sprintf)(format, str) for every string in this value and returns the results as a new Strings value.
+| Except | vals ([]string) | Except returns a Strings value with the given values removed from the list (if they existed).  The check is case sensitive.
 
 ### Table
 

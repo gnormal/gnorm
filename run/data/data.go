@@ -154,6 +154,26 @@ func (s Strings) Sprintf(format string) Strings {
 	return ret
 }
 
+// Except returns a copy of the Strings with the given values removed.
+func (s Strings) Except(excludes []string) Strings {
+	ret := make(Strings, 0, len(s))
+	for x := range s {
+		if !contains(excludes, s[x]) {
+			ret = append(ret, s[x])
+		}
+	}
+	return ret
+}
+
+func contains(list []string, s string) bool {
+	for x := range list {
+		if s == list[x] {
+			return true
+		}
+	}
+	return false
+}
+
 // Columns represents the ordered list of columns in a table.
 type Columns []*Column
 
