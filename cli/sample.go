@@ -24,7 +24,9 @@ package cli
 // 	fmt.Println("`")
 // }
 // gocog]]]
-const sample = `# ConnStr is the connection string for the database.
+const sample = `# ConnStr is the connection string for the database.  Any environment variables
+# in this string will be expanded, so for example dbname=$MY_DDB will do the
+# right thing.
 # MySQL example:
 # ConnStr = "root:admin@tcp/"
 # Postgres example:
