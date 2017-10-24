@@ -14,6 +14,34 @@ import (
 	"text/template"
 )
 
+func TestMakeStringSlice(t *testing.T) {
+	t.Run("ideal input", func(t *testing.T) {
+		expected := []string{"things", "and", "stuff"}
+		exampleInput := []interface{}{"things", "and", "stuff"}
+
+		actual, err := makeStringSlice(exampleInput)
+
+		if err != nil {
+			t.Errorf("error returned from makeStringSlice with what should be valid input")
+		}
+
+		for ix, s := range actual {
+			if expected[ix] != s {
+				t.Errorf("expected %s got %s", s, expected[ix])
+			}
+		}
+	})
+
+	t.Run("invalid input", func(t *testing.T) {
+		exampleInput := []interface{}{1, "two", fmt.Println}
+		_, err := makeStringSlice(exampleInput)
+
+		if err == nil {
+			t.Errorf("error not returned from makeStringSlice with what should be invalid input")
+		}
+	})
+}
+
 func TestPlugin(t *testing.T) {
 	table := []struct {
 		cmd, function string

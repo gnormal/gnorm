@@ -17,49 +17,50 @@ import (
 // FuncMap is the default list of functions available to templates.  If you add
 // methods here, please keep them alphabetical.
 var FuncMap = map[string]interface{}{
-	"camel":        kace.Camel,
-	"compare":      strings.Compare,
-	"contains":     strings.Contains,
-	"containsAny":  strings.ContainsAny,
-	"count":        strings.Count,
-	"dec":          dec,
-	"equalFold":    strings.EqualFold,
-	"fields":       strings.Fields,
-	"hasPrefix":    strings.HasPrefix,
-	"hasSuffix":    strings.HasPrefix,
-	"inc":          inc,
-	"index":        strings.Index,
-	"indexAny":     strings.IndexAny,
-	"join":         strings.Join,
-	"kebab":        kace.Kebab,
-	"kebabUpper":   kace.KebabUpper,
-	"lastIndex":    strings.LastIndex,
-	"lastIndexAny": strings.LastIndexAny,
-	"makeMap":      makeMap,
-	"makeSlice":    makeSlice,
-	"numbers":      numbers,
-	"pascal":       kace.Pascal,
-	"repeat":       strings.Repeat,
-	"replace":      strings.Replace,
-	"sliceString":  sliceString,
-	"snake":        kace.Snake,
-	"snakeUpper":   kace.SnakeUpper,
-	"split":        strings.Split,
-	"splitAfter":   strings.SplitAfter,
-	"splitAfterN":  strings.SplitAfterN,
-	"splitN":       strings.SplitN,
-	"sub":          sub,
-	"sum":          sum,
-	"title":        strings.Title,
-	"toLower":      strings.ToLower,
-	"toTitle":      strings.ToTitle,
-	"toUpper":      strings.ToUpper,
-	"trim":         strings.Trim,
-	"trimLeft":     strings.TrimLeft,
-	"trimPrefix":   strings.TrimPrefix,
-	"trimRight":    strings.TrimRight,
-	"trimSpace":    strings.TrimSpace,
-	"trimSuffix":   strings.TrimSuffix,
+	"camel":           kace.Camel,
+	"compare":         strings.Compare,
+	"contains":        strings.Contains,
+	"containsAny":     strings.ContainsAny,
+	"count":           strings.Count,
+	"dec":             dec,
+	"equalFold":       strings.EqualFold,
+	"fields":          strings.Fields,
+	"hasPrefix":       strings.HasPrefix,
+	"hasSuffix":       strings.HasPrefix,
+	"inc":             inc,
+	"index":           strings.Index,
+	"indexAny":        strings.IndexAny,
+	"join":            strings.Join,
+	"kebab":           kace.Kebab,
+	"kebabUpper":      kace.KebabUpper,
+	"lastIndex":       strings.LastIndex,
+	"lastIndexAny":    strings.LastIndexAny,
+	"makeMap":         makeMap,
+	"makeSlice":       makeSlice,
+	"makeStringSlice": makeStringSlice,
+	"numbers":         numbers,
+	"pascal":          kace.Pascal,
+	"repeat":          strings.Repeat,
+	"replace":         strings.Replace,
+	"sliceString":     sliceString,
+	"snake":           kace.Snake,
+	"snakeUpper":      kace.SnakeUpper,
+	"split":           strings.Split,
+	"splitAfter":      strings.SplitAfter,
+	"splitAfterN":     strings.SplitAfterN,
+	"splitN":          strings.SplitN,
+	"sub":             sub,
+	"sum":             sum,
+	"title":           strings.Title,
+	"toLower":         strings.ToLower,
+	"toTitle":         strings.ToTitle,
+	"toUpper":         strings.ToUpper,
+	"trim":            strings.Trim,
+	"trimLeft":        strings.TrimLeft,
+	"trimPrefix":      strings.TrimPrefix,
+	"trimRight":       strings.TrimRight,
+	"trimSpace":       strings.TrimSpace,
+	"trimSuffix":      strings.TrimSuffix,
 }
 
 // sliceString returns a slice of s from index start to end.
@@ -81,6 +82,18 @@ func makeSlice(vals ...interface{}) interface{} {
 		}
 	}
 	return ss
+}
+
+func makeStringSlice(in []interface{}) ([]string, error) {
+	var out []string
+	for _, i := range in {
+		s, ok := i.(string)
+		if !ok {
+			return nil, fmt.Errorf("expected input to be string, but got %T", i)
+		}
+		out = append(out, s)
+	}
+	return out, nil
 }
 
 // makeMap expects an even number of parameters, in order to have name:value

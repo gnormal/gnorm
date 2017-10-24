@@ -99,6 +99,7 @@ gocog}}} -->
 <tr><td>lastIndexAny</td><td>[https://golang.org/pkg/strings/#LastIndexAny](https://golang.org/pkg/strings/#LastIndexAny)</td></tr>
 <tr><td>makeMap</td><td>[makeMap (see below)](/templates/functions/#makemap)</td></tr>
 <tr><td>makeSlice</td><td>[makeSlice (see below)](/templates/functions/#makeslice)</td></tr>
+<tr><td>makeStringSlice</td><td>[makeStringSlice (see below)](/templates/functions/#makestringslice)</td></tr>
 <tr><td>numbers</td><td>[numbers (see below)](/templates/functions/#numbers)</td></tr>
 <tr><td>pascal</td><td>[https://godoc.org/github.com/codemodus/kace#Pascal](https://godoc.org/github.com/codemodus/kace#Pascal)</td></tr>
 <tr><td>repeat</td><td>[https://golang.org/pkg/strings/#Repeat](https://golang.org/pkg/strings/#Repeat)</td></tr>
@@ -144,6 +145,13 @@ statements, etc.
 makeSlice returns the arguments as a single slice. If all the arguments are
 strings, they are returned as a []string, otherwise they're returned as
 []interface{}.
+## makeStringSlice
+` func makeStringSlice(in []interface{}) ([]string, error) `
+
+makeStringSlice converts a slice of interfaces to a slice of strings. If an
+element of the input slice cannot be asserted to string, it returns an error.
+This is useful for converting arrays of strings returned by plugins, as the plugin
+system unmarshals these as slices of interfaces
 ## numbers
 ` func numbers(start, end int) data.Strings `
 
