@@ -104,8 +104,9 @@ type Config struct {
 	// the .Params value for all templates.
 	Params map[string]interface{}
 
-	// PluginDirs a set of absolute/relative  paths that will be used for
-	// plugin lookup.
+	// PluginDirs a list of paths that will be used for finding plugins.  The
+	// list will be traversed in order, looking for a specifically named plugin.
+	// The first plugin that is found will be the one used.
 	PluginDirs []string
 
 	// OutputDir is the directory relative to the project root (where the

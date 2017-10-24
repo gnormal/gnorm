@@ -39,6 +39,11 @@ DBType = "postgres"
 # Schemas holds the names of schemas to generate code for.
 Schemas = ["public"]
 
+# PluginDirs a list of paths that will be used for finding plugins.  The list
+# will be traversed in order, looking for a specifically named plugin. The first
+# plugin that is found will be the one used.
+PluginDirs = ["plugins"]
+
 # NameConversion defines how the DBName of tables, schemas, and enums are
 # converted into their Name value.  This is a template that may use all the
 # regular functions.  The "." value is the DB name of the item. Thus, to make an
@@ -58,7 +63,7 @@ IncludeTables = []
 # generation. You cannot set ExcludeTables if IncludeTables is set.  By
 # default, tables will be excluded from all schemas.  To specify tables for
 # a specific schema only, use the schema.tablenmae format.
-ExcludeTables = []
+ExcludeTables = ["xyzzx"]
 
 # PostRun is a command with arguments that is run after each file is generated
 # by GNORM.  It is generally used to reformat the file, but it can be for any
@@ -66,8 +71,7 @@ ExcludeTables = []
 # environment variable may be used, which will expand to the name of the file
 # that was just generated.
 # Example to run goimports on each output file:
-# PostRun = ["goimports", "-w", "$GNORMFILE"]
-PostRun = []
+PostRun = ["echo", "$GNORMFILE"]
 
 # OutputDir is the directory relative to the project root (where the
 # gnorm.toml file is located) in which all the generated files are written
@@ -98,7 +102,7 @@ StaticDir = "static"
 # "tables.gotmpl" would render tables.gotmpl template with data from the the
 # "public.users" table to ./public/users/users.go.
 [TablePaths]
-"{{.Schema}}/tables/{{.Table}}.go" = "templates/table.gotmpl"
+"{{.Schema}}/tables/{{.Table}}.go" = "testdata/table.tpl"
 
 # SchemaPaths iis a map of output paths to template paths that tells Gnorm how
 # to render and output its schema info.  Each template will be rendered with
@@ -112,7 +116,7 @@ StaticDir = "static"
 # schemas.gotmpl template with the "public" schema and output to
 # ./schemas/public/public.go
 [SchemaPaths]
-"{{.Schema}}.go" = "templates/schema.gotmpl"
+"{{.Schema}}.go" = "testdata/schema.tpl"
 
 # EnumPaths is a is a map of output paths to template paths that tells Gnorm how
 # to render and output its enum info.  Each template will be rendered with each
@@ -126,7 +130,7 @@ StaticDir = "static"
 # "enums.gotmpl" would render the enums.gotmpl template with data from the
 # "public.book_type" enum to ./gnorm/public/enums/users.go.
 [EnumPaths]
-"{{.Schema}}/enums/{{.Enum}}.go" = "templates/enum.gotmpl"
+"{{.Schema}}/enums/{{.Enum}}.go" = "testdata/enum.tpl"
 
 # TypeMap is a mapping of database type names to replacement type names
 # (generally types from your language for deserialization), specifically for
@@ -136,15 +140,14 @@ StaticDir = "static"
 # of the way tables in TOML work, TypeMap and NullableTypeMap must be at the end
 # of your configuration file.
 # Example for mapping postgres types to Go types:
-# [TypeMap]
-# "timestamp with time zone" = "time.Time"
-# "text" = "string"
-# "boolean" = "bool"
-# "uuid" = "uuid.UUID"
-# "character varying" = "string"
-# "integer" = "int"
-# "numeric" = "float64"
 [TypeMap]
+"timestamp with time zone" = "time.Time"
+"text" = "string"
+"boolean" = "bool"
+"uuid" = "uuid.UUID"
+"character varying" = "string"
+"integer" = "int"
+"numeric" = "float64"
 
 # NullableTypeMap is a mapping of database type names to replacement type names
 # (generally types from your language for deserialization), specifically for
@@ -154,15 +157,14 @@ StaticDir = "static"
 # of the way tables in TOML work, TypeMap and NullableTypeMap must be at the end
 # of your configuration file.
 # Example for mapping postgres types to Go types:
-# [NullableTypeMap]
-# "timestamp with time zone" = "pq.NullTime"
-# "text" = "sql.NullString"
-# "boolean" = "sql.NullBool"
-# "uuid" = "uuid.NullUUID"
-# "character varying" = "sql.NullString"
-# "integer" = "sql.NullInt64"
-# "numeric" = "sql.NullFloat64"
 [NullableTypeMap]
+"timestamp with time zone" = "pq.NullTime"
+"text" = "sql.NullString"
+"boolean" = "sql.NullBool"
+"uuid" = "uuid.NullUUID"
+"character varying" = "sql.NullString"
+"integer" = "sql.NullInt64"
+"numeric" = "sql.NullFloat64"
 
 
 # Params contains any data you may want to pass to your templates.  This is a
@@ -170,5 +172,5 @@ StaticDir = "static"
 # different situations.  The values in this field will be available in the
 # .Params value for all templates.
 [Params]
-# mySpecalValue = "some value"`
+mySpecialValue = "some value"`
 // [[[end]]]

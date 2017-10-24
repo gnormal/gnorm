@@ -33,6 +33,7 @@ aliases = [
 # }
 # gocog]]]
 "/gnorm/cli",
+"/gnorm/cli/testdata",
 "/gnorm/database",
 "/gnorm/database/drivers",
 "/gnorm/database/drivers/mysql",

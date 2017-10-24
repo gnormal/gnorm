@@ -93,11 +93,15 @@ type EnumValue struct {
 }
 
 // ConfigData holds the portion of the config that will be available to
-// templates.  NOte that Params are added to the data at a higher level.
+// templates.  Note that Params are added to the data at a higher level.
 type ConfigData struct {
 	// ConnStr is the connection string for the database.  Environment variables
 	// in $FOO form will be expanded.
 	ConnStr string
+
+	// The type of DB you're connecting to.  Currently the possible values are
+	// "postgres" or "mysql".
+	DBType string
 
 	// Schemas holds the names of schemas to generate code for.
 	Schemas []string
@@ -139,6 +143,26 @@ type ConfigData struct {
 	// TypeMap and NullableTypeMap must be at the end of your configuration
 	// file.
 	NullableTypeMap map[string]string
+
+	// PluginDirs a set of absolute/relative  paths that will be used for
+	// plugin lookup.
+	PluginDirs []string
+
+	// OutputDir is the directory relative to the project root (where the
+	// gnorm.toml file is located) in which all the generated files are written
+	// to.
+	//
+	// This defaults to the current working directory i.e the directory in which
+	// gnorm.toml is found.
+	OutputDir string
+
+	// StaticDir is the directory relative to the project root (where the
+	// gnorm.toml file is located) in which all static files , which are
+	// intended to be copied to the OutputDir are found.
+	//
+	// The directory structure is preserved when copying the files to the
+	// OutputDir
+	StaticDir string
 }
 
 // Strings is a named type of []string to allow us to put methods on it.
