@@ -172,5 +172,5 @@ StaticDir = "static"
 # different situations.  The values in this field will be available in the
 # .Params value for all templates.
 [Params]
-mySpecalValue = "some value"`
+mySpecialValue = "some value"`
 // [[[end]]]

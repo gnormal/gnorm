@@ -78,6 +78,7 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 			StaticDir:       c.StaticDir,
 			PluginDirs:      c.PluginDirs,
 		},
+		Params: c.Params,
 	}
 	d, err := getDriver(strings.ToLower(c.DBType))
 	if err != nil {

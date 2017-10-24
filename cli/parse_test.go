@@ -45,7 +45,7 @@ func TestParseTables(t *testing.T) {
 	}
 }
 
-func TestParseConfigData(t *testing.T) {
+func TestParseConfig(t *testing.T) {
 	var stderr, stdout bytes.Buffer
 	env := environ.Values{
 		Stderr: &stderr,
@@ -56,7 +56,9 @@ func TestParseConfigData(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
+	if diff := cmp.Diff(cfg.Params, map[string]interface{}{"mySpecialValue": "some value"}); diff != "" {
+		t.Errorf("Params not copied correctly:\n%s", diff)
+	}
 	expected := data.ConfigData{
 		ConnStr: "dbname=mydb host=127.0.0.1 sslmode=disable user=admin",
 		DBType:  "postgres",
