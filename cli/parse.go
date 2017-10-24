@@ -66,15 +66,18 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 
 	cfg := &run.Config{
 		ConfigData: data.ConfigData{
+			ConnStr:         c.ConnStr,
+			DBType:          c.DBType,
 			Schemas:         c.Schemas,
 			NullableTypeMap: c.NullableTypeMap,
 			TypeMap:         c.TypeMap,
 			PostRun:         c.PostRun,
 			ExcludeTables:   exclude,
 			IncludeTables:   include,
+			OutputDir:       c.OutputDir,
+			StaticDir:       c.StaticDir,
+			PluginDirs:      c.PluginDirs,
 		},
-		OutputDir: c.OutputDir,
-		StaticDir: c.StaticDir,
 	}
 	d, err := getDriver(strings.ToLower(c.DBType))
 	if err != nil {
