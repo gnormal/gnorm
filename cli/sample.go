@@ -30,7 +30,7 @@ const sample = `# ConnStr is the connection string for the database.  Any enviro
 # MySQL example:
 # ConnStr = "root:admin@tcp/"
 # Postgres example:
-ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
+ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin password=!#$@gnorm1#"
 
 # DBType holds the type of db you're connecting to.  Possible values are
 # "postgres" or "mysql". 

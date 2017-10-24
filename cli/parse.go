@@ -113,9 +113,8 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		return nil, errors.New("no output paths defined, so no output will be generated")
 	}
 
-	cfg.ConnStr = os.Expand(c.ConnStr, func(s string) string {
-		return env.Env[s]
-	})
+	cfg.ConnStr = c.ConnStr
+	
 	return cfg, nil
 }
 
