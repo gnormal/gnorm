@@ -5,7 +5,7 @@ package {{toLower .Name}}
 import "gnorm.org/gnorm/database/drivers/mysql/gnorm"
 
 {{$table := .DBName -}}
-{{$schema := .DBSchema -}}
+{{$schema := .Schema.DBName -}}
 // Row represents a row from '{{ $table }}'.
 type Row struct {
 {{- range .Columns }}
