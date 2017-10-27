@@ -165,6 +165,8 @@ Strings is a list of string values with the following methods
 | ColumnsByName | map[string][Column](#column) | map of column dbname to column
 | PrimaryKeys | [Columns](#columns) | primary key columns
 | HasPrimaryKey | bool | does the column have at least one primary key
+| Indexes | [Indexes](#indexes) | the list of indexes on the table
+| IndexesByName | map[string][Index](#index) | map index dbname to index
 
 ### Tables
 
@@ -175,3 +177,18 @@ have the following properties:
 | --- | ---- | --- |
 | DBNames | [Strings](#strings) | the list of DBNames of all the tables
 | Names | [Strings](#strings) | the list of Names of all the tables
+
+### Index
+
+| Property | Type | Description |
+| --- | --- | --- |
+| DBName | string | the name of the index from the database
+| Columns | [Columns](#columns) | the list of the columns used in the index
+
+### Indexes
+
+Indexes is a list of [Index](#index) values for a table.
+
+| Property | Type | Description
+| --- | --- | --- |
+| DBNames | [Strings](#strings) | the list of DBNames of the Indexes

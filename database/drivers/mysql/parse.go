@@ -12,6 +12,7 @@ import (
 
 	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/columns"
+	"gnorm.org/gnorm/database/drivers/mysql/gnorm/statistics"
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/tables"
 )
 
@@ -87,6 +88,56 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		}
 	}
 
+	indexes := make(map[string]map[string]map[string][]*database.Column)
+
+	statistics, err := statistics.Query(db, statistics.TableSchemaCol.In(schemaNames))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, s := range statistics {
+		if !filterTables(s.TableSchema, s.TableName) {
+			continue
+		}
+
+		schema, ok := schemas[s.TableSchema]
+		if !ok {
+			log.Printf("Should be impossible: index %q references unknown schema %q", s.IndexName, s.TableSchema)
+			continue
+		}
+
+		table, ok := schema[s.TableName]
+		if !ok {
+			log.Printf("Should be impossible: index %q references unknown table %q", s.IndexName, s.TableName)
+			continue
+		}
+
+		var column *database.Column
+		for _, c := range table {
+			if c.Name == s.ColumnName {
+				column = c
+				break
+			}
+		}
+		if column == nil {
+			log.Printf("Should be impossible: index %q references unknown column %q", s.IndexName, s.ColumnName)
+			continue
+		}
+
+		schemaIndex, ok := indexes[s.TableSchema]
+		if !ok {
+			schemaIndex = make(map[string]map[string][]*database.Column)
+			indexes[s.TableSchema] = schemaIndex
+		}
+
+		tableIndex, ok := schemaIndex[s.TableName]
+		if !ok {
+			tableIndex = make(map[string][]*database.Column)
+			schemaIndex[s.TableName] = tableIndex
+		}
+		tableIndex[s.IndexName] = append(tableIndex[s.IndexName], column)
+	}
+
 	res := &database.Info{Schemas: make([]*database.Schema, 0, len(schemas))}
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
@@ -94,9 +145,21 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			Name:  schema,
 			Enums: enums[schema],
 		}
+
+		dbtables := make(map[string]*database.Table, len(tables))
 		for tname, columns := range tables {
-			s.Tables = append(s.Tables, &database.Table{Name: tname, Columns: columns})
+			dbtables[tname] = &database.Table{Name: tname, Columns: columns}
 		}
+		for tname, index := range indexes[schema] {
+			dbtables[tname].Indexes = make([]*database.Index, 0)
+			for iname, columns := range index {
+				dbtables[tname].Indexes = append(dbtables[tname].Indexes, &database.Index{DBName: iname, Columns: columns})
+			}
+		}
+		for _, table := range dbtables {
+			s.Tables = append(s.Tables, table)
+		}
+
 		res.Schemas = append(res.Schemas, s)
 	}
 

@@ -62,6 +62,7 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 				DBName:        t.Name,
 				Schema:        sch,
 				ColumnsByName: make(map[string]*data.Column, len(t.Columns)),
+				IndexesByName: make(map[string]*data.Index, len(t.Indexes)),
 			}
 			sch.Tables = append(sch.Tables, table)
 			sch.TablesByName[table.DBName] = table
@@ -101,6 +102,18 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 				}
 			}
 			table.PrimaryKeys = filterPrimaryKeyColumns(table.Columns)
+
+			for _, i := range t.Indexes {
+				index := &data.Index{
+					DBName: i.DBName,
+				}
+				for _, c := range i.Columns {
+					index.Columns = append(index.Columns, table.ColumnsByName[c.Name])
+				}
+
+				table.Indexes = append(table.Indexes, index)
+				table.IndexesByName[index.DBName] = index
+			}
 		}
 	}
 	return db, nil

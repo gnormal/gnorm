@@ -54,9 +54,11 @@ type Table struct {
 	Columns       Columns            // Database columns
 	ColumnsByName map[string]*Column `yaml:"-" json:"-"` // dbname to column
 	PrimaryKeys   Columns            // Primary Key Columns
+	Indexes       Indexes            // Table indexes
+	IndexesByName map[string]*Index  `yaml:"-" json:"-"` // indexname to index
 }
 
-// Returns true if Table has one or more primary keys
+// HasPrimaryKey returns true if Table has one or more primary keys.
 func (t *Table) HasPrimaryKey() bool {
 	return len(t.PrimaryKeys) > 0
 }
@@ -74,6 +76,12 @@ type Column struct {
 	HasDefault   bool        // true if the column has a default
 	IsPrimaryKey bool        // true if the column is a primary key
 	Orig         interface{} `yaml:"-" json:"-"` // the raw database column data
+}
+
+// Index is the data about a table index.
+type Index struct {
+	DBName  string  // dbname of the index
+	Columns Columns // columns used in the index
 }
 
 // Enum represents a type that has a set of allowed values.
@@ -257,6 +265,18 @@ func (c Enums) DBNames() Strings {
 	names := make(Strings, len(c))
 	for x := range c {
 		names[x] = c[x].DBName
+	}
+	return names
+}
+
+// Indexes represents all the indexes on a table.
+type Indexes []*Index
+
+// DBNames returns the list of index DBNames in this table.
+func (i Indexes) DBNames() Strings {
+	names := make(Strings, len(i))
+	for x := range i {
+		names[x] = i[x].DBName
 	}
 	return names
 }

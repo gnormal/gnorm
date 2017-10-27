@@ -68,6 +68,14 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 					Type:     "*string",
 					Nullable: true,
 				}},
+				Indexes: []*database.Index{{
+					DBName: "col1_pkey",
+					Columns: []*database.Column{{
+						Name:         "col1",
+						Type:         "int",
+						IsPrimaryKey: true,
+					}},
+				}},
 			}},
 			Enums: []*database.Enum{{
 				Name: "enum",
@@ -137,6 +145,19 @@ const expectYaml = `schemas:
       nullable: false
       hasdefault: false
       isprimarykey: true
+    indexes:
+    - dbname: col1_pkey
+      columns:
+      - name: abc col1
+        dbname: col1
+        type: INTEGER
+        dbtype: int
+        isarray: false
+        length: 0
+        userdefined: false
+        nullable: false
+        hasdefault: false
+        isprimarykey: true
   enums:
   - name: abc enum
     dbname: enum
@@ -165,6 +186,12 @@ Table: abc table(schema.table)
 | abc col3 | col3   |          | string  | false   | false        |      0 | false       | false    | false      |
 | abc col4 | col4   |          | *string | false   | false        |      0 | false       | true     | false      |
 +----------+--------+----------+---------+---------+--------------+--------+-------------+----------+------------+
+Indexes:
++-----------+----------+
+|  DBName   | Columns  |
++-----------+----------+
+| col1_pkey | abc col1 |
++-----------+----------+
 
 `
 
@@ -270,6 +297,25 @@ var expectJSON = `
               "Nullable": false,
               "HasDefault": false,
               "IsPrimaryKey": true
+            }
+          ],
+          "Indexes": [
+            {
+              "DBName": "col1_pkey",
+              "Columns": [
+                {
+                  "Name": "abc col1",
+                  "DBName": "col1",
+                  "Type": "INTEGER",
+                  "DBType": "int",
+                  "IsArray": false,
+                  "Length": 0,
+                  "UserDefined": false,
+                  "Nullable": false,
+                  "HasDefault": false,
+                  "IsPrimaryKey": true
+                }
+              ]
             }
           ]
         }

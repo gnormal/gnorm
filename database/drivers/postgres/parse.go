@@ -125,6 +125,62 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		return nil, err
 	}
 	log.Printf("found %v enums for all schemas", len(enums))
+
+	indexResults, err := queryIndexes(log, db, schemaNames)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("found %d indexes for all tables in all schemas", len(indexResults))
+
+	indexes := make(map[string]map[string]map[string][]*database.Column)
+outer:
+	for _, r := range indexResults {
+		if !filterTables(r.SchemaName, r.TableName) {
+			continue
+		}
+
+		schema, ok := schemas[r.SchemaName]
+		if !ok {
+			log.Printf("Should be impossible: index %q references unknown schema %q", r.IndexName, r.SchemaName)
+			continue
+		}
+
+		table, ok := schema[r.TableName]
+		if !ok {
+			log.Printf("Should be impossible: index %q references unknown table %q", r.IndexName, r.TableName)
+			continue
+		}
+
+		columnMap := make(map[string]*database.Column, len(table))
+		for _, c := range table {
+			columnMap[c.Name] = c
+		}
+
+		columns := make([]*database.Column, 0)
+		for _, c := range r.Columns {
+			column, ok := columnMap[c]
+			if !ok {
+				log.Printf("Should be impossible: index %q references unknown column %q", r.IndexName, c)
+				continue outer
+			}
+			columns = append(columns, column)
+		}
+
+		schemaIndex, ok := indexes[r.SchemaName]
+		if !ok {
+			schemaIndex = make(map[string]map[string][]*database.Column)
+			indexes[r.SchemaName] = schemaIndex
+		}
+
+		tableIndex, ok := schemaIndex[r.TableName]
+		if !ok {
+			tableIndex = make(map[string][]*database.Column)
+			schemaIndex[r.TableName] = tableIndex
+		}
+
+		tableIndex[r.IndexName] = append(tableIndex[r.IndexName], columns...)
+	}
+
 	res := &database.Info{Schemas: make([]*database.Schema, 0, len(schemas))}
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
@@ -132,9 +188,22 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			Name:  schema,
 			Enums: enums[schema],
 		}
+
+		dbtables := make(map[string]*database.Table, len(tables))
 		for tname, columns := range tables {
-			s.Tables = append(s.Tables, &database.Table{Name: tname, Columns: columns})
+			dbtables[tname] = &database.Table{Name: tname, Columns: columns}
 		}
+		for tname, index := range indexes[schema] {
+			dbtables[tname].Indexes = make([]*database.Index, 0)
+			for iname, columns := range index {
+				log.Printf("schema: %s; table: %s; index: %s; columns: %v", schema, tname, iname, columns)
+				dbtables[tname].Indexes = append(dbtables[tname].Indexes, &database.Index{DBName: iname, Columns: columns})
+			}
+		}
+		for _, table := range dbtables {
+			s.Tables = append(s.Tables, table)
+		}
+
 		res.Schemas = append(res.Schemas, s)
 	}
 
@@ -202,14 +271,78 @@ func queryPrimaryKeys(log *log.Logger, db *sql.DB, schemas []string) ([]*databas
 	return ret, nil
 }
 
+type indexResult struct {
+	SchemaName string
+	TableName  string
+	IndexName  string
+	Columns    []string
+}
+
+func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexResult, error) {
+	const q = `
+	SELECT
+		n.nspname as schema,
+		i.indrelid::regclass as table,
+		c.relname as name,
+		array_to_string(ARRAY(
+			SELECT pg_get_indexdef(i.indexrelid, k + 1, true)
+			FROM generate_subscripts(i.indkey, 1) as k
+			ORDER BY k
+		), ',') as column_names
+	FROM pg_index as i
+	JOIN pg_class as c
+		ON c.oid = i.indexrelid
+	JOIN pg_namespace as n
+		ON n.oid = c.relnamespace
+	WHERE n.nspname IN (%s)`
+
+	spots := make([]string, len(schemaNames))
+	vals := make([]interface{}, len(schemaNames))
+	for i := range schemaNames {
+		spots[i] = fmt.Sprintf("$%v", i+1)
+		vals[i] = schemaNames[i]
+	}
+
+	query := fmt.Sprintf(q, strings.Join(spots, ", "))
+	rows, err := db.Query(query, vals...)
+	defer rows.Close()
+	if err != nil {
+		return nil, errors.WithMessage(err, "error querying indexes")
+	}
+
+	var results []indexResult
+	for rows.Next() {
+		var r indexResult
+		var cs string
+		if err := rows.Scan(&r.SchemaName, &r.TableName, &r.IndexName, &cs); err != nil {
+			return nil, errors.WithMessage(err, "error scanning index")
+		}
+		r.Columns = strings.Split(cs, ",") // array converted to string in query
+
+		// postgres prepends schema onto table name
+		r.TableName = r.TableName[strings.LastIndex(r.TableName, ".")+1:]
+
+		results = append(results, r)
+	}
+
+	return results, nil
+}
+
 func queryEnums(log *log.Logger, db *sql.DB, schemas []string) (map[string][]*database.Enum, error) {
 	// TODO: make this work with Gnorm generated types
 	const q = `
+<<<<<<< HEAD
 	SELECT      n.nspname, t.typname as type 
 	FROM        pg_type t 
 	LEFT JOIN   pg_catalog.pg_namespace n ON n.oid = t.typnamespace 
 	JOIN        pg_enum e ON t.oid = e.enumtypid
 	WHERE       (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid)) 
+=======
+	SELECT      n.nspname, t.typname as type
+	FROM        pg_type t
+	LEFT JOIN   pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+	WHERE       (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid))
+>>>>>>> support postgres index
 	AND     NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
 	AND     n.nspname IN (%s)`
 	spots := make([]string, len(schemas))

@@ -11,7 +11,7 @@ Schemas = ["information_schema"]
 
 NameConversion = "{{. | pascal}}"
 
-IncludeTables = ["TABLES", "COLUMNS"]
+IncludeTables = ["TABLES", "COLUMNS", "STATISTICS"]
 
 PostRun = ["goimports", "-w", "$GNORMFILE"]
 

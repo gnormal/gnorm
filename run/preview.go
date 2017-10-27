@@ -28,7 +28,9 @@ Enum: {{.Name}}({{$schema}}.{{.DBName}})
 {{end -}}
 {{range .Tables}}
 Table: {{.Name}}({{$schema}}.{{.DBName}})
-{{makeTable .Columns "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.IsPrimaryKey}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}" "Name" "DBName" "Type" "DBType" "IsArray" "IsPrimaryKey" "Length" "UserDefined" "Nullable" "HasDefault"}}
+{{makeTable .Columns "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.IsPrimaryKey}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}" "Name" "DBName" "Type" "DBType" "IsArray" "IsPrimaryKey" "Length" "UserDefined" "Nullable" "HasDefault" -}}
+Indexes:
+{{makeTable .Indexes "{{.DBName}}|{{join .Columns.Names \", \"}}" "DBName" "Columns"}}
 {{end -}}
 {{end -}}
 `))
@@ -100,7 +102,9 @@ func Preview(env environ.Values, cfg *Config, format PreviewFormat) error {
 //    +----------+-----+
 //    ```
 func makeTable(data interface{}, templateStr string, columnTitles ...string) (string, error) {
-	t, err := template.New("table").Parse("{{range .}}" + templateStr + "\n{{end}}")
+	t, err := template.New("table").
+		Funcs(map[string]interface{}{"join": strings.Join}).
+		Parse("{{range .}}" + templateStr + "\n{{end}}")
 	if err != nil {
 		return "", errors.WithMessage(err, "failed to parse table template")
 	}
