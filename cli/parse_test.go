@@ -1,9 +1,15 @@
 package cli
 
 import (
+	"bytes"
+	"log"
 	"testing"
 
+	"gnorm.org/gnorm/environ"
+	"gnorm.org/gnorm/run/data"
+
 	"github.com/BurntSushi/toml"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestParseTables(t *testing.T) {
@@ -37,6 +43,59 @@ func TestParseTables(t *testing.T) {
 	if !contains(list2, "table") {
 		t.Error(`"schema" table list should have included schema-unspecified "table", but did not`)
 	}
+}
+
+func TestParseConfig(t *testing.T) {
+	var stderr, stdout bytes.Buffer
+	env := environ.Values{
+		Stderr: &stderr,
+		Stdout: &stdout,
+		Log:    log.New(&stderr, "", 0),
+	}
+	cfg, err := parseFile(env, "gnorm.toml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(cfg.Params, map[string]interface{}{"mySpecialValue": "some value"}); diff != "" {
+		t.Errorf("Params not copied correctly:\n%s", diff)
+	}
+	expected := data.ConfigData{
+		ConnStr: "dbname=mydb host=127.0.0.1 sslmode=disable user=admin",
+		DBType:  "postgres",
+		Schemas: []string{"public"},
+		PostRun: []string{"echo", "$GNORMFILE"},
+		IncludeTables: map[string][]string{
+			"public": nil,
+		},
+		ExcludeTables: map[string][]string{
+			"public": []string{"xyzzx"},
+		},
+		TypeMap: map[string]string{
+			"timestamp with time zone": "time.Time",
+			"text":              "string",
+			"boolean":           "bool",
+			"uuid":              "uuid.UUID",
+			"character varying": "string",
+			"integer":           "int",
+			"numeric":           "float64",
+		},
+		NullableTypeMap: map[string]string{
+			"timestamp with time zone": "pq.NullTime",
+			"text":              "sql.NullString",
+			"boolean":           "sql.NullBool",
+			"uuid":              "uuid.NullUUID",
+			"character varying": "sql.NullString",
+			"integer":           "sql.NullInt64",
+			"numeric":           "sql.NullFloat64",
+		},
+		PluginDirs: []string{"plugins"},
+		OutputDir:  "gnorm",
+		StaticDir:  "static",
+	}
+	if diff := cmp.Diff(cfg.ConfigData, expected); diff != "" {
+		t.Fatalf("Actual differs from expected:\n%s", diff)
+	}
+
 }
 
 func TestParseGnormToml(t *testing.T) {

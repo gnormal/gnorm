@@ -15,6 +15,8 @@ import (
 	"gnorm.org/gnorm/database/drivers/postgres/gnorm/tables"
 )
 
+//go:generate gnorm gen
+
 // PG implements drivers.Driver interface for interacting with postgresql
 // database.
 type PG struct{}
@@ -275,6 +277,7 @@ func queryEnums(log *log.Logger, db *sql.DB, schemas []string) (map[string][]*da
 	SELECT      n.nspname, t.typname as type 
 	FROM        pg_type t 
 	LEFT JOIN   pg_catalog.pg_namespace n ON n.oid = t.typnamespace 
+	JOIN        pg_enum e ON t.oid = e.enumtypid
 	WHERE       (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid)) 
 	AND     NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
 	AND     n.nspname IN (%s)`

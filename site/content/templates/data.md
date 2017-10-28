@@ -95,12 +95,16 @@ have the following properties:
 | Property | Type | Description |
 | --- | ---- | --- |
 | ConnStr | string | the connection string for the database
+| DBType | string | the type of db
 | Schemas | list of string | the schema names to generate files for
 | IncludeTables | map[string] list of string | whitelist map of schema names to table names in that schema to generate files for.
 | ExcludeTables | map[string] list of string | blacklist map of schema names to table names in that schema to not generate files for.
 | PostRun | list of string | the command to run on files after generation
 | TypeMap | map[string]string | map of DBNames to converted names for column types
 | NullableTypeMap | map[string]string | map of DBNames to converted names for column types (used when Nullable=true)
+| PluginDirs | list of string | ordered list of directories to look in for plugins
+| OutputDir | string | the directory where gnorm should output all its data 
+| StaticDir | string | the directory from which to statically copy files to outputdir
 
 ### Enum
 
@@ -184,6 +188,7 @@ Strings is a list of string values with the following methods
 | Method | Arguments | Description |
 | --- | ---- | --- |
 | Sprintf | format (string) | Sprintf calls [fmt.Sprintf](https://golang.org/pkg/fmt/#Sprintf)(format, str) for every string in this value and returns the results as a new Strings value.
+| Except | vals ([]string) | Except returns a Strings value with the given values removed from the list (if they existed).  The check is case sensitive.
 
 ### Table
 
