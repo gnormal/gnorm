@@ -56,13 +56,13 @@ Data representing the entire DB schema(s).
 | Schemas | list of [Schemas](#schema) | all the schemas parsed by gnorm
 | SchemasByName | map[string][Schema](#schema) | map of schema DBName to Schema
 
-
 ### Column
 
 Column is the data about a DB column of a table.
 
 | Property | Type | Description |
 | --- | ---- | --- |
+| Table | [Table](#table) | the table this column is in
 | Name  | string | the converted name of the column
 | DBName | string | the original name of the column in the DB
 | Type |string | the converted name of the type
@@ -73,9 +73,12 @@ Column is the data about a DB column of a table.
 | Nullable | boolean | true if the column is not NON NULL
 | HasDefault | boolean | true if the column has a default
 | IsPrimaryKey | boolean | true if the column is a primary key
+| IsFK | boolean | true if the column is a foreign key
+| HasFKRef | boolean | true if the column is referenced by a foreign key
+| FKColumn | [ForeignKeyColumn](#foreignKeyColumn) | foreign key column definition
+| FKColumnRefs | [ForeignKeyColumns](#foreignKeyColumns) | all foreign key columns referencing this column
+| FKColumnRefsByName | map[string][ForeignKeyColumn](#foreignKeyColumn) | all foreign key columns referencing this column by foreign key name
 | Orig | db-specific | the raw database column data (different per db type)
-
-
 
 ### Columns
 
@@ -129,13 +132,46 @@ have the following properties:
 |DBName | string | the original label of the enum in the DB
 |Value |  int | the value for this enum value (order)
 
+### ForeignKey
+
+| Property | Type | Description |
+| --- | ---- | ---|
+| DBName | string | the original name of the foreign key constraint in the db
+| TableDBName | string | the original name of the table in the db
+| RefTableDBName | string | the original name of the foreign table in the db
+| Table | [Table](#table) | the foreign key table
+| RefTable | [Table](#table) | the foreign key foreign table
+| FKColumns | [ForeignKeyColumns](#foreignKeyColumns) | all foreign key columns belonging to the foreign key
+
+### ForeignKeys
+
+| Property | Type | Description |
+| --- | ---- | ---|
+| DBNames | [Strings](#strings) | the list of DBNames of all the foreign keys
+
+### ForeignKeyColumn
+
+| Property | Type | Description |
+| --- | ---- | ---|
+| DBName | string | the original name of the foreign key constraint in the db
+| ColumnDBName | string | the original name of the column in the db
+| RefColumnDBName | string | the original name of the foreign column in the db
+| Column | [Column](#column) | the foreign key column
+| RefColumn | [Column](#column) | the referenced column
+
+### ForeignKeyColumns
+
+| Property | Type | Description |
+| --- | ---- | ---|
+| DBNames | [Strings](#strings) | the list of DBNames of all the foreign keys
+
 ### Schema
 
 A schema represents a namespace of tables and enums in a database.
 
 | Property | Type | Description |
 | --- | ---- | --- |
-| Name | string the converted name of the schema
+| Name | string | the converted name of the schema
 | DBName | string | the original name of the schema in the DB 
 | Tables | [Tables](#tables) | the list of [Table](#table) values in this schema 
 | Enums | [Enums](#enums) | the list of [Enum](#enum) values in this schema
@@ -160,6 +196,10 @@ Strings is a list of string values with the following methods
 | ColumnsByName | map[string][Column](#column) | map of column dbname to column
 | PrimaryKeys | [Columns](#columns) | primary key columns
 | HasPrimaryKey | bool | does the column have at least one primary key
+| ForeignKeys | [ForeignKeys](#foreignKeys) | foreign keys
+| ForeignKeyRefs | [ForeignKeys](#foreignKeys) | foreign keys referencing this table
+| FKByName | map[string][ForeignKey](#foreignKey) | foreign keys by foreign key name
+| FKRefsByName | map[string][ForeignKey](#foreignKey) | foreign keys referencing this table by name
 
 ### Tables
 

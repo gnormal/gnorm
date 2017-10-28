@@ -48,17 +48,16 @@ type Schema struct {
 
 // Table is the data about a DB Table.
 type Table struct {
-	Name                               string                      // the converted name of the table
-	DBName                             string                      // the original name of the table in the DB
-	Schema                             *Schema                     `yaml:"-" json:"-"` // the schema this table is in
-	Columns                            Columns                     // Database columns
-	ColumnsByName                      map[string]*Column          `yaml:"-" json:"-"` // dbname to column
-	ForeignColumnsByForeignKey         map[string][]*ForeignColumn // foreign key columns
-	PrimaryKeys                        Columns                     // Primary Key Columns
-	ForeignKeys                        []string                    // database names of this tables foreign keys
-	ForeignKeyReferences               []string                    // database names of foreign keys referencing this table
-	ForeignTablesByForeignKey          map[string]*ForeignTable    // tables referenced by foreign keys
-	ForeignTablesByForeignKeyReference map[string]*ForeignTable    // all tables referencing this table
+	Name           string                 // the converted name of the table
+	DBName         string                 // the original name of the table in the DB
+	Schema         *Schema                `yaml:"-" json:"-"` // the schema this table is in
+	Columns        Columns                // Database columns
+	ColumnsByName  map[string]*Column     `yaml:"-" json:"-"` // dbname to column
+	PrimaryKeys    Columns                // Primary Key Columns
+	ForeignKeys    ForeignKeys            // Foreign Keys
+	ForeignKeyRefs ForeignKeys            // Foreign Keys referencing this table
+	FKByName       map[string]*ForeignKey `yaml:"-" json:"-"` // Foreign Keys by foreign key name
+	FKRefsByName   map[string]*ForeignKey `yaml:"-" json:"-"` // Foreign Keys referencing this table by foreign key name
 }
 
 // Returns true if Table has one or more primary keys
@@ -68,52 +67,52 @@ func (t *Table) HasPrimaryKey() bool {
 
 // Returns true if Table has one or more foreign keys
 func (t *Table) HasForeignKeys() bool {
-	return len(t.ForeignColumnsByForeignKey) > 0
+	return len(t.ForeignKeys) > 0
 }
 
 // Returns true if one or more foreign keys reference Table
-func (t *Table) HasForeignKeyReferences() bool {
-	return len(t.ForeignKeyReferences) > 0
+func (t *Table) HasForeignKeyRefs() bool {
+	return len(t.ForeignKeyRefs) > 0
 }
 
 // Column is the data about a DB column of a table.
 type Column struct {
-	Table                               *Table                    `yaml:"-" json:"-"` // the table this column is in
-	Name                                string                    // the converted name of the column
-	DBName                              string                    // the original name of the column in the DB
-	Type                                string                    // the converted name of the type
-	DBType                              string                    // the original type of the column in the DB
-	IsArray                             bool                      // true if the column type is an array
-	Length                              int                       // non-zero if the type has a length (e.g. varchar[16])
-	UserDefined                         bool                      // true if the type is user-defined
-	Nullable                            bool                      // true if the column is not NON NULL
-	HasDefault                          bool                      // true if the column has a default
-	IsPrimaryKey                        bool                      // true if the column is a primary key
-	IsForeignKey                        bool                      // true if the column is a foreign key
-	IsForeignKeyReference               bool                      // true if the column is referenced by a foreign key
-	ForeignColumn                       *ForeignColumn            // foreign key database definition
-	ForeignKeyReferences                []string                  // all database names of foreign keys referencing this column
-	ForeignColumnsByForeignKeyReference map[string]*ForeignColumn // all columns referring to this column
-	Orig                                interface{}               `yaml:"-" json:"-"` // the raw database column data
+	Table              *Table                       `yaml:"-" json:"-"` // the table this column is in
+	Name               string                       // the converted name of the column
+	DBName             string                       // the original name of the column in the DB
+	Type               string                       // the converted name of the type
+	DBType             string                       // the original type of the column in the DB
+	IsArray            bool                         // true if the column type is an array
+	Length             int                          // non-zero if the type has a length (e.g. varchar[16])
+	UserDefined        bool                         // true if the type is user-defined
+	Nullable           bool                         // true if the column is not NON NULL
+	HasDefault         bool                         // true if the column has a default
+	IsPrimaryKey       bool                         // true if the column is a primary key
+	IsFK               bool                         // true if the column is a foreign key
+	HasFKRef           bool                         // true if the column is referenced by a foreign key
+	FKColumn           *ForeignKeyColumn            // foreign key column definition
+	FKColumnRefs       ForeignKeyColumns            // all foreign key columns referencing this column
+	FKColumnRefsByName map[string]*ForeignKeyColumn `yaml:"-" json:"-"` // all foreign key columns referencing this column by foreign key name
+	Orig               interface{}                  `yaml:"-" json:"-"` // the raw database column data
 }
 
-type ForeignTable struct {
-	Name             string
-	TableName        string
-	ForeignTableName string
-	Table            *Table `yaml:"-" json:"-"`
-	ForeignTable     *Table `yaml:"-" json:"-"`
+// Foreign Key contains the
+type ForeignKey struct {
+	DBName         string            // the original name of the foreign key constraint in the db
+	TableDBName    string            // the original name of the table in the db
+	RefTableDBName string            // the original name of the foreign table in the db
+	Table          *Table            `yaml:"-" json:"-"` // the foreign key table
+	RefTable       *Table            `yaml:"-" json:"-"` // the foreign key foreign table
+	FKColumns      ForeignKeyColumns // all foreign key columns belonging to the foreign key
 }
 
-// Foreign Column contains the definition of a database foreign key
-type ForeignColumn struct {
-	Name                     string // the original name of the foreign key constraint in the db
-	ColumnName               string
-	ForeignColumnName        string
-	UniqueConstraintPosition int     // the position of the unique constraint in the db
-	Column                   *Column `yaml:"-" json:"-"` // the foreign key column
-	ForeignColumn            *Column `yaml:"-" json:"-"` // the referenced column
-
+// Foreign Column contains the definition of a database foreign key at the kcolumn level
+type ForeignKeyColumn struct {
+	DBName          string  // the original name of the foreign key constraint in the db
+	ColumnDBName    string  // the original name of the column in the db
+	RefColumnDBName string  // the original name of the foreign column in the db
+	Column          *Column `yaml:"-" json:"-"` // the foreign key column
+	RefColumn       *Column `yaml:"-" json:"-"` // the referenced column
 }
 
 // Enum represents a type that has a set of allowed values.
@@ -192,6 +191,29 @@ func (s Strings) Sprintf(format string) Strings {
 		ret[x] = fmt.Sprintf(format, s[x])
 	}
 	return ret
+}
+
+// Foreign keys represents a list of ForeignKey
+type ForeignKeys []*ForeignKey
+
+func (fk ForeignKeys) DBNames() Strings {
+	names := make(Strings, len(fk))
+	for x := range fk {
+		names[x] = fk[x].DBName
+	}
+	return names
+}
+
+// ForeignKeyColumns represents a list of ForeignKeyColumn
+type ForeignKeyColumns []*ForeignKeyColumn
+
+// DBNames returns the list of db foreign key names
+func (fkc ForeignKeyColumns) DBNames() Strings {
+	names := make(Strings, len(fkc))
+	for x := range fkc {
+		names[x] = fkc[x].DBName
+	}
+	return names
 }
 
 // Columns represents the ordered list of columns in a table.

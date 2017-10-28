@@ -197,7 +197,7 @@ func queryForeignKeys(log *log.Logger, db *sql.DB, schemas []string) ([]*databas
 	query := fmt.Sprintf(q, strings.Join(spots, ", "))
 	rows, err := db.Query(query, vals...)
 	if err != nil {
-		return nil, errors.WithMessage(err, "error querying keys")
+		return nil, errors.WithMessage(err, "error querying foreign keys")
 	}
 	defer rows.Close()
 	var ret []*database.ForeignKey
@@ -205,9 +205,13 @@ func queryForeignKeys(log *log.Logger, db *sql.DB, schemas []string) ([]*databas
 	for rows.Next() {
 		fk := &database.ForeignKey{}
 		if err := rows.Scan(&fk.SchemaName, &fk.TableName, &fk.ColumnName, &fk.Name, &fk.UniqueConstraintPosition, &fk.ForeignTableName, &fk.ForeignColumnName); err != nil {
-			return nil, errors.WithMessage(err, "error scanning key constraint")
+			return nil, errors.WithMessage(err, "error scanning foreign key constraint")
 		}
 		ret = append(ret, fk)
 	}
+	if rows.Err() != nil {
+		return nil, errors.WithMessage(rows.Err(), "error reading foreign keys")
+	}
+
 	return ret, nil
 }
