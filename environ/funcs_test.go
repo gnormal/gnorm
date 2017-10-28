@@ -14,34 +14,6 @@ import (
 	"text/template"
 )
 
-func TestMakeStringSlice(t *testing.T) {
-	t.Run("ideal input", func(t *testing.T) {
-		expected := []string{"things", "and", "stuff"}
-		exampleInput := []interface{}{"things", "and", "stuff"}
-
-		actual, err := makeStringSlice(exampleInput)
-
-		if err != nil {
-			t.Errorf("error returned from makeStringSlice with what should be valid input")
-		}
-
-		for ix, s := range actual {
-			if expected[ix] != s {
-				t.Errorf("expected %s got %s", s, expected[ix])
-			}
-		}
-	})
-
-	t.Run("invalid input", func(t *testing.T) {
-		exampleInput := []interface{}{1, "two", fmt.Println}
-		_, err := makeStringSlice(exampleInput)
-
-		if err == nil {
-			t.Errorf("error not returned from makeStringSlice with what should be invalid input")
-		}
-	})
-}
-
 func TestPlugin(t *testing.T) {
 	table := []struct {
 		cmd, function string
@@ -109,6 +81,34 @@ func helperCMD(args ...string) *exec.Cmd {
 	cmd := exec.Command(os.Args[0], args...)
 	cmd.Env = []string{"GO_TEST_ENV=command"}
 	return cmd
+}
+
+func TestConvert(t *testing.T) {
+	t.Run("ordinary use case", func(t *testing.T) {
+		expected := []interface{}{"things", "and", "stuff"}
+
+		actual, ok := convert(expected).([]string)
+		if !ok {
+			t.Error("convert returned an interface that couldn't be converted to []string")
+		}
+
+		for i, s := range expected {
+			if actual[i] != s {
+				t.Errorf("expected %s got %s", s, actual[i])
+			}
+		}
+	})
+
+	t.Run("early exit", func(t *testing.T) {
+		expected := []interface{}{"things", nil, "stuff"}
+		actual := convert(expected).([]interface{})
+
+		for i, x := range expected {
+			if actual[i] != x {
+				t.Errorf("expected %v got %v", x, actual[i])
+			}
+		}
+	})
 }
 
 func TestMain(t *testing.M) {

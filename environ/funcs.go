@@ -17,50 +17,49 @@ import (
 // FuncMap is the default list of functions available to templates.  If you add
 // methods here, please keep them alphabetical.
 var FuncMap = map[string]interface{}{
-	"camel":           kace.Camel,
-	"compare":         strings.Compare,
-	"contains":        strings.Contains,
-	"containsAny":     strings.ContainsAny,
-	"count":           strings.Count,
-	"dec":             dec,
-	"equalFold":       strings.EqualFold,
-	"fields":          strings.Fields,
-	"hasPrefix":       strings.HasPrefix,
-	"hasSuffix":       strings.HasPrefix,
-	"inc":             inc,
-	"index":           strings.Index,
-	"indexAny":        strings.IndexAny,
-	"join":            strings.Join,
-	"kebab":           kace.Kebab,
-	"kebabUpper":      kace.KebabUpper,
-	"lastIndex":       strings.LastIndex,
-	"lastIndexAny":    strings.LastIndexAny,
-	"makeMap":         makeMap,
-	"makeSlice":       makeSlice,
-	"makeStringSlice": makeStringSlice,
-	"numbers":         numbers,
-	"pascal":          kace.Pascal,
-	"repeat":          strings.Repeat,
-	"replace":         strings.Replace,
-	"sliceString":     sliceString,
-	"snake":           kace.Snake,
-	"snakeUpper":      kace.SnakeUpper,
-	"split":           strings.Split,
-	"splitAfter":      strings.SplitAfter,
-	"splitAfterN":     strings.SplitAfterN,
-	"splitN":          strings.SplitN,
-	"sub":             sub,
-	"sum":             sum,
-	"title":           strings.Title,
-	"toLower":         strings.ToLower,
-	"toTitle":         strings.ToTitle,
-	"toUpper":         strings.ToUpper,
-	"trim":            strings.Trim,
-	"trimLeft":        strings.TrimLeft,
-	"trimPrefix":      strings.TrimPrefix,
-	"trimRight":       strings.TrimRight,
-	"trimSpace":       strings.TrimSpace,
-	"trimSuffix":      strings.TrimSuffix,
+	"camel":        kace.Camel,
+	"compare":      strings.Compare,
+	"contains":     strings.Contains,
+	"containsAny":  strings.ContainsAny,
+	"count":        strings.Count,
+	"dec":          dec,
+	"equalFold":    strings.EqualFold,
+	"fields":       strings.Fields,
+	"hasPrefix":    strings.HasPrefix,
+	"hasSuffix":    strings.HasPrefix,
+	"inc":          inc,
+	"index":        strings.Index,
+	"indexAny":     strings.IndexAny,
+	"join":         strings.Join,
+	"kebab":        kace.Kebab,
+	"kebabUpper":   kace.KebabUpper,
+	"lastIndex":    strings.LastIndex,
+	"lastIndexAny": strings.LastIndexAny,
+	"makeMap":      makeMap,
+	"makeSlice":    makeSlice,
+	"numbers":      numbers,
+	"pascal":       kace.Pascal,
+	"repeat":       strings.Repeat,
+	"replace":      strings.Replace,
+	"sliceString":  sliceString,
+	"snake":        kace.Snake,
+	"snakeUpper":   kace.SnakeUpper,
+	"split":        strings.Split,
+	"splitAfter":   strings.SplitAfter,
+	"splitAfterN":  strings.SplitAfterN,
+	"splitN":       strings.SplitN,
+	"sub":          sub,
+	"sum":          sum,
+	"title":        strings.Title,
+	"toLower":      strings.ToLower,
+	"toTitle":      strings.ToTitle,
+	"toUpper":      strings.ToUpper,
+	"trim":         strings.Trim,
+	"trimLeft":     strings.TrimLeft,
+	"trimPrefix":   strings.TrimPrefix,
+	"trimRight":    strings.TrimRight,
+	"trimSpace":    strings.TrimSpace,
+	"trimSuffix":   strings.TrimSuffix,
 }
 
 // sliceString returns a slice of s from index start to end.
@@ -82,18 +81,6 @@ func makeSlice(vals ...interface{}) interface{} {
 		}
 	}
 	return ss
-}
-
-func makeStringSlice(in []interface{}) ([]string, error) {
-	var out []string
-	for _, i := range in {
-		s, ok := i.(string)
-		if !ok {
-			return nil, fmt.Errorf("expected input to be string, but got %T", i)
-		}
-		out = append(out, s)
-	}
-	return out, nil
 }
 
 // makeMap expects an even number of parameters, in order to have name:value
@@ -173,6 +160,27 @@ func lookUpPlugin(dirs []string, name string) (p string, err error) {
 	return
 }
 
+func convert(v interface{}) interface{} {
+	if m, ok := v.(map[string]interface{}); ok {
+		for k, v := range m {
+			m[k] = convert(v)
+		}
+	}
+	list, ok := v.([]interface{})
+	if !ok {
+		return v
+	}
+	var str []string
+	for _, val := range list {
+		s, ok := val.(string)
+		if !ok {
+			return v
+		}
+		str = append(str, s)
+	}
+	return str
+}
+
 func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (interface{}, error) {
 	d := make(map[string]interface{})
 	d["data"] = ctx
@@ -184,7 +192,8 @@ func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (inter
 	if err != nil {
 		return nil, err
 	}
-	return o["data"], nil
+
+	return convert(o["data"]), nil
 }
 
 type cmdRunner func(name string, args ...string) *exec.Cmd
