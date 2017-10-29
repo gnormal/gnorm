@@ -141,6 +141,7 @@ have the following properties:
 | Property | Type | Description |
 | --- | ---- | ---|
 | DBName | string | the original name of the foreign key constraint in the db
+| Name | string | the converted name of the foreign key constraint
 | TableDBName | string | the original name of the table in the db
 | RefTableDBName | string | the original name of the foreign table in the db
 | Table | [Table](#table) | the foreign key table
@@ -152,6 +153,7 @@ have the following properties:
 | Property | Type | Description |
 | --- | ---- | ---|
 | DBNames | [Strings](#strings) | the list of DBNames of all the foreign keys
+| Names | [Strings](#strings) | the list of converted names of all the foreign keys
 
 ### ForeignKeyColumn
 

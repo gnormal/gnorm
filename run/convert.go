@@ -9,6 +9,8 @@ import (
 	"gnorm.org/gnorm/run/data"
 )
 
+type nameConverter func(s string) (string, error)
+
 func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, error) {
 	convert := func(s string) (string, error) {
 		buf := &bytes.Buffer{}
@@ -107,7 +109,7 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 			}
 			table.PrimaryKeys = filterPrimaryKeyColumns(table.Columns)
 		}
-		if err = mapSchemaForeignKeyReferences(s, sch); err != nil {
+		if err = mapSchemaForeignKeyReferences(s, sch, convert); err != nil {
 			return nil, err
 		}
 	}
@@ -125,7 +127,7 @@ func filterPrimaryKeyColumns(columns data.Columns) data.Columns {
 	return pkColumns
 }
 
-func mapSchemaForeignKeyReferences(isch *database.Schema, sch *data.Schema) error {
+func mapSchemaForeignKeyReferences(isch *database.Schema, sch *data.Schema, convert nameConverter) error {
 	for _, t := range isch.Tables {
 		table, ok := sch.TablesByName[t.Name]
 		if !ok {
@@ -176,23 +178,32 @@ func mapSchemaForeignKeyReferences(isch *database.Schema, sch *data.Schema) erro
 		}
 
 		for _, fkc := range fkColumnsByFKNames {
-			mapForeignTable(fkc)
+			err := mapForeignTable(fkc, convert)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
 }
 
-func mapForeignTable(fkc data.ForeignKeyColumns) {
+func mapForeignTable(fkc data.ForeignKeyColumns, convert nameConverter) error {
 	if len(fkc) == 0 {
-		return
+		return nil
 	}
 
+	// All ForeignKeyColumns will point to same table/refTable and have the same name, use first one
 	table := fkc[0].Column.Table
 	refTable := fkc[0].RefColumn.Table
+	cName, err := convert(fkc[0].DBName)
+	if err != nil {
+		return errors.Wrap(err, "foreign key")
+	}
 
 	fk := &data.ForeignKey{
 		DBName:         fkc[0].DBName,
+		Name:           cName,
 		TableDBName:    table.DBName,
 		RefTableDBName: refTable.DBName,
 		Table:          table,
@@ -204,4 +215,6 @@ func mapForeignTable(fkc data.ForeignKeyColumns) {
 	refTable.ForeignKeyRefs = append(table.ForeignKeyRefs, fk)
 	table.FKByName[fk.DBName] = fk
 	refTable.FKRefsByName[fk.DBName] = fk
+
+	return nil
 }

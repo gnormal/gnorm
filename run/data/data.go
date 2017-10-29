@@ -99,6 +99,7 @@ type Column struct {
 // Foreign Key contains the
 type ForeignKey struct {
 	DBName         string            // the original name of the foreign key constraint in the db
+	Name           string            // the converted name of the foreign key constraint
 	TableDBName    string            // the original name of the table in the db
 	RefTableDBName string            // the original name of the foreign table in the db
 	Table          *Table            `yaml:"-" json:"-"` // the foreign key table
@@ -240,10 +241,20 @@ func contains(list []string, s string) bool {
 // Foreign keys represents a list of ForeignKey
 type ForeignKeys []*ForeignKey
 
+// DBNames returns the list of db foreign key names
 func (fk ForeignKeys) DBNames() Strings {
 	names := make(Strings, len(fk))
 	for x := range fk {
 		names[x] = fk[x].DBName
+	}
+	return names
+}
+
+// Names returns the list of converted foreign key names
+func (fk ForeignKeys) Names() Strings {
+	names := make(Strings, len(fk))
+	for x := range fk {
+		names[x] = fk[x].Name
 	}
 	return names
 }

@@ -185,6 +185,7 @@ const expectYaml = `schemas:
     foreignkeys: []
     foreignkeyrefs:
     - dbname: tb2_col2_fkey
+      name: abc tb2_col2_fkey
       tabledbname: tb2
       reftabledbname: table
       fkcolumns:
@@ -242,6 +243,7 @@ const expectYaml = `schemas:
       fkcolumnrefs: []
     foreignkeys:
     - dbname: tb2_col2_fkey
+      name: abc tb2_col2_fkey
       tabledbname: tb2
       reftabledbname: table
       fkcolumns:
@@ -429,6 +431,7 @@ var expectJSON = `
           "ForeignKeyRefs": [
             {
               "DBName": "tb2_col2_fkey",
+              "Name": "abc tb2_col2_fkey",
               "TableDBName": "tb2",
               "RefTableDBName": "table",
               "FKColumns": [
@@ -503,6 +506,7 @@ var expectJSON = `
           "ForeignKeys": [
             {
               "DBName": "tb2_col2_fkey",
+              "Name": "abc tb2_col2_fkey",
               "TableDBName": "tb2",
               "RefTableDBName": "table",
               "FKColumns": [
