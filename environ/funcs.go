@@ -165,16 +165,23 @@ func convert(v interface{}) interface{} {
 		for k, v := range m {
 			m[k] = convert(v)
 		}
+		return m
 	}
+
 	list, ok := v.([]interface{})
 	if !ok {
 		return v
 	}
+
 	var str []string
 	for _, val := range list {
 		s, ok := val.(string)
 		if !ok {
-			return v
+			var out []interface{}
+			for _, x := range list {
+				out = append(out, convert(x))
+			}
+			return out
 		}
 		str = append(str, s)
 	}
