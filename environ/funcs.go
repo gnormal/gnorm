@@ -160,6 +160,34 @@ func lookUpPlugin(dirs []string, name string) (p string, err error) {
 	return
 }
 
+func convert(v interface{}) interface{} {
+	if m, ok := v.(map[string]interface{}); ok {
+		for k, v := range m {
+			m[k] = convert(v)
+		}
+		return m
+	}
+
+	list, ok := v.([]interface{})
+	if !ok {
+		return v
+	}
+
+	var str []string
+	for _, val := range list {
+		s, ok := val.(string)
+		if !ok {
+			var out []interface{}
+			for _, x := range list {
+				out = append(out, convert(x))
+			}
+			return out
+		}
+		str = append(str, s)
+	}
+	return str
+}
+
 func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (interface{}, error) {
 	d := make(map[string]interface{})
 	d["data"] = ctx
@@ -171,7 +199,8 @@ func callPlugin(runner cmdRunner, name, function string, ctx interface{}) (inter
 	if err != nil {
 		return nil, err
 	}
-	return o["data"], nil
+
+	return convert(o["data"]), nil
 }
 
 type cmdRunner func(name string, args ...string) *exec.Cmd

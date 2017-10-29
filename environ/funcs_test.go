@@ -83,6 +83,34 @@ func helperCMD(args ...string) *exec.Cmd {
 	return cmd
 }
 
+func TestConvert(t *testing.T) {
+	t.Run("ordinary use case", func(t *testing.T) {
+		expected := []interface{}{"things", "and", "stuff"}
+
+		actual, ok := convert(expected).([]string)
+		if !ok {
+			t.Error("convert returned an interface that couldn't be converted to []string")
+		}
+
+		for i, s := range expected {
+			if actual[i] != s {
+				t.Errorf("expected %s got %s", s, actual[i])
+			}
+		}
+	})
+
+	t.Run("early exit", func(t *testing.T) {
+		expected := []interface{}{"things", nil, "stuff"}
+		actual := convert(expected).([]interface{})
+
+		for i, x := range expected {
+			if actual[i] != x {
+				t.Errorf("expected %v got %v", x, actual[i])
+			}
+		}
+	})
+}
+
 func TestMain(t *testing.M) {
 	switch os.Getenv("GO_TEST_ENV") {
 	case "command":
