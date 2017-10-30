@@ -182,6 +182,7 @@ have the following properties:
 
 | Property | Type | Description |
 | --- | --- | --- |
+| Name | string | the converted name of the index
 | DBName | string | the name of the index from the database
 | Columns | [Columns](#columns) | the list of the columns used in the index
 
@@ -191,4 +192,5 @@ Indexes is a list of [Index](#index) values for a table.
 
 | Property | Type | Description
 | --- | --- | --- |
+| Names | [Strings](#strings) | the list of Names of the indexes
 | DBNames | [Strings](#strings) | the list of DBNames of the Indexes

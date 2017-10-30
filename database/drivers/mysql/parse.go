@@ -151,9 +151,9 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			dbtables[tname] = &database.Table{Name: tname, Columns: columns}
 		}
 		for tname, index := range indexes[schema] {
-			dbtables[tname].Indexes = make([]*database.Index, 0)
+			dbtables[tname].Indexes = make([]*database.Index, 0, len(indexes))
 			for iname, columns := range index {
-				dbtables[tname].Indexes = append(dbtables[tname].Indexes, &database.Index{DBName: iname, Columns: columns})
+				dbtables[tname].Indexes = append(dbtables[tname].Indexes, &database.Index{Name: iname, Columns: columns})
 			}
 		}
 		for _, table := range dbtables {

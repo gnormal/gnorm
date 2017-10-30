@@ -105,10 +105,15 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 
 			for _, i := range t.Indexes {
 				index := &data.Index{
-					DBName: i.DBName,
+					DBName: i.Name,
 				}
 				for _, c := range i.Columns {
 					index.Columns = append(index.Columns, table.ColumnsByName[c.Name])
+				}
+
+				index.Name, err = convert(i.Name)
+				if err != nil {
+					return nil, errors.WithMessage(err, "index")
 				}
 
 				table.Indexes = append(table.Indexes, index)

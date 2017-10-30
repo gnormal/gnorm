@@ -80,6 +80,7 @@ type Column struct {
 
 // Index is the data about a table index.
 type Index struct {
+	Name    string  // the converted name of the index
 	DBName  string  // dbname of the index
 	Columns Columns // columns used in the index
 }
@@ -277,6 +278,15 @@ func (i Indexes) DBNames() Strings {
 	names := make(Strings, len(i))
 	for x := range i {
 		names[x] = i[x].DBName
+	}
+	return names
+}
+
+// Names returns the list of index Name in this table.
+func (i Indexes) Names() Strings {
+	names := make(Strings, len(i))
+	for x := range i {
+		names[x] = i[x].Name
 	}
 	return names
 }

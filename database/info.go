@@ -37,7 +37,7 @@ type Table struct {
 
 // Index contains the definition of a database index.
 type Index struct {
-	DBName  string    // name of the index in the database
+	Name    string    // name of the index in the database
 	Columns []*Column // list of columns in this index
 }
 

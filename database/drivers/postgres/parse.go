@@ -196,8 +196,7 @@ outer:
 		for tname, index := range indexes[schema] {
 			dbtables[tname].Indexes = make([]*database.Index, 0)
 			for iname, columns := range index {
-				log.Printf("schema: %s; table: %s; index: %s; columns: %v", schema, tname, iname, columns)
-				dbtables[tname].Indexes = append(dbtables[tname].Indexes, &database.Index{DBName: iname, Columns: columns})
+				dbtables[tname].Indexes = append(dbtables[tname].Indexes, &database.Index{Name: iname, Columns: columns})
 			}
 		}
 		for _, table := range dbtables {
@@ -320,7 +319,7 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 		r.Columns = strings.Split(cs, ",") // array converted to string in query
 
 		// postgres prepends schema onto table name
-		r.TableName = r.TableName[strings.LastIndex(r.TableName, ".")+1:]
+		r.TableName = r.TableName[len(r.SchemaName)+1:]
 
 		results = append(results, r)
 	}
@@ -331,18 +330,11 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 func queryEnums(log *log.Logger, db *sql.DB, schemas []string) (map[string][]*database.Enum, error) {
 	// TODO: make this work with Gnorm generated types
 	const q = `
-<<<<<<< HEAD
-	SELECT      n.nspname, t.typname as type 
-	FROM        pg_type t 
-	LEFT JOIN   pg_catalog.pg_namespace n ON n.oid = t.typnamespace 
-	JOIN        pg_enum e ON t.oid = e.enumtypid
-	WHERE       (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid)) 
-=======
 	SELECT      n.nspname, t.typname as type
 	FROM        pg_type t
 	LEFT JOIN   pg_catalog.pg_namespace n ON n.oid = t.typnamespace
+	JOIN        pg_enum e ON t.oid = e.enumtypid
 	WHERE       (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid))
->>>>>>> support postgres index
 	AND     NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
 	AND     n.nspname IN (%s)`
 	spots := make([]string, len(schemas))

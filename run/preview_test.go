@@ -69,7 +69,7 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 					Nullable: true,
 				}},
 				Indexes: []*database.Index{{
-					DBName: "col1_pkey",
+					Name: "col1_pkey",
 					Columns: []*database.Column{{
 						Name:         "col1",
 						Type:         "int",
@@ -146,7 +146,8 @@ const expectYaml = `schemas:
       hasdefault: false
       isprimarykey: true
     indexes:
-    - dbname: col1_pkey
+    - name: abc col1_pkey
+      dbname: col1_pkey
       columns:
       - name: abc col1
         dbname: col1
@@ -187,11 +188,11 @@ Table: abc table(schema.table)
 | abc col4 | col4   |          | *string | false   | false        |      0 | false       | true     | false      |
 +----------+--------+----------+---------+---------+--------------+--------+-------------+----------+------------+
 Indexes:
-+-----------+----------+
-|  DBName   | Columns  |
-+-----------+----------+
-| col1_pkey | abc col1 |
-+-----------+----------+
++---------------+-----------+----------+
+|     Name      |  DBName   | Columns  |
++---------------+-----------+----------+
+| abc col1_pkey | col1_pkey | abc col1 |
++---------------+-----------+----------+
 
 `
 
@@ -301,6 +302,7 @@ var expectJSON = `
           ],
           "Indexes": [
             {
+              "Name": "abc col1_pkey",
               "DBName": "col1_pkey",
               "Columns": [
                 {
