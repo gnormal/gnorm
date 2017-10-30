@@ -54,13 +54,15 @@ type Table struct {
 	Columns        Columns                // Database columns
 	ColumnsByName  map[string]*Column     `yaml:"-" json:"-"` // dbname to column
 	PrimaryKeys    Columns                // Primary Key Columns
+	Indexes        Indexes                // Table indexes
+	IndexesByName  map[string]*Index      `yaml:"-" json:"-"` // indexname to index
 	ForeignKeys    ForeignKeys            // Foreign Keys
 	ForeignKeyRefs ForeignKeys            // Foreign Keys referencing this table
 	FKByName       map[string]*ForeignKey `yaml:"-" json:"-"` // Foreign Keys by foreign key name
 	FKRefsByName   map[string]*ForeignKey `yaml:"-" json:"-"` // Foreign Keys referencing this table by foreign key name
 }
 
-// Returns true if Table has one or more primary keys
+// HasPrimaryKey returns true if Table has one or more primary keys.
 func (t *Table) HasPrimaryKey() bool {
 	return len(t.PrimaryKeys) > 0
 }
@@ -114,6 +116,13 @@ type ForeignKeyColumn struct {
 	RefColumnDBName string  // the original name of the foreign column in the db
 	Column          *Column `yaml:"-" json:"-"` // the foreign key column
 	RefColumn       *Column `yaml:"-" json:"-"` // the referenced column
+}
+
+// Index is the data about a table index.
+type Index struct {
+	Name    string  // the converted name of the index
+	DBName  string  // dbname of the index
+	Columns Columns // columns used in the index
 }
 
 // Enum represents a type that has a set of allowed values.
@@ -330,6 +339,27 @@ func (c Enums) DBNames() Strings {
 	names := make(Strings, len(c))
 	for x := range c {
 		names[x] = c[x].DBName
+	}
+	return names
+}
+
+// Indexes represents all the indexes on a table.
+type Indexes []*Index
+
+// DBNames returns the list of index DBNames in this table.
+func (i Indexes) DBNames() Strings {
+	names := make(Strings, len(i))
+	for x := range i {
+		names[x] = i[x].DBName
+	}
+	return names
+}
+
+// Names returns the list of index Name in this table.
+func (i Indexes) Names() Strings {
+	names := make(Strings, len(i))
+	for x := range i {
+		names[x] = i[x].Name
 	}
 	return names
 }

@@ -12,10 +12,10 @@ Data passed to each schema template:
 
 | Property | Type | Description |
 | --- | ---- | --- |
-| Schema | [Schema](#schema) | The schema being rendered 
-| DB | [DB](#db) | The data for the whole DB 
-| Config | [Config](#config) | Gnorm config values from the gnorm.toml file 
-| Params | map[string]anything | the values from the Params entry in the config file 
+| Schema | [Schema](#schema) | The schema being rendered
+| DB | [DB](#db) | The data for the whole DB
+| Config | [Config](#config) | Gnorm config values from the gnorm.toml file
+| Params | map[string]anything | the values from the Params entry in the config file
 
 
 ## __Table Data__
@@ -25,9 +25,9 @@ Data passed to each table template:
 | Property | Type | Description |
 | --- | ---- | --- |
 | Table | [Table](#table) | the table being rendered
-| DB | [DB](#db) | The data for the whole DB 
-| Config | [Config](#config) | Gnorm config values from the gnorm.toml file 
-| Params | map[string]anything | the values from the Params entry in the config file 
+| DB | [DB](#db) | The data for the whole DB
+| Config | [Config](#config) | Gnorm config values from the gnorm.toml file
+| Params | map[string]anything | the values from the Params entry in the config file
 
 
 
@@ -38,9 +38,9 @@ Data passed to each enum template:
 | Property | Type | Description |
 | --- | ---- | --- |
 | Enum | [Enum](#enum) | the enum being rendered
-| DB | [DB](#db) | The data for the whole DB 
-| Config | [Config](#config) | Gnorm config values from the gnorm.toml file 
-| Params | map[string]anything | the values from the Params entry in the config file 
+| DB | [DB](#db) | The data for the whole DB
+| Config | [Config](#config) | Gnorm config values from the gnorm.toml file
+| Params | map[string]anything | the values from the Params entry in the config file
 
 
 ## __Type Definitions__
@@ -66,8 +66,8 @@ Column is the data about a DB column of a table.
 | Name  | string | the converted name of the column
 | DBName | string | the original name of the column in the DB
 | Type |string | the converted name of the type
-| DBType | string | the original type name of the column in the DB 
-| IsArray | boolean | true if the column type is an array 
+| DBType | string | the original type name of the column in the DB
+| IsArray | boolean | true if the column type is an array
 | Length | integer | non-zero if the type has a length (e.g. varchar[16])
 | UserDefined | boolean | true if the type is user-defined
 | Nullable | boolean | true if the column is not NON NULL
@@ -87,7 +87,7 @@ have the following properties:
 
 | Property | Type | Description |
 | --- | ---- | --- |
-| DBNames | [Strings](#strings) | the ordered list of DBNames of all the columns 
+| DBNames | [Strings](#strings) | the ordered list of DBNames of all the columns
 | Names | [Strings](#strings) | the ordered list of Names of all the columns
 
 ### ConfigData
@@ -103,7 +103,7 @@ have the following properties:
 | TypeMap | map[string]string | map of DBNames to converted names for column types
 | NullableTypeMap | map[string]string | map of DBNames to converted names for column types (used when Nullable=true)
 | PluginDirs | list of string | ordered list of directories to look in for plugins
-| OutputDir | string | the directory where gnorm should output all its data 
+| OutputDir | string | the directory where gnorm should output all its data
 | StaticDir | string | the directory from which to statically copy files to outputdir
 
 ### Enum
@@ -125,7 +125,7 @@ have the following properties:
 
 | Property | Type | Description |
 | --- | ---- | --- |
-| DBNames | [Strings](#strings) | the ordered list of DBNames of all the enums 
+| DBNames | [Strings](#strings) | the ordered list of DBNames of all the enums
 | Names | [Strings](#strings) | the ordered list of Names of all the enums
 
 ### EnumValue
@@ -178,8 +178,8 @@ A schema represents a namespace of tables and enums in a database.
 | Property | Type | Description |
 | --- | ---- | --- |
 | Name | string | the converted name of the schema
-| DBName | string | the original name of the schema in the DB 
-| Tables | [Tables](#tables) | the list of [Table](#table) values in this schema 
+| DBName | string | the original name of the schema in the DB
+| Tables | [Tables](#tables) | the list of [Table](#table) values in this schema
 | Enums | [Enums](#enums) | the list of [Enum](#enum) values in this schema
 | TablesByName | map\[string\][Table](#table) | map of DBName to Table.
 
@@ -203,6 +203,8 @@ Strings is a list of string values with the following methods
 | ColumnsByName | map[string][Column](#column) | map of column dbname to column
 | PrimaryKeys | [Columns](#columns) | primary key columns
 | HasPrimaryKey | bool | does the column have at least one primary key
+| Indexes | [Indexes](#indexes) | the list of indexes on the table
+| IndexesByName | map[string][Index](#index) | map index dbname to index
 | ForeignKeys | [ForeignKeys](#foreignKeys) | foreign keys
 | ForeignKeyRefs | [ForeignKeys](#foreignKeys) | foreign keys referencing this table
 | FKByName | map[string][ForeignKey](#foreignKey) | foreign keys by foreign key name
@@ -217,3 +219,20 @@ have the following properties:
 | --- | ---- | --- |
 | DBNames | [Strings](#strings) | the list of DBNames of all the tables
 | Names | [Strings](#strings) | the list of Names of all the tables
+
+### Index
+
+| Property | Type | Description |
+| --- | --- | --- |
+| Name | string | the converted name of the index
+| DBName | string | the name of the index from the database
+| Columns | [Columns](#columns) | the list of the columns used in the index
+
+### Indexes
+
+Indexes is a list of [Index](#index) values for a table.
+
+| Property | Type | Description
+| --- | --- | --- |
+| Names | [Strings](#strings) | the list of Names of the indexes
+| DBNames | [Strings](#strings) | the list of DBNames of the Indexes

@@ -32,6 +32,13 @@ type EnumValue struct {
 type Table struct {
 	Name    string    // the original name of the table in the DB
 	Columns []*Column // ordered list of columns in this table
+	Indexes []*Index  // list of indexes in this table
+}
+
+// Index contains the definition of a database index.
+type Index struct {
+	Name    string    // name of the index in the database
+	Columns []*Column // list of columns in this index
 }
 
 // PrimaryKey contains the definition of a database primary key.

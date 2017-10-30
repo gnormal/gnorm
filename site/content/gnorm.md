@@ -39,6 +39,7 @@ aliases = [
 "/gnorm/database/drivers/mysql",
 "/gnorm/database/drivers/mysql/gnorm",
 "/gnorm/database/drivers/mysql/gnorm/columns",
+"/gnorm/database/drivers/mysql/gnorm/statistics",
 "/gnorm/database/drivers/mysql/gnorm/tables",
 "/gnorm/database/drivers/mysql/templates",
 "/gnorm/database/drivers/postgres",
