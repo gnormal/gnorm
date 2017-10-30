@@ -9,6 +9,8 @@ import (
 	"gnorm.org/gnorm/run/data"
 )
 
+type nameConverter func(s string) (string, error)
+
 func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, error) {
 	convert := func(s string) (string, error) {
 		buf := &bytes.Buffer{}
@@ -63,6 +65,8 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 				Schema:        sch,
 				ColumnsByName: make(map[string]*data.Column, len(t.Columns)),
 				IndexesByName: make(map[string]*data.Index, len(t.Indexes)),
+				FKByName:      map[string]*data.ForeignKey{},
+				FKRefsByName:  map[string]*data.ForeignKey{},
 			}
 			sch.Tables = append(sch.Tables, table)
 			sch.TablesByName[table.DBName] = table
@@ -72,15 +76,18 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 			}
 			for _, c := range t.Columns {
 				col := &data.Column{
-					DBName:       c.Name,
-					DBType:       c.Type,
-					IsArray:      c.IsArray,
-					Length:       c.Length,
-					UserDefined:  c.UserDefined,
-					Nullable:     c.Nullable,
-					HasDefault:   c.HasDefault,
-					IsPrimaryKey: c.IsPrimaryKey,
-					Orig:         c.Orig,
+					Table:              table,
+					DBName:             c.Name,
+					DBType:             c.Type,
+					IsArray:            c.IsArray,
+					Length:             c.Length,
+					UserDefined:        c.UserDefined,
+					Nullable:           c.Nullable,
+					HasDefault:         c.HasDefault,
+					IsPrimaryKey:       c.IsPrimaryKey,
+					IsFK:               c.IsForeignKey,
+					FKColumnRefsByName: map[string]*data.ForeignKeyColumn{},
+					Orig:               c.Orig,
 				}
 				table.Columns = append(table.Columns, col)
 				table.ColumnsByName[col.DBName] = col
@@ -120,12 +127,15 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 				table.IndexesByName[index.DBName] = index
 			}
 		}
+		if err = mapSchemaForeignKeyReferences(s, sch, convert); err != nil {
+			return nil, err
+		}
 	}
 	return db, nil
 }
 
-func filterPrimaryKeyColumns(columns []*data.Column) []*data.Column {
-	var pkColumns []*data.Column
+func filterPrimaryKeyColumns(columns data.Columns) data.Columns {
+	var pkColumns data.Columns
 	for _, column := range columns {
 		if column.IsPrimaryKey {
 			pkColumns = append(pkColumns, column)
@@ -133,4 +143,96 @@ func filterPrimaryKeyColumns(columns []*data.Column) []*data.Column {
 	}
 
 	return pkColumns
+}
+
+func mapSchemaForeignKeyReferences(isch *database.Schema, sch *data.Schema, convert nameConverter) error {
+	for _, t := range isch.Tables {
+		table, ok := sch.TablesByName[t.Name]
+		if !ok {
+			log.Printf("Unmapped table %v in %v", t.Name, isch.Name)
+			continue
+		}
+
+		fkColumnsByFKNames := map[string]data.ForeignKeyColumns{}
+
+		for _, c := range t.Columns {
+			column, ok := table.ColumnsByName[c.Name]
+			if !ok {
+				log.Printf("Unmapped column %v in %v.%v", c.Name, isch.Name, t.Name)
+				continue
+			}
+
+			if column.IsFK {
+				refTable, ok := sch.TablesByName[c.ForeignKey.ForeignTableName]
+				if !ok {
+					log.Printf("Unmapped foreign table %v in %v", c.ForeignKey.ForeignTableName, isch.Name)
+					continue
+				}
+				refColumn, ok := refTable.ColumnsByName[c.ForeignKey.ForeignColumnName]
+				if !ok {
+					log.Printf("Unmapped foreign column %v in %v.%v", c.ForeignKey.ForeignColumnName, isch.Name, c.ForeignKey.ForeignTableName)
+					continue
+				}
+
+				fkColumn := &data.ForeignKeyColumn{
+					DBName:          c.ForeignKey.Name,
+					ColumnDBName:    column.DBName,
+					RefColumnDBName: refColumn.DBName,
+					Column:          column,
+					RefColumn:       refColumn,
+				}
+				column.FKColumn = fkColumn
+
+				refColumn.HasFKRef = true
+				refColumn.FKColumnRefs = append(refColumn.FKColumnRefs, fkColumn)
+				refColumn.FKColumnRefsByName[fkColumn.DBName] = fkColumn
+
+				if _, ok := fkColumnsByFKNames[fkColumn.DBName]; !ok {
+					fkColumnsByFKNames[fkColumn.DBName] = data.ForeignKeyColumns{fkColumn}
+				} else {
+					fkColumnsByFKNames[fkColumn.DBName] = append(fkColumnsByFKNames[fkColumn.DBName], fkColumn)
+				}
+			}
+		}
+
+		for _, fkc := range fkColumnsByFKNames {
+			err := mapForeignTable(fkc, convert)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func mapForeignTable(fkc data.ForeignKeyColumns, convert nameConverter) error {
+	if len(fkc) == 0 {
+		return nil
+	}
+
+	// All ForeignKeyColumns will point to same table/refTable and have the same name, use first one
+	table := fkc[0].Column.Table
+	refTable := fkc[0].RefColumn.Table
+	cName, err := convert(fkc[0].DBName)
+	if err != nil {
+		return errors.Wrap(err, "foreign key")
+	}
+
+	fk := &data.ForeignKey{
+		DBName:         fkc[0].DBName,
+		Name:           cName,
+		TableDBName:    table.DBName,
+		RefTableDBName: refTable.DBName,
+		Table:          table,
+		RefTable:       refTable,
+		FKColumns:      fkc,
+	}
+
+	table.ForeignKeys = append(table.ForeignKeys, fk)
+	refTable.ForeignKeyRefs = append(table.ForeignKeyRefs, fk)
+	table.FKByName[fk.DBName] = fk
+	refTable.FKRefsByName[fk.DBName] = fk
+
+	return nil
 }

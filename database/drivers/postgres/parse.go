@@ -120,6 +120,36 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		}
 	}
 
+	foreignKeys, err := queryForeignKeys(log, db, schemaNames)
+	if err != nil {
+		return nil, err
+	}
+	for _, fk := range foreignKeys {
+		if !filterTables(fk.SchemaName, fk.TableName) {
+			log.Printf("skipping constraint %q because it is for filtered-out table %v.%v", fk.Name, fk.SchemaName, fk.TableName)
+			continue
+		}
+
+		schema, ok := schemas[fk.SchemaName]
+		if !ok {
+			log.Printf("Should be impossible: constraint %q references unknown schema %q", fk.Name, fk.SchemaName)
+			continue
+		}
+		table, ok := schema[fk.TableName]
+		if !ok {
+			log.Printf("Should be impossible: constraint %q references unknown table %q in schema %q", fk.Name, fk.TableName, fk.SchemaName)
+			continue
+		}
+
+		for _, col := range table {
+			if fk.ColumnName != col.Name {
+				continue
+			}
+			col.IsForeignKey = true
+			col.ForeignKey = fk
+		}
+	}
+
 	enums, err := queryEnums(log, db, schemaNames)
 	if err != nil {
 		return nil, err
@@ -254,10 +284,10 @@ func queryPrimaryKeys(log *log.Logger, db *sql.DB, schemas []string) ([]*databas
 	}
 	query := fmt.Sprintf(q, strings.Join(spots, ", "))
 	rows, err := db.Query(query, vals...)
-	defer rows.Close()
 	if err != nil {
 		return nil, errors.WithMessage(err, "error querying keys")
 	}
+	defer rows.Close()
 	var ret []*database.PrimaryKey
 
 	for rows.Next() {
@@ -266,6 +296,45 @@ func queryPrimaryKeys(log *log.Logger, db *sql.DB, schemas []string) ([]*databas
 			return nil, errors.WithMessage(err, "error scanning key constraint")
 		}
 		ret = append(ret, kc)
+	}
+	return ret, nil
+}
+
+func queryForeignKeys(log *log.Logger, db *sql.DB, schemas []string) ([]*database.ForeignKey, error) {
+	// TODO: make this work with Gnorm generated types
+	const q = `SELECT rc.constraint_schema, lkc.table_name, lkc.column_name, lkc.constraint_name, lkc.position_in_unique_constraint, fkc.table_name, fkc.column_name
+	  FROM information_schema.referential_constraints rc
+  		LEFT JOIN information_schema.key_column_usage lkc
+    	  ON lkc.table_schema = rc.constraint_schema
+      		AND lkc.constraint_name = rc.constraint_name
+  		LEFT JOIN information_schema.key_column_usage fkc
+    	  ON fkc.table_schema = rc.constraint_schema
+      	    AND fkc.ordinal_position = lkc.position_in_unique_constraint
+      		AND fkc.constraint_name = rc.unique_constraint_name
+	  WHERE rc.constraint_schema IN (%s)`
+	spots := make([]string, len(schemas))
+	vals := make([]interface{}, len(schemas))
+	for x := range schemas {
+		spots[x] = fmt.Sprintf("$%v", x+1)
+		vals[x] = schemas[x]
+	}
+	query := fmt.Sprintf(q, strings.Join(spots, ", "))
+	rows, err := db.Query(query, vals...)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error querying foreign keys")
+	}
+	defer rows.Close()
+	var ret []*database.ForeignKey
+
+	for rows.Next() {
+		fk := &database.ForeignKey{}
+		if err := rows.Scan(&fk.SchemaName, &fk.TableName, &fk.ColumnName, &fk.Name, &fk.UniqueConstraintPosition, &fk.ForeignTableName, &fk.ForeignColumnName); err != nil {
+			return nil, errors.WithMessage(err, "error scanning foreign key constraint")
+		}
+		ret = append(ret, fk)
+	}
+	if rows.Err() != nil {
+		return nil, errors.WithMessage(rows.Err(), "error reading foreign keys")
 	}
 	return ret, nil
 }
@@ -345,10 +414,10 @@ func queryEnums(log *log.Logger, db *sql.DB, schemas []string) (map[string][]*da
 	}
 	query := fmt.Sprintf(q, strings.Join(spots, ", "))
 	rows, err := db.Query(query, vals...)
-	defer rows.Close()
 	if err != nil {
 		return nil, errors.WithMessage(err, "error querying enum names")
 	}
+	defer rows.Close()
 	ret := map[string][]*database.Enum{}
 	for rows.Next() {
 		var name, schema string

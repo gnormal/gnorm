@@ -76,6 +76,25 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 						IsPrimaryKey: true,
 					}},
 				}},
+			}, {
+				Name: "tb2",
+				Columns: []*database.Column{{
+					Name:         "col1",
+					Type:         "int",
+					IsPrimaryKey: true,
+				}, {
+					Name:         "col2",
+					Type:         "int",
+					IsForeignKey: true,
+					ForeignKey: &database.ForeignKey{
+						SchemaName:        "schema",
+						TableName:         "tb2",
+						ColumnName:        "col2",
+						Name:              "tb2_col2_fkey",
+						ForeignTableName:  "table",
+						ForeignColumnName: "col1",
+					},
+				}},
 			}},
 			Enums: []*database.Enum{{
 				Name: "enum",
@@ -104,6 +123,13 @@ const expectYaml = `schemas:
       nullable: false
       hasdefault: false
       isprimarykey: true
+      isfk: false
+      hasfkref: true
+      fkcolumn: null
+      fkcolumnrefs:
+      - dbname: tb2_col2_fkey
+        columndbname: col2
+        refcolumndbname: col1
     - name: abc col2
       dbname: col2
       type: '*INTEGER'
@@ -114,6 +140,10 @@ const expectYaml = `schemas:
       nullable: true
       hasdefault: false
       isprimarykey: false
+      isfk: false
+      hasfkref: false
+      fkcolumn: null
+      fkcolumnrefs: []
     - name: abc col3
       dbname: col3
       type: ""
@@ -124,6 +154,10 @@ const expectYaml = `schemas:
       nullable: false
       hasdefault: false
       isprimarykey: false
+      isfk: false
+      hasfkref: false
+      fkcolumn: null
+      fkcolumnrefs: []
     - name: abc col4
       dbname: col4
       type: ""
@@ -134,6 +168,10 @@ const expectYaml = `schemas:
       nullable: true
       hasdefault: false
       isprimarykey: false
+      isfk: false
+      hasfkref: false
+      fkcolumn: null
+      fkcolumnrefs: []
     primarykeys:
     - name: abc col1
       dbname: col1
@@ -145,6 +183,13 @@ const expectYaml = `schemas:
       nullable: false
       hasdefault: false
       isprimarykey: true
+      isfk: false
+      hasfkref: true
+      fkcolumn: null
+      fkcolumnrefs:
+      - dbname: tb2_col2_fkey
+        columndbname: col2
+        refcolumndbname: col1
     indexes:
     - name: abc col1_pkey
       dbname: col1_pkey
@@ -159,6 +204,83 @@ const expectYaml = `schemas:
         nullable: false
         hasdefault: false
         isprimarykey: true
+        isfk: false
+        hasfkref: true
+        fkcolumn: null
+        fkcolumnrefs:
+        - dbname: tb2_col2_fkey
+          columndbname: col2
+          refcolumndbname: col1
+    foreignkeys: []
+    foreignkeyrefs:
+    - dbname: tb2_col2_fkey
+      name: abc tb2_col2_fkey
+      tabledbname: tb2
+      reftabledbname: table
+      fkcolumns:
+      - dbname: tb2_col2_fkey
+        columndbname: col2
+        refcolumndbname: col1
+  - name: abc tb2
+    dbname: tb2
+    columns:
+    - name: abc col1
+      dbname: col1
+      type: INTEGER
+      dbtype: int
+      isarray: false
+      length: 0
+      userdefined: false
+      nullable: false
+      hasdefault: false
+      isprimarykey: true
+      isfk: false
+      hasfkref: false
+      fkcolumn: null
+      fkcolumnrefs: []
+    - name: abc col2
+      dbname: col2
+      type: INTEGER
+      dbtype: int
+      isarray: false
+      length: 0
+      userdefined: false
+      nullable: false
+      hasdefault: false
+      isprimarykey: false
+      isfk: true
+      hasfkref: false
+      fkcolumn:
+        dbname: tb2_col2_fkey
+        columndbname: col2
+        refcolumndbname: col1
+      fkcolumnrefs: []
+    primarykeys:
+    - name: abc col1
+      dbname: col1
+      type: INTEGER
+      dbtype: int
+      isarray: false
+      length: 0
+      userdefined: false
+      nullable: false
+      hasdefault: false
+      isprimarykey: true
+      isfk: false
+      hasfkref: false
+      fkcolumn: null
+      fkcolumnrefs: []
+    indexes: []
+    foreignkeys:
+    - dbname: tb2_col2_fkey
+      name: abc tb2_col2_fkey
+      tabledbname: tb2
+      reftabledbname: table
+      fkcolumns:
+      - dbname: tb2_col2_fkey
+        columndbname: col2
+        refcolumndbname: col1
+    foreignkeyrefs: []
   enums:
   - name: abc enum
     dbname: enum
@@ -179,20 +301,34 @@ Enum: abc enum(schema.enum)
 
 
 Table: abc table(schema.table)
-+----------+--------+----------+---------+---------+--------------+--------+-------------+----------+------------+
-|   Name   | DBName |   Type   | DBType  | IsArray | IsPrimaryKey | Length | UserDefined | Nullable | HasDefault |
-+----------+--------+----------+---------+---------+--------------+--------+-------------+----------+------------+
-| abc col1 | col1   | INTEGER  | int     | false   | true         |      0 | false       | false    | false      |
-| abc col2 | col2   | *INTEGER | *int    | false   | false        |      0 | false       | true     | false      |
-| abc col3 | col3   |          | string  | false   | false        |      0 | false       | false    | false      |
-| abc col4 | col4   |          | *string | false   | false        |      0 | false       | true     | false      |
-+----------+--------+----------+---------+---------+--------------+--------+-------------+----------+------------+
++----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+|   Name   | DBName |   Type   | DBType  | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |
++----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+| abc col1 | col1   | INTEGER  | int     | false   | true         | false | true     |      0 | false       | false    | false      |
+| abc col2 | col2   | *INTEGER | *int    | false   | false        | false | false    |      0 | false       | true     | false      |
+| abc col3 | col3   |          | string  | false   | false        | false | false    |      0 | false       | false    | false      |
+| abc col4 | col4   |          | *string | false   | false        | false | false    |      0 | false       | true     | false      |
++----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
 Indexes:
 +---------------+-----------+----------+
 |     Name      |  DBName   | Columns  |
 +---------------+-----------+----------+
 | abc col1_pkey | col1_pkey | abc col1 |
 +---------------+-----------+----------+
+
+
+Table: abc tb2(schema.tb2)
++----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+|   Name   | DBName |  Type   | DBType | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |
++----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+| abc col1 | col1   | INTEGER | int    | false   | true         | false | false    |      0 | false       | false    | false      |
+| abc col2 | col2   | INTEGER | int    | false   | false        | true  | false    |      0 | false       | false    | false      |
++----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+Indexes:
++------+--------+---------+
+| Name | DBName | Columns |
++------+--------+---------+
++------+--------+---------+
 
 `
 
@@ -247,7 +383,17 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": false,
               "HasDefault": false,
-              "IsPrimaryKey": true
+              "IsPrimaryKey": true,
+              "IsFK": false,
+              "HasFKRef": true,
+              "FKColumn": null,
+              "FKColumnRefs": [
+                {
+                  "DBName": "tb2_col2_fkey",
+                  "ColumnDBName": "col2",
+                  "RefColumnDBName": "col1"
+                }
+              ]
             },
             {
               "Name": "abc col2",
@@ -259,7 +405,11 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": true,
               "HasDefault": false,
-              "IsPrimaryKey": false
+              "IsPrimaryKey": false,
+              "IsFK": false,
+              "HasFKRef": false,
+              "FKColumn": null,
+              "FKColumnRefs": null
             },
             {
               "Name": "abc col3",
@@ -271,7 +421,11 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": false,
               "HasDefault": false,
-              "IsPrimaryKey": false
+              "IsPrimaryKey": false,
+              "IsFK": false,
+              "HasFKRef": false,
+              "FKColumn": null,
+              "FKColumnRefs": null
             },
             {
               "Name": "abc col4",
@@ -283,7 +437,11 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": true,
               "HasDefault": false,
-              "IsPrimaryKey": false
+              "IsPrimaryKey": false,
+              "IsFK": false,
+              "HasFKRef": false,
+              "FKColumn": null,
+              "FKColumnRefs": null
             }
           ],
           "PrimaryKeys": [
@@ -297,7 +455,17 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": false,
               "HasDefault": false,
-              "IsPrimaryKey": true
+              "IsPrimaryKey": true,
+              "IsFK": false,
+              "HasFKRef": true,
+              "FKColumn": null,
+              "FKColumnRefs": [
+                {
+                  "DBName": "tb2_col2_fkey",
+                  "ColumnDBName": "col2",
+                  "RefColumnDBName": "col1"
+                }
+              ]
             }
           ],
           "Indexes": [
@@ -315,11 +483,114 @@ var expectJSON = `
                   "UserDefined": false,
                   "Nullable": false,
                   "HasDefault": false,
-                  "IsPrimaryKey": true
+                  "IsPrimaryKey": true,
+                  "IsFK": false,
+                  "HasFKRef": true,
+                  "FKColumn": null,
+                  "FKColumnRefs": [
+                    {
+                      "DBName": "tb2_col2_fkey",
+                      "ColumnDBName": "col2",
+                      "RefColumnDBName": "col1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "ForeignKeys": null,
+          "ForeignKeyRefs": [
+            {
+              "DBName": "tb2_col2_fkey",
+              "Name": "abc tb2_col2_fkey",
+              "TableDBName": "tb2",
+              "RefTableDBName": "table",
+              "FKColumns": [
+                {
+                  "DBName": "tb2_col2_fkey",
+                  "ColumnDBName": "col2",
+                  "RefColumnDBName": "col1"
                 }
               ]
             }
           ]
+        },
+        {
+          "Name": "abc tb2",
+          "DBName": "tb2",
+          "Columns": [
+            {
+              "Name": "abc col1",
+              "DBName": "col1",
+              "Type": "INTEGER",
+              "DBType": "int",
+              "IsArray": false,
+              "Length": 0,
+              "UserDefined": false,
+              "Nullable": false,
+              "HasDefault": false,
+              "IsPrimaryKey": true,
+              "IsFK": false,
+              "HasFKRef": false,
+              "FKColumn": null,
+              "FKColumnRefs": null
+            },
+            {
+              "Name": "abc col2",
+              "DBName": "col2",
+              "Type": "INTEGER",
+              "DBType": "int",
+              "IsArray": false,
+              "Length": 0,
+              "UserDefined": false,
+              "Nullable": false,
+              "HasDefault": false,
+              "IsPrimaryKey": false,
+              "IsFK": true,
+              "HasFKRef": false,
+              "FKColumn": {
+                "DBName": "tb2_col2_fkey",
+                "ColumnDBName": "col2",
+                "RefColumnDBName": "col1"
+              },
+              "FKColumnRefs": null
+            }
+          ],
+          "PrimaryKeys": [
+            {
+              "Name": "abc col1",
+              "DBName": "col1",
+              "Type": "INTEGER",
+              "DBType": "int",
+              "IsArray": false,
+              "Length": 0,
+              "UserDefined": false,
+              "Nullable": false,
+              "HasDefault": false,
+              "IsPrimaryKey": true,
+              "IsFK": false,
+              "HasFKRef": false,
+              "FKColumn": null,
+              "FKColumnRefs": null
+            }
+          ],
+          "Indexes": null,
+          "ForeignKeys": [
+            {
+              "DBName": "tb2_col2_fkey",
+              "Name": "abc tb2_col2_fkey",
+              "TableDBName": "tb2",
+              "RefTableDBName": "table",
+              "FKColumns": [
+                {
+                  "DBName": "tb2_col2_fkey",
+                  "ColumnDBName": "col2",
+                  "RefColumnDBName": "col1"
+                }
+              ]
+            }
+          ],
+          "ForeignKeyRefs": null
         }
       ],
       "Enums": [

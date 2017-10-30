@@ -12,10 +12,10 @@ Data passed to each schema template:
 
 | Property | Type | Description |
 | --- | ---- | --- |
-| Schema | [Schema](#schema) | The schema being rendered 
-| DB | [DB](#db) | The data for the whole DB 
-| Config | [Config](#config) | Gnorm config values from the gnorm.toml file 
-| Params | map[string]anything | the values from the Params entry in the config file 
+| Schema | [Schema](#schema) | The schema being rendered
+| DB | [DB](#db) | The data for the whole DB
+| Config | [Config](#config) | Gnorm config values from the gnorm.toml file
+| Params | map[string]anything | the values from the Params entry in the config file
 
 
 ## __Table Data__
@@ -25,9 +25,9 @@ Data passed to each table template:
 | Property | Type | Description |
 | --- | ---- | --- |
 | Table | [Table](#table) | the table being rendered
-| DB | [DB](#db) | The data for the whole DB 
-| Config | [Config](#config) | Gnorm config values from the gnorm.toml file 
-| Params | map[string]anything | the values from the Params entry in the config file 
+| DB | [DB](#db) | The data for the whole DB
+| Config | [Config](#config) | Gnorm config values from the gnorm.toml file
+| Params | map[string]anything | the values from the Params entry in the config file
 
 
 
@@ -38,9 +38,9 @@ Data passed to each enum template:
 | Property | Type | Description |
 | --- | ---- | --- |
 | Enum | [Enum](#enum) | the enum being rendered
-| DB | [DB](#db) | The data for the whole DB 
-| Config | [Config](#config) | Gnorm config values from the gnorm.toml file 
-| Params | map[string]anything | the values from the Params entry in the config file 
+| DB | [DB](#db) | The data for the whole DB
+| Config | [Config](#config) | Gnorm config values from the gnorm.toml file
+| Params | map[string]anything | the values from the Params entry in the config file
 
 
 ## __Type Definitions__
@@ -56,26 +56,29 @@ Data representing the entire DB schema(s).
 | Schemas | list of [Schemas](#schema) | all the schemas parsed by gnorm
 | SchemasByName | map[string][Schema](#schema) | map of schema DBName to Schema
 
-
 ### Column
 
 Column is the data about a DB column of a table.
 
 | Property | Type | Description |
 | --- | ---- | --- |
+| Table | [Table](#table) | the table this column is in
 | Name  | string | the converted name of the column
 | DBName | string | the original name of the column in the DB
 | Type |string | the converted name of the type
-| DBType | string | the original type name of the column in the DB 
-| IsArray | boolean | true if the column type is an array 
+| DBType | string | the original type name of the column in the DB
+| IsArray | boolean | true if the column type is an array
 | Length | integer | non-zero if the type has a length (e.g. varchar[16])
 | UserDefined | boolean | true if the type is user-defined
 | Nullable | boolean | true if the column is not NON NULL
 | HasDefault | boolean | true if the column has a default
 | IsPrimaryKey | boolean | true if the column is a primary key
+| IsFK | boolean | true if the column is a foreign key
+| HasFKRef | boolean | true if the column is referenced by a foreign key
+| FKColumn | [ForeignKeyColumn](#foreignKeyColumn) | foreign key column definition
+| FKColumnRefs | [ForeignKeyColumns](#foreignKeyColumns) | all foreign key columns referencing this column
+| FKColumnRefsByName | map[string][ForeignKeyColumn](#foreignKeyColumn) | all foreign key columns referencing this column by foreign key name
 | Orig | db-specific | the raw database column data (different per db type)
-
-
 
 ### Columns
 
@@ -84,7 +87,7 @@ have the following properties:
 
 | Property | Type | Description |
 | --- | ---- | --- |
-| DBNames | [Strings](#strings) | the ordered list of DBNames of all the columns 
+| DBNames | [Strings](#strings) | the ordered list of DBNames of all the columns
 | Names | [Strings](#strings) | the ordered list of Names of all the columns
 
 ### ConfigData
@@ -100,7 +103,7 @@ have the following properties:
 | TypeMap | map[string]string | map of DBNames to converted names for column types
 | NullableTypeMap | map[string]string | map of DBNames to converted names for column types (used when Nullable=true)
 | PluginDirs | list of string | ordered list of directories to look in for plugins
-| OutputDir | string | the directory where gnorm should output all its data 
+| OutputDir | string | the directory where gnorm should output all its data
 | StaticDir | string | the directory from which to statically copy files to outputdir
 
 ### Enum
@@ -122,7 +125,7 @@ have the following properties:
 
 | Property | Type | Description |
 | --- | ---- | --- |
-| DBNames | [Strings](#strings) | the ordered list of DBNames of all the enums 
+| DBNames | [Strings](#strings) | the ordered list of DBNames of all the enums
 | Names | [Strings](#strings) | the ordered list of Names of all the enums
 
 ### EnumValue
@@ -133,15 +136,50 @@ have the following properties:
 |DBName | string | the original label of the enum in the DB
 |Value |  int | the value for this enum value (order)
 
+### ForeignKey
+
+| Property | Type | Description |
+| --- | ---- | ---|
+| DBName | string | the original name of the foreign key constraint in the db
+| Name | string | the converted name of the foreign key constraint
+| TableDBName | string | the original name of the table in the db
+| RefTableDBName | string | the original name of the foreign table in the db
+| Table | [Table](#table) | the foreign key table
+| RefTable | [Table](#table) | the foreign key foreign table
+| FKColumns | [ForeignKeyColumns](#foreignKeyColumns) | all foreign key columns belonging to the foreign key
+
+### ForeignKeys
+
+| Property | Type | Description |
+| --- | ---- | ---|
+| DBNames | [Strings](#strings) | the list of DBNames of all the foreign keys
+| Names | [Strings](#strings) | the list of converted names of all the foreign keys
+
+### ForeignKeyColumn
+
+| Property | Type | Description |
+| --- | ---- | ---|
+| DBName | string | the original name of the foreign key constraint in the db
+| ColumnDBName | string | the original name of the column in the db
+| RefColumnDBName | string | the original name of the foreign column in the db
+| Column | [Column](#column) | the foreign key column
+| RefColumn | [Column](#column) | the referenced column
+
+### ForeignKeyColumns
+
+| Property | Type | Description |
+| --- | ---- | ---|
+| DBNames | [Strings](#strings) | the list of DBNames of all the foreign keys
+
 ### Schema
 
 A schema represents a namespace of tables and enums in a database.
 
 | Property | Type | Description |
 | --- | ---- | --- |
-| Name | string the converted name of the schema
-| DBName | string | the original name of the schema in the DB 
-| Tables | [Tables](#tables) | the list of [Table](#table) values in this schema 
+| Name | string | the converted name of the schema
+| DBName | string | the original name of the schema in the DB
+| Tables | [Tables](#tables) | the list of [Table](#table) values in this schema
 | Enums | [Enums](#enums) | the list of [Enum](#enum) values in this schema
 | TablesByName | map\[string\][Table](#table) | map of DBName to Table.
 
@@ -167,6 +205,10 @@ Strings is a list of string values with the following methods
 | HasPrimaryKey | bool | does the column have at least one primary key
 | Indexes | [Indexes](#indexes) | the list of indexes on the table
 | IndexesByName | map[string][Index](#index) | map index dbname to index
+| ForeignKeys | [ForeignKeys](#foreignKeys) | foreign keys
+| ForeignKeyRefs | [ForeignKeys](#foreignKeys) | foreign keys referencing this table
+| FKByName | map[string][ForeignKey](#foreignKey) | foreign keys by foreign key name
+| FKRefsByName | map[string][ForeignKey](#foreignKey) | foreign keys referencing this table by name
 
 ### Tables
 
