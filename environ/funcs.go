@@ -17,6 +17,9 @@ import (
 // FuncMap is the default list of functions available to templates.  If you add
 // methods here, please keep them alphabetical.
 var FuncMap = map[string]interface{}{
+	// namespaces
+	"strings": strFuncs,
+
 	"camel":        kace.Camel,
 	"compare":      strings.Compare,
 	"contains":     strings.Contains,
