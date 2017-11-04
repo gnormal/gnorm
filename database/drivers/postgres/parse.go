@@ -387,8 +387,10 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 		}
 		r.Columns = strings.Split(cs, ",") // array converted to string in query
 
-		// postgres prepends schema onto table name
-		r.TableName = r.TableName[len(r.SchemaName)+1:]
+		// postgres prepends schema onto table name if outside of public schema
+		if r.SchemaName != "public" {
+			r.TableName = r.TableName[len(r.SchemaName)+1:]
+		}
 
 		results = append(results, r)
 	}
