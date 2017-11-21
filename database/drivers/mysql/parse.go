@@ -138,6 +138,37 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		tableIndex[s.IndexName] = append(tableIndex[s.IndexName], column)
 	}
 
+	foreignKeys, err := queryForeignKeys(log, db, schemaNames)
+	if err != nil {
+		return nil, err
+	}
+	for _, fk := range foreignKeys {
+		if !filterTables(fk.SchemaName, fk.TableName) {
+			log.Printf("skipping constraint %q because it is for filtered-out table %v.%v", fk.Name, fk.SchemaName, fk.TableName)
+			continue
+		}
+
+		schema, ok := schemas[fk.SchemaName]
+
+		if !ok {
+			log.Printf("Should be impossible: constraint %q references unknown schema %q", fk.Name, fk.SchemaName)
+			continue
+		}
+		table, ok := schema[fk.TableName]
+		if !ok {
+			log.Printf("Should be impossible: constraint %q references unknown table %q in schema %q", fk.Name, fk.TableName, fk.SchemaName)
+			continue
+		}
+
+		for _, col := range table {
+			if fk.ColumnName != col.Name {
+				continue
+			}
+			col.IsForeignKey = true
+			col.ForeignKey = fk
+		}
+	}
+
 	res := &database.Info{Schemas: make([]*database.Schema, 0, len(schemas))}
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
