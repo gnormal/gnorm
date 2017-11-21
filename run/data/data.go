@@ -280,6 +280,24 @@ func (fkc ForeignKeyColumns) DBNames() Strings {
 	return names
 }
 
+// ColumnDBNames returns the list of column database names.
+func (fkc ForeignKeyColumns) ColumnDBNames() Strings {
+	names := make(Strings, len(fkc))
+	for x := range fkc {
+		names[x] = fkc[x].ColumnDBName
+	}
+	return names
+}
+
+// RefColumnDBNames returns the list of foreign column database names.
+func (fkc ForeignKeyColumns) RefColumnDBNames() Strings {
+	names := make(Strings, len(fkc))
+	for x := range fkc {
+		names[x] = fkc[x].RefColumnDBName
+	}
+	return names
+}
+
 // Columns represents the ordered list of columns in a table.
 type Columns []*Column
 

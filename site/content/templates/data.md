@@ -75,9 +75,9 @@ Column is the data about a DB column of a table.
 | IsPrimaryKey | boolean | true if the column is a primary key
 | IsFK | boolean | true if the column is a foreign key
 | HasFKRef | boolean | true if the column is referenced by a foreign key
-| FKColumn | [ForeignKeyColumn](#foreignKeyColumn) | foreign key column definition
-| FKColumnRefs | [ForeignKeyColumns](#foreignKeyColumns) | all foreign key columns referencing this column
-| FKColumnRefsByName | map[string][ForeignKeyColumn](#foreignKeyColumn) | all foreign key columns referencing this column by foreign key name
+| FKColumn | [ForeignKeyColumn](#foreignkeycolumn) | foreign key column definition
+| FKColumnRefs | [ForeignKeyColumns](#foreignkeycolumns) | all foreign key columns referencing this column
+| FKColumnRefsByName | map[string][ForeignKeyColumn](#foreignkeycolumn) | all foreign key columns referencing this column by foreign key name
 | Orig | db-specific | the raw database column data (different per db type)
 
 ### Columns
@@ -146,7 +146,7 @@ have the following properties:
 | RefTableDBName | string | the original name of the foreign table in the db
 | Table | [Table](#table) | the foreign key table
 | RefTable | [Table](#table) | the foreign key foreign table
-| FKColumns | [ForeignKeyColumns](#foreignKeyColumns) | all foreign key columns belonging to the foreign key
+| FKColumns | [ForeignKeyColumns](#foreignkeycolumns) | all foreign key columns belonging to the foreign key
 
 ### ForeignKeys
 
@@ -170,6 +170,8 @@ have the following properties:
 | Property | Type | Description |
 | --- | ---- | ---|
 | DBNames | [Strings](#strings) | the list of DBNames of all the foreign keys
+| ColumnDBNames | [Strings](#strings) | the list of column database names
+| RefColumnDBNames | [Strings](#strings) | the list of foreign column database names
 
 ### Schema
 
