@@ -162,7 +162,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	}
 	log.Printf("found %d indexes for all tables in all schemas", len(indexResults))
 
-	indexes := make(map[string]map[string]map[string][]*database.Column)
+	indexes := make(map[string]map[string][]*database.Index)
 outer:
 	for _, r := range indexResults {
 		if !filterTables(r.SchemaName, r.TableName) {
@@ -198,17 +198,29 @@ outer:
 
 		schemaIndex, ok := indexes[r.SchemaName]
 		if !ok {
-			schemaIndex = make(map[string]map[string][]*database.Column)
+			schemaIndex = make(map[string][]*database.Index)
 			indexes[r.SchemaName] = schemaIndex
 		}
 
 		tableIndex, ok := schemaIndex[r.TableName]
 		if !ok {
-			tableIndex = make(map[string][]*database.Column)
+			tableIndex = make([]*database.Index, 0)
 			schemaIndex[r.TableName] = tableIndex
 		}
 
-		tableIndex[r.IndexName] = append(tableIndex[r.IndexName], columns...)
+		var index *database.Index
+		for _, i := range tableIndex {
+			if i.Name == r.IndexName {
+				index = i
+				break
+			}
+		}
+		if index == nil {
+			index = &database.Index{Name: r.IndexName}
+			schemaIndex[r.TableName] = append(tableIndex, index)
+		}
+
+		index.Columns = columns
 	}
 
 	res := &database.Info{Schemas: make([]*database.Schema, 0, len(schemas))}
@@ -224,10 +236,7 @@ outer:
 			dbtables[tname] = &database.Table{Name: tname, Columns: columns}
 		}
 		for tname, index := range indexes[schema] {
-			dbtables[tname].Indexes = make([]*database.Index, 0)
-			for iname, columns := range index {
-				dbtables[tname].Indexes = append(dbtables[tname].Indexes, &database.Index{Name: iname, Columns: columns})
-			}
+			dbtables[tname].Indexes = index
 		}
 		for _, table := range dbtables {
 			s.Tables = append(s.Tables, table)

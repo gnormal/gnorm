@@ -88,7 +88,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		}
 	}
 
-	indexes := make(map[string]map[string]map[string][]*database.Column)
+	indexes := make(map[string]map[string][]*database.Index)
 
 	statistics, err := statistics.Query(db, statistics.TableSchemaCol.In(schemaNames))
 	if err != nil {
@@ -126,16 +126,29 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 
 		schemaIndex, ok := indexes[s.TableSchema]
 		if !ok {
-			schemaIndex = make(map[string]map[string][]*database.Column)
+			schemaIndex = make(map[string][]*database.Index)
 			indexes[s.TableSchema] = schemaIndex
 		}
 
 		tableIndex, ok := schemaIndex[s.TableName]
 		if !ok {
-			tableIndex = make(map[string][]*database.Column)
+			tableIndex = make([]*database.Index, 0)
 			schemaIndex[s.TableName] = tableIndex
 		}
-		tableIndex[s.IndexName] = append(tableIndex[s.IndexName], column)
+
+		var index *database.Index
+		for _, i := range tableIndex {
+			if i.Name == s.IndexName {
+				index = i
+				break
+			}
+		}
+		if index == nil {
+			index = &database.Index{Name: s.IndexName}
+			schemaIndex[s.TableName] = append(tableIndex, index)
+		}
+
+		index.Columns = append(index.Columns, column)
 	}
 
 	foreignKeys, err := queryForeignKeys(log, db, schemaNames)
@@ -182,10 +195,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			dbtables[tname] = &database.Table{Name: tname, Columns: columns}
 		}
 		for tname, index := range indexes[schema] {
-			dbtables[tname].Indexes = make([]*database.Index, 0, len(indexes))
-			for iname, columns := range index {
-				dbtables[tname].Indexes = append(dbtables[tname].Indexes, &database.Index{Name: iname, Columns: columns})
-			}
+			dbtables[tname].Indexes = index
 		}
 		for _, table := range dbtables {
 			s.Tables = append(s.Tables, table)
