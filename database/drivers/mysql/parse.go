@@ -130,14 +130,14 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			indexes[s.TableSchema] = schemaIndex
 		}
 
-		tableIndex, ok := schemaIndex[s.TableName]
+		tableIndices, ok := schemaIndex[s.TableName]
 		if !ok {
-			tableIndex = make([]*database.Index, 0)
-			schemaIndex[s.TableName] = tableIndex
+			tableIndices = make([]*database.Index, 0)
+			schemaIndex[s.TableName] = tableIndices
 		}
 
 		var index *database.Index
-		for _, i := range tableIndex {
+		for _, i := range tableIndices {
 			if i.Name == s.IndexName {
 				index = i
 				break
@@ -145,7 +145,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		}
 		if index == nil {
 			index = &database.Index{Name: s.IndexName}
-			schemaIndex[s.TableName] = append(tableIndex, index)
+			schemaIndex[s.TableName] = append(tableIndices, index)
 		}
 
 		index.Columns = append(index.Columns, column)
