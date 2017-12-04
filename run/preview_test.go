@@ -51,7 +51,8 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 		Schemas: []*database.Schema{{
 			Name: "schema",
 			Tables: []*database.Table{{
-				Name: "table",
+				Name:    "table",
+				Comment: "a table",
 				Columns: []*database.Column{{
 					Name:         "col1",
 					Type:         "int",
@@ -114,6 +115,7 @@ const expectYaml = `schemas:
   tables:
   - name: abc table
     dbname: table
+    comment: a table
     columns:
     - name: abc col1
       dbname: col1
@@ -231,6 +233,7 @@ const expectYaml = `schemas:
         refcolumndbname: col1
   - name: abc tb2
     dbname: tb2
+    comment: ""
     columns:
     - name: abc col1
       dbname: col1
@@ -311,7 +314,7 @@ Enum: abc enum(schema.enum)
 +---------------+-----------+-------+
 
 
-Table: abc table(schema.table)
+Table: abc table(schema.table); a table
 +----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+--------------+
 |   Name   | DBName |   Type   | DBType  | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |   Comment    |
 +----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+--------------+
@@ -383,6 +386,7 @@ var expectJSON = `
         {
           "Name": "abc table",
           "DBName": "table",
+          "Comment": "a table",
           "Columns": [
             {
               "Name": "abc col1",
@@ -535,6 +539,7 @@ var expectJSON = `
         {
           "Name": "abc tb2",
           "DBName": "tb2",
+          "Comment": "",
           "Columns": [
             {
               "Name": "abc col1",

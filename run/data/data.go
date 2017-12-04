@@ -50,6 +50,7 @@ type Schema struct {
 type Table struct {
 	Name           string                 // the converted name of the table
 	DBName         string                 // the original name of the table in the DB
+	Comment        string                 // the comment attached to the table
 	Schema         *Schema                `yaml:"-" json:"-"` // the schema this table is in
 	Columns        Columns                // Database columns
 	ColumnsByName  map[string]*Column     `yaml:"-" json:"-"` // dbname to column
