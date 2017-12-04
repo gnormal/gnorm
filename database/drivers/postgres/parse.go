@@ -211,6 +211,39 @@ outer:
 		tableIndex[r.IndexName] = append(tableIndex[r.IndexName], columns...)
 	}
 
+	columnCommentResults, err := queryColumnComments(log, db, schemaNames)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("found %d comments for all columns in all tables in all specified schemas", len(columnCommentResults))
+
+	for _, r := range columnCommentResults {
+		if !filterTables(r.SchemaName, r.TableName) {
+			continue
+		}
+
+		schema, ok := schemas[r.SchemaName]
+		if !ok {
+			log.Printf("Should be impossible: comment for %q.%q.%q references unknown schema %q",
+				r.SchemaName, r.TableName, r.ColumnName, r.SchemaName)
+			continue
+		}
+
+		table, ok := schema[r.TableName]
+		if !ok {
+			log.Printf("Should be impossible: comment for %q.%q.%q references unknown table %q",
+				r.SchemaName, r.TableName, r.ColumnName, r.TableName)
+			continue
+		}
+
+		for _, c := range table {
+			if c.Name == r.ColumnName {
+				c.Comment = r.Comment
+				break
+			}
+		}
+	}
+
 	res := &database.Info{Schemas: make([]*database.Schema, 0, len(schemas))}
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
@@ -393,6 +426,58 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 		}
 
 		results = append(results, r)
+	}
+
+	return results, nil
+}
+
+type columnCommentResult struct {
+	SchemaName string
+	TableName  string
+	ColumnName string
+	Comment    string
+}
+
+func queryColumnComments(log *log.Logger, db *sql.DB, schemaNames []string) ([]columnCommentResult, error) {
+	const q = `
+	SELECT
+		cols.table_schema,
+		cols.table_name,
+		cols.column_name,
+			(
+					SELECT pg_catalog.col_description(c.oid, cols.ordinal_position::int)
+					FROM pg_catalog.pg_class c
+					WHERE c.relname = cols.table_name
+			) AS column_comment
+	FROM information_schema.columns cols
+	WHERE cols.table_schema IN (%s)`
+
+	spots := make([]string, len(schemaNames))
+	vals := make([]interface{}, len(schemaNames))
+	for i := range schemaNames {
+		spots[i] = fmt.Sprintf("$%v", i+1)
+		vals[i] = schemaNames[i]
+	}
+
+	query := fmt.Sprintf(q, strings.Join(spots, ", "))
+	rows, err := db.Query(query, vals...)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error querying comments")
+	}
+	defer rows.Close()
+
+	var results []columnCommentResult
+	for rows.Next() {
+		var r columnCommentResult
+		var c sql.NullString
+		if err := rows.Scan(&r.SchemaName, &r.TableName, &r.ColumnName, &c); err != nil {
+			return nil, errors.WithMessage(err, "error scanning comment")
+		}
+
+		if c.Valid {
+			r.Comment = c.String
+			results = append(results, r)
+		}
 	}
 
 	return results, nil

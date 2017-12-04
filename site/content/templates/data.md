@@ -72,6 +72,7 @@ Column is the data about a DB column of a table.
 | UserDefined | boolean | true if the type is user-defined
 | Nullable | boolean | true if the column is not NON NULL
 | HasDefault | boolean | true if the column has a default
+| Comment | string | the comment attached to the column
 | IsPrimaryKey | boolean | true if the column is a primary key
 | IsFK | boolean | true if the column is a foreign key
 | HasFKRef | boolean | true if the column is referenced by a foreign key

@@ -203,6 +203,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.En
 		Nullable:     c.IsNullable == "YES",
 		HasDefault:   c.ColumnDefault.String != "",
 		Type:         c.DataType,
+		Comment:      c.ColumnComment,
 		Orig:         *c,
 		IsPrimaryKey: strings.Contains(c.ColumnKey, "PRI"),
 	}

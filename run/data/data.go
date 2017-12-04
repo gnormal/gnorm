@@ -89,6 +89,7 @@ type Column struct {
 	UserDefined        bool                         // true if the type is user-defined
 	Nullable           bool                         // true if the column is not NON NULL
 	HasDefault         bool                         // true if the column has a default
+	Comment            string                       // the comment attached to the column
 	IsPrimaryKey       bool                         // true if the column is a primary key
 	IsFK               bool                         // true if the column is a foreign key
 	HasFKRef           bool                         // true if the column is referenced by a foreign key
