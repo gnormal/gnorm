@@ -202,14 +202,8 @@ outer:
 			indexes[r.SchemaName] = schemaIndex
 		}
 
-		tableIndices, ok := schemaIndex[r.TableName]
-		if !ok {
-			tableIndices = make([]*database.Index, 0)
-			schemaIndex[r.TableName] = tableIndices
-		}
-
 		var index *database.Index
-		for _, i := range tableIndices {
+		for _, i := range schemaIndex[r.TableName] {
 			if i.Name == r.IndexName {
 				index = i
 				break
@@ -217,7 +211,7 @@ outer:
 		}
 		if index == nil {
 			index = &database.Index{Name: r.IndexName}
-			schemaIndex[r.TableName] = append(tableIndices, index)
+			schemaIndex[r.TableName] = append(schemaIndex[r.TableName], index)
 		}
 
 		index.Columns = columns
