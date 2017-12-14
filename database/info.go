@@ -37,8 +37,9 @@ type Table struct {
 
 // Index contains the definition of a database index.
 type Index struct {
-	Name    string    // name of the index in the database
-	Columns []*Column // list of columns in this index
+	Name     string    // name of the index in the database
+	IsUnique bool      // true if the index is unique
+	Columns  []*Column // list of columns in this index
 }
 
 // PrimaryKey contains the definition of a database primary key.
@@ -49,7 +50,7 @@ type PrimaryKey struct {
 	Name       string // the original name of the key constraint in the db
 }
 
-// Foreign Key contains the definition of a database foreign key
+// ForeignKey contains the definition of a database foreign key
 type ForeignKey struct {
 	SchemaName               string // the original name of the schema in the db
 	TableName                string // the original name of the table in the db

@@ -98,7 +98,7 @@ type Column struct {
 	Orig               interface{}                  `yaml:"-" json:"-"` // the raw database column data
 }
 
-// Foreign Key contains the
+// ForeignKey contains the
 type ForeignKey struct {
 	DBName         string            // the original name of the foreign key constraint in the db
 	Name           string            // the converted name of the foreign key constraint
@@ -109,7 +109,7 @@ type ForeignKey struct {
 	FKColumns      ForeignKeyColumns // all foreign key columns belonging to the foreign key
 }
 
-// Foreign Column contains the definition of a database foreign key at the kcolumn level
+// ForeignKeyColumn contains the definition of a database foreign key at the kcolumn level
 type ForeignKeyColumn struct {
 	DBName          string  // the original name of the foreign key constraint in the db
 	ColumnDBName    string  // the original name of the column in the db
@@ -120,9 +120,10 @@ type ForeignKeyColumn struct {
 
 // Index is the data about a table index.
 type Index struct {
-	Name    string  // the converted name of the index
-	DBName  string  // dbname of the index
-	Columns Columns // columns used in the index
+	Name     string  // the converted name of the index
+	DBName   string  // dbname of the index
+	IsUnique bool    // true if index is unique
+	Columns  Columns // columns used in the index
 }
 
 // Enum represents a type that has a set of allowed values.

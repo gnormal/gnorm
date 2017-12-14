@@ -69,7 +69,8 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 					Nullable: true,
 				}},
 				Indexes: []*database.Index{{
-					Name: "col1_pkey",
+					Name:     "col1_pkey",
+					IsUnique: true,
 					Columns: []*database.Column{{
 						Name:         "col1",
 						Type:         "int",
@@ -193,6 +194,7 @@ const expectYaml = `schemas:
     indexes:
     - name: abc col1_pkey
       dbname: col1_pkey
+      isunique: true
       columns:
       - name: abc col1
         dbname: col1
@@ -310,11 +312,11 @@ Table: abc table(schema.table)
 | abc col4 | col4   |          | *string | false   | false        | false | false    |      0 | false       | true     | false      |
 +----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
 Indexes:
-+---------------+-----------+----------+
-|     Name      |  DBName   | Columns  |
-+---------------+-----------+----------+
-| abc col1_pkey | col1_pkey | abc col1 |
-+---------------+-----------+----------+
++---------------+-----------+----------+----------+
+|     Name      |  DBName   | IsUnique | Columns  |
++---------------+-----------+----------+----------+
+| abc col1_pkey | col1_pkey | true     | abc col1 |
++---------------+-----------+----------+----------+
 
 
 Table: abc tb2(schema.tb2)
@@ -325,10 +327,10 @@ Table: abc tb2(schema.tb2)
 | abc col2 | col2   | INTEGER | int    | false   | false        | true  | false    |      0 | false       | false    | false      |
 +----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
 Indexes:
-+------+--------+---------+
-| Name | DBName | Columns |
-+------+--------+---------+
-+------+--------+---------+
++------+--------+----------+---------+
+| Name | DBName | IsUnique | Columns |
++------+--------+----------+---------+
++------+--------+----------+---------+
 
 `
 
@@ -472,6 +474,7 @@ var expectJSON = `
             {
               "Name": "abc col1_pkey",
               "DBName": "col1_pkey",
+              "IsUnique": true,
               "Columns": [
                 {
                   "Name": "abc col1",
