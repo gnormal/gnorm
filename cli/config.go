@@ -124,4 +124,9 @@ type Config struct {
 	// The directory structure is preserved when copying the files to the
 	// OutputDir
 	StaticDir string
+
+	// NoOverwriteGlobs is a list of globs
+	// (https://golang.org/pkg/path/filepath/#Match). If a filename matches a glob
+	// *and* a file exists with that name, it will not be generated.
+	NoOverwriteGlobs []string
 }

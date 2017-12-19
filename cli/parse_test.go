@@ -88,9 +88,10 @@ func TestParseConfig(t *testing.T) {
 			"integer":           "sql.NullInt64",
 			"numeric":           "sql.NullFloat64",
 		},
-		PluginDirs: []string{"plugins"},
-		OutputDir:  "gnorm",
-		StaticDir:  "static",
+		PluginDirs:       []string{"plugins"},
+		OutputDir:        "gnorm",
+		StaticDir:        "static",
+		NoOverwriteGlobs: []string{"*.perm.go"},
 	}
 	if diff := cmp.Diff(cfg.ConfigData, expected); diff != "" {
 		t.Fatalf("Actual differs from expected:\n%s", diff)

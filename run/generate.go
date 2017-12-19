@@ -63,7 +63,7 @@ func generateSchemas(env environ.Values, cfg *Config, db *data.DBData) error {
 		}
 		for _, target := range cfg.SchemaPaths {
 			env.Log.Printf("Generating output for schema %v", schema.Name)
-			if err := genFile(env, fileData, contents, target, cfg.PostRun, cfg.OutputDir); err != nil {
+			if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir); err != nil {
 				return errors.WithMessage(err, "generating file for schema "+schema.Name)
 			}
 		}
@@ -82,7 +82,7 @@ func generateEnums(env environ.Values, cfg *Config, db *data.DBData) error {
 				Params: cfg.Params,
 			}
 			for _, target := range cfg.EnumPaths {
-				if err := genFile(env, fileData, contents, target, cfg.PostRun, cfg.OutputDir); err != nil {
+				if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir); err != nil {
 					env.Log.Printf("Generating output for enum %v", enum.Name)
 					return errors.WithMessage(err, "generating file for enum "+enum.Name)
 				}
@@ -103,7 +103,7 @@ func generateTables(env environ.Values, cfg *Config, db *data.DBData) error {
 			}
 			fileData := struct{ Schema, Table string }{Schema: schema.Name, Table: table.Name}
 			for _, target := range cfg.TablePaths {
-				if err := genFile(env, fileData, contents, target, cfg.PostRun, cfg.OutputDir); err != nil {
+				if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir); err != nil {
 					env.Log.Printf("Generating output for table %v", table.Name)
 					return errors.WithMessage(err, "generating file for table "+table.Name)
 				}
@@ -113,13 +113,26 @@ func generateTables(env environ.Values, cfg *Config, db *data.DBData) error {
 	return nil
 }
 
-func genFile(env environ.Values, filedata, contents interface{}, target OutputTarget, postrun []string, outputDir string) error {
+func genFile(env environ.Values, filedata, contents interface{}, target OutputTarget, noOverwriteGlobs, postrun []string, outputDir string) error {
 	buf := &bytes.Buffer{}
 	err := target.Filename.Execute(buf, filedata)
 	if err != nil {
 		return errors.WithMessage(err, "failed to run Filename template")
 	}
 	outputPath := filepath.Join(outputDir, buf.String())
+
+	// if file exists and filename matches glob, abort
+	if _, err := os.Stat(outputPath); err == nil {
+		for _, glob := range noOverwriteGlobs {
+			m, err := filepath.Match(glob, buf.String())
+			if err != nil {
+				return errors.WithMessage(err, "error checking glob")
+			}
+			if m {
+				return nil
+			}
+		}
+	}
 
 	if err := os.MkdirAll(filepath.Dir(outputPath), 0700); err != nil {
 		return errors.WithMessage(err, "error creating template output directory")
