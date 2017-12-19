@@ -64,6 +64,7 @@ type ForeignKey struct {
 type Column struct {
 	Name         string      // the original name of the column in the DB
 	Type         string      // the original type of the column in the DB
+	ColumnType   string      // [mysql] a detailed description of the type of the column in the DB
 	IsArray      bool        // true if the column type is an array
 	Length       int         // non-zero if the type has a length (e.g. varchar[16])
 	UserDefined  bool        // true if the type is user-defined

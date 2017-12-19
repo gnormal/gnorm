@@ -55,6 +55,7 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 				Columns: []*database.Column{{
 					Name:         "col1",
 					Type:         "int",
+					ColumnType:   "int(10)",
 					IsPrimaryKey: true,
 				}, {
 					Name:     "col2",
@@ -73,6 +74,7 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 					Columns: []*database.Column{{
 						Name:         "col1",
 						Type:         "int",
+						ColumnType:   "int(10)",
 						IsPrimaryKey: true,
 					}},
 				}},
@@ -117,6 +119,7 @@ const expectYaml = `schemas:
       dbname: col1
       type: INTEGER
       dbtype: int
+      columntype: int(10)
       isarray: false
       length: 0
       userdefined: false
@@ -134,6 +137,7 @@ const expectYaml = `schemas:
       dbname: col2
       type: '*INTEGER'
       dbtype: '*int'
+      columntype: ""
       isarray: false
       length: 0
       userdefined: false
@@ -148,6 +152,7 @@ const expectYaml = `schemas:
       dbname: col3
       type: ""
       dbtype: string
+      columntype: ""
       isarray: false
       length: 0
       userdefined: false
@@ -162,6 +167,7 @@ const expectYaml = `schemas:
       dbname: col4
       type: ""
       dbtype: '*string'
+      columntype: ""
       isarray: false
       length: 0
       userdefined: false
@@ -177,6 +183,7 @@ const expectYaml = `schemas:
       dbname: col1
       type: INTEGER
       dbtype: int
+      columntype: int(10)
       isarray: false
       length: 0
       userdefined: false
@@ -198,6 +205,7 @@ const expectYaml = `schemas:
         dbname: col1
         type: INTEGER
         dbtype: int
+        columntype: int(10)
         isarray: false
         length: 0
         userdefined: false
@@ -228,6 +236,7 @@ const expectYaml = `schemas:
       dbname: col1
       type: INTEGER
       dbtype: int
+      columntype: ""
       isarray: false
       length: 0
       userdefined: false
@@ -242,6 +251,7 @@ const expectYaml = `schemas:
       dbname: col2
       type: INTEGER
       dbtype: int
+      columntype: ""
       isarray: false
       length: 0
       userdefined: false
@@ -260,6 +270,7 @@ const expectYaml = `schemas:
       dbname: col1
       type: INTEGER
       dbtype: int
+      columntype: ""
       isarray: false
       length: 0
       userdefined: false
@@ -301,14 +312,14 @@ Enum: abc enum(schema.enum)
 
 
 Table: abc table(schema.table)
-+----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
-|   Name   | DBName |   Type   | DBType  | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |
-+----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
-| abc col1 | col1   | INTEGER  | int     | false   | true         | false | true     |      0 | false       | false    | false      |
-| abc col2 | col2   | *INTEGER | *int    | false   | false        | false | false    |      0 | false       | true     | false      |
-| abc col3 | col3   |          | string  | false   | false        | false | false    |      0 | false       | false    | false      |
-| abc col4 | col4   |          | *string | false   | false        | false | false    |      0 | false       | true     | false      |
-+----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
++----------+--------+----------+---------+------------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+|   Name   | DBName |   Type   | DBType  | ColumnType | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |
++----------+--------+----------+---------+------------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+| abc col1 | col1   | INTEGER  | int     | int(10)    | false   | true         | false | true     |      0 | false       | false    | false      |
+| abc col2 | col2   | *INTEGER | *int    |            | false   | false        | false | false    |      0 | false       | true     | false      |
+| abc col3 | col3   |          | string  |            | false   | false        | false | false    |      0 | false       | false    | false      |
+| abc col4 | col4   |          | *string |            | false   | false        | false | false    |      0 | false       | true     | false      |
++----------+--------+----------+---------+------------+---------+--------------+-------+----------+--------+-------------+----------+------------+
 Indexes:
 +---------------+-----------+----------+
 |     Name      |  DBName   | Columns  |
@@ -318,12 +329,12 @@ Indexes:
 
 
 Table: abc tb2(schema.tb2)
-+----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
-|   Name   | DBName |  Type   | DBType | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |
-+----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
-| abc col1 | col1   | INTEGER | int    | false   | true         | false | false    |      0 | false       | false    | false      |
-| abc col2 | col2   | INTEGER | int    | false   | false        | true  | false    |      0 | false       | false    | false      |
-+----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
++----------+--------+---------+--------+------------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+|   Name   | DBName |  Type   | DBType | ColumnType | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |
++----------+--------+---------+--------+------------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+| abc col1 | col1   | INTEGER | int    |            | false   | true         | false | false    |      0 | false       | false    | false      |
+| abc col2 | col2   | INTEGER | int    |            | false   | false        | true  | false    |      0 | false       | false    | false      |
++----------+--------+---------+--------+------------+---------+--------------+-------+----------+--------+-------------+----------+------------+
 Indexes:
 +------+--------+---------+
 | Name | DBName | Columns |
@@ -378,6 +389,7 @@ var expectJSON = `
               "DBName": "col1",
               "Type": "INTEGER",
               "DBType": "int",
+              "ColumnType": "int(10)",
               "IsArray": false,
               "Length": 0,
               "UserDefined": false,
@@ -400,6 +412,7 @@ var expectJSON = `
               "DBName": "col2",
               "Type": "*INTEGER",
               "DBType": "*int",
+              "ColumnType": "",
               "IsArray": false,
               "Length": 0,
               "UserDefined": false,
@@ -416,6 +429,7 @@ var expectJSON = `
               "DBName": "col3",
               "Type": "",
               "DBType": "string",
+              "ColumnType": "",
               "IsArray": false,
               "Length": 0,
               "UserDefined": false,
@@ -432,6 +446,7 @@ var expectJSON = `
               "DBName": "col4",
               "Type": "",
               "DBType": "*string",
+              "ColumnType": "",
               "IsArray": false,
               "Length": 0,
               "UserDefined": false,
@@ -450,6 +465,7 @@ var expectJSON = `
               "DBName": "col1",
               "Type": "INTEGER",
               "DBType": "int",
+              "ColumnType": "int(10)",
               "IsArray": false,
               "Length": 0,
               "UserDefined": false,
@@ -478,6 +494,7 @@ var expectJSON = `
                   "DBName": "col1",
                   "Type": "INTEGER",
                   "DBType": "int",
+                  "ColumnType": "int(10)",
                   "IsArray": false,
                   "Length": 0,
                   "UserDefined": false,
@@ -524,6 +541,7 @@ var expectJSON = `
               "DBName": "col1",
               "Type": "INTEGER",
               "DBType": "int",
+              "ColumnType": "",
               "IsArray": false,
               "Length": 0,
               "UserDefined": false,
@@ -540,6 +558,7 @@ var expectJSON = `
               "DBName": "col2",
               "Type": "INTEGER",
               "DBType": "int",
+              "ColumnType": "",
               "IsArray": false,
               "Length": 0,
               "UserDefined": false,
@@ -562,6 +581,7 @@ var expectJSON = `
               "DBName": "col1",
               "Type": "INTEGER",
               "DBType": "int",
+              "ColumnType": "",
               "IsArray": false,
               "Length": 0,
               "UserDefined": false,

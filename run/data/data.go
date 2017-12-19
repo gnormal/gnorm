@@ -84,6 +84,7 @@ type Column struct {
 	DBName             string                       // the original name of the column in the DB
 	Type               string                       // the converted name of the type
 	DBType             string                       // the original type of the column in the DB
+	ColumnType         string                       // [mysql] a detail description of the type of the column in the DB
 	IsArray            bool                         // true if the column type is an array
 	Length             int                          // non-zero if the type has a length (e.g. varchar[16])
 	UserDefined        bool                         // true if the type is user-defined

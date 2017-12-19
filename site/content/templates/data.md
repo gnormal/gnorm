@@ -67,6 +67,7 @@ Column is the data about a DB column of a table.
 | DBName | string | the original name of the column in the DB
 | Type |string | the converted name of the type
 | DBType | string | the original type name of the column in the DB
+| ColumnType | string | [mysql] a detailed description of the type of the column in the DB
 | IsArray | boolean | true if the column type is an array
 | Length | integer | non-zero if the type has a length (e.g. varchar[16])
 | UserDefined | boolean | true if the type is user-defined
