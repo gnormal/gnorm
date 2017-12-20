@@ -35,11 +35,6 @@ type Config struct {
 	// "public.book_type" enum to ./gnorm/public/enums/users.go.
 	EnumPaths []OutputTarget
 
-	// NoOverwriteGlobs is a list of strings to be checked before a file is
-	// generated. If the filename matches a glob *and* the file exists, generation
-	// is aborted.
-	NoOverwriteGlobs []string
-
 	// NameConversion defines how the DBName of tables, schemas, and enums are
 	// converted into their Name value.  This is a template that may use all the
 	// regular functions.  The "." value is the DB name of the item. Thus, to
