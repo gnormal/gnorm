@@ -129,6 +129,7 @@ func genFile(env environ.Values, filedata, contents interface{}, target OutputTa
 				return errors.WithMessage(err, "error checking glob")
 			}
 			if m {
+				env.Log.Printf("Skipping generation for file %s", buf.String())
 				return nil
 			}
 		}
