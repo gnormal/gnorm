@@ -28,7 +28,7 @@ Enum: {{.Name}}({{$schema}}.{{.DBName}})
 {{end -}}
 {{range .Tables}}
 Table: {{.Name}}({{$schema}}.{{.DBName}})
-{{makeTable .Columns "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.ColumnType}}|{{.IsArray}}|{{.IsPrimaryKey}}|{{.IsFK}}|{{.HasFKRef}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}|{{.Comment}}" "Name" "DBName" "Type" "DBType" "ColumnType" "IsArray" "IsPrimaryKey" "IsFK" "HasFKRef" "Length" "UserDefined" "Nullable" "HasDefault" "Comment" -}}
+{{makeTable .Columns "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.IsPrimaryKey}}|{{.IsFK}}|{{.HasFKRef}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}|{{.Comment}}" "Name" "DBName" "Type" "DBType" "IsArray" "IsPrimaryKey" "IsFK" "HasFKRef" "Length" "UserDefined" "Nullable" "HasDefault" "Comment" -}}
 Indexes:
 {{makeTable .Indexes "{{.Name}}|{{.DBName}}|{{.IsUnique}}|{{join .Columns.Names \", \"}}" "Name" "DBName" "IsUnique" "Columns"}}
 {{end -}}

@@ -221,7 +221,6 @@ func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.En
 		Nullable:     c.IsNullable == "YES",
 		HasDefault:   c.ColumnDefault.String != "",
 		Type:         c.DataType,
-		ColumnType:   c.ColumnType,
 		Comment:      c.ColumnComment,
 		Orig:         *c,
 		IsPrimaryKey: strings.Contains(c.ColumnKey, "PRI"),
@@ -232,6 +231,12 @@ func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.En
 	// of the column_type.
 	if strings.HasSuffix(c.ColumnType, fmt.Sprintf("(%v)", c.CharacterMaximumLength.Int64)) {
 		col.Length = int(c.CharacterMaximumLength.Int64)
+	}
+
+	// MySQL ColumnType exposes sign information for numeric types. We want to
+	// reflect that the type.
+	if strings.Contains(c.ColumnType, "unsigned") {
+		col.Type += " unsigned"
 	}
 
 	if col.Type != "enum" {
