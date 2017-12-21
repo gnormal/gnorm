@@ -31,14 +31,16 @@ type EnumValue struct {
 // Table contains the definition of a database table.
 type Table struct {
 	Name    string    // the original name of the table in the DB
+	Comment string    // the comment attached to the table
 	Columns []*Column // ordered list of columns in this table
 	Indexes []*Index  // list of indexes in this table
 }
 
 // Index contains the definition of a database index.
 type Index struct {
-	Name    string    // name of the index in the database
-	Columns []*Column // list of columns in this index
+	Name     string    // name of the index in the database
+	IsUnique bool      // true if the index is unique
+	Columns  []*Column // list of columns in this index
 }
 
 // PrimaryKey contains the definition of a database primary key.
@@ -49,7 +51,7 @@ type PrimaryKey struct {
 	Name       string // the original name of the key constraint in the db
 }
 
-// Foreign Key contains the definition of a database foreign key
+// ForeignKey contains the definition of a database foreign key
 type ForeignKey struct {
 	SchemaName               string // the original name of the schema in the db
 	TableName                string // the original name of the table in the db
@@ -70,6 +72,7 @@ type Column struct {
 	UserDefined  bool        // true if the type is user-defined
 	Nullable     bool        // true if the column is not NON NULL
 	HasDefault   bool        // true if the column has a default
+	Comment      string      // the comment attached to the column
 	IsPrimaryKey bool        // true if the column is a primary key
 	IsForeignKey bool        // true if the column is a foreign key
 	ForeignKey   *ForeignKey // foreign key database definition

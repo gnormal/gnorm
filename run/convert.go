@@ -62,6 +62,7 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 		for _, t := range s.Tables {
 			table := &data.Table{
 				DBName:        t.Name,
+				Comment:       t.Comment,
 				Schema:        sch,
 				ColumnsByName: make(map[string]*data.Column, len(t.Columns)),
 				IndexesByName: make(map[string]*data.Index, len(t.Indexes)),
@@ -85,6 +86,7 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 					UserDefined:        c.UserDefined,
 					Nullable:           c.Nullable,
 					HasDefault:         c.HasDefault,
+					Comment:            c.Comment,
 					IsPrimaryKey:       c.IsPrimaryKey,
 					IsFK:               c.IsForeignKey,
 					FKColumnRefsByName: map[string]*data.ForeignKeyColumn{},
@@ -113,7 +115,8 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 
 			for _, i := range t.Indexes {
 				index := &data.Index{
-					DBName: i.Name,
+					DBName:   i.Name,
+					IsUnique: i.IsUnique,
 				}
 				for _, c := range i.Columns {
 					index.Columns = append(index.Columns, table.ColumnsByName[c.Name])

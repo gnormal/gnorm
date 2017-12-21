@@ -39,21 +39,16 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		return nil, err
 	}
 
-	schemas := make(map[string]map[string][]*database.Column, len(schemaNames))
-	for _, name := range schemaNames {
-		schemas[name] = map[string][]*database.Column{}
-	}
+	schemas := make(map[string][]*database.Table, len(schemaNames))
 
 	for _, t := range tables {
 		if !filterTables(t.TableSchema, t.TableName) {
 			continue
 		}
-		s, ok := schemas[t.TableSchema]
-		if !ok {
-			log.Printf("Should be impossible: table %q references unknown schema %q", t.TableName, t.TableSchema)
-			continue
-		}
-		s[t.TableName] = nil
+		schemas[t.TableSchema] = append(schemas[t.TableSchema], &database.Table{
+			Name:    t.TableName,
+			Comment: t.TableComment,
+		})
 	}
 
 	columns, err := columns.Query(db, columns.TableSchemaCol.In(schemaNames))
@@ -67,21 +62,30 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		if !filterTables(c.TableSchema, c.TableName) {
 			continue
 		}
-		schema, ok := schemas[c.TableSchema]
+		tables, ok := schemas[c.TableSchema]
 		if !ok {
 			log.Printf("Should be impossible: column %q references unknown schema %q", c.ColumnName, c.TableSchema)
 			continue
 		}
-		_, ok = schema[c.TableName]
-		if !ok {
+
+		var table *database.Table
+		for _, t := range tables {
+			if t.Name == c.TableName {
+				table = t
+				break
+			}
+		}
+		if table == nil {
 			log.Printf("Should be impossible: column %q references unknown table %q in schema %q", c.ColumnName, c.TableName, c.TableSchema)
 			continue
 		}
-		col, enum, err := toDBColumn(c, log)
-		if err != nil {
-			return nil, err
+
+		col, enum, terr := toDBColumn(c, log)
+		if terr != nil {
+			return nil, terr
 		}
-		schema[c.TableName] = append(schema[c.TableName], col)
+
+		table.Columns = append(table.Columns, col)
 		if enum != nil {
 			enum.Table = c.TableName
 			enums[c.TableSchema] = append(enums[c.TableSchema], enum)
@@ -100,20 +104,26 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			continue
 		}
 
-		schema, ok := schemas[s.TableSchema]
+		tables, ok := schemas[s.TableSchema]
 		if !ok {
 			log.Printf("Should be impossible: index %q references unknown schema %q", s.IndexName, s.TableSchema)
 			continue
 		}
 
-		table, ok := schema[s.TableName]
-		if !ok {
+		var table *database.Table
+		for _, t := range tables {
+			if t.Name == s.TableName {
+				table = t
+				break
+			}
+		}
+		if table == nil {
 			log.Printf("Should be impossible: index %q references unknown table %q", s.IndexName, s.TableName)
 			continue
 		}
 
 		var column *database.Column
-		for _, c := range table {
+		for _, c := range table.Columns {
 			if c.Name == s.ColumnName {
 				column = c
 				break
@@ -138,7 +148,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			}
 		}
 		if index == nil {
-			index = &database.Index{Name: s.IndexName}
+			index = &database.Index{Name: s.IndexName, IsUnique: s.NonUnique == 0}
 			schemaIndex[s.TableName] = append(schemaIndex[s.TableName], index)
 		}
 
@@ -155,19 +165,25 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			continue
 		}
 
-		schema, ok := schemas[fk.SchemaName]
-
+		tables, ok := schemas[fk.SchemaName]
 		if !ok {
 			log.Printf("Should be impossible: constraint %q references unknown schema %q", fk.Name, fk.SchemaName)
 			continue
 		}
-		table, ok := schema[fk.TableName]
-		if !ok {
+
+		var table *database.Table
+		for _, t := range tables {
+			if t.Name == fk.TableName {
+				table = t
+				break
+			}
+		}
+		if table == nil {
 			log.Printf("Should be impossible: constraint %q references unknown table %q in schema %q", fk.Name, fk.TableName, fk.SchemaName)
 			continue
 		}
 
-		for _, col := range table {
+		for _, col := range table.Columns {
 			if fk.ColumnName != col.Name {
 				continue
 			}
@@ -180,19 +196,17 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
 		s := &database.Schema{
-			Name:  schema,
-			Enums: enums[schema],
+			Name:   schema,
+			Tables: tables,
+			Enums:  enums[schema],
 		}
 
 		dbtables := make(map[string]*database.Table, len(tables))
-		for tname, columns := range tables {
-			dbtables[tname] = &database.Table{Name: tname, Columns: columns}
+		for _, t := range tables {
+			dbtables[t.Name] = t
 		}
 		for tname, index := range indexes[schema] {
 			dbtables[tname].Indexes = index
-		}
-		for _, table := range dbtables {
-			s.Tables = append(s.Tables, table)
 		}
 
 		res.Schemas = append(res.Schemas, s)
@@ -208,6 +222,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.En
 		HasDefault:   c.ColumnDefault.String != "",
 		Type:         c.DataType,
 		ColumnType:   c.ColumnType,
+		Comment:      c.ColumnComment,
 		Orig:         *c,
 		IsPrimaryKey: strings.Contains(c.ColumnKey, "PRI"),
 	}

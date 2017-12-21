@@ -45,23 +45,16 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 	}
 
 	log.Printf("found %v tables", len(tables))
-	schemas := make(map[string]map[string][]*database.Column, len(schemaNames))
-	for _, name := range schemaNames {
-		schemas[name] = map[string][]*database.Column{}
-	}
-
+	schemas := make(map[string][]*database.Table, len(schemaNames))
 	for _, t := range tables {
 		if !filterTables(t.TableSchema.String, t.TableName.String) {
 			log.Printf("skipping filtered-out table %v.%v", t.TableSchema.String, t.TableName.String)
 			continue
 		}
 
-		s, ok := schemas[t.TableSchema.String]
-		if !ok {
-			log.Printf("Should be impossible: table %q references unknown schema %q", t.TableName.String, t.TableSchema.String)
-			continue
-		}
-		s[t.TableName.String] = nil
+		schemas[t.TableSchema.String] = append(schemas[t.TableSchema.String], &database.Table{
+			Name: t.TableName.String,
+		})
 	}
 
 	columns, err := columns.Query(db, columns.TableSchemaCol.In(sch))
@@ -75,19 +68,25 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			continue
 		}
 
-		schema, ok := schemas[c.TableSchema.String]
+		tables, ok := schemas[c.TableSchema.String]
 		if !ok {
 			log.Printf("Should be impossible: column %q references unknown schema %q", c.ColumnName.String, c.TableSchema.String)
 			continue
 		}
-		_, ok = schema[c.TableName.String]
-		if !ok {
+		var table *database.Table
+		for _, t := range tables {
+			if t.Name == c.TableName.String {
+				table = t
+				break
+			}
+		}
+		if table == nil {
 			log.Printf("Should be impossible: column %q references unknown table %q in schema %q", c.ColumnName.String, c.TableName.String, c.TableSchema.String)
 			continue
 		}
 
 		col := toDBColumn(c, log)
-		schema[c.TableName.String] = append(schema[c.TableName.String], col)
+		table.Columns = append(table.Columns, col)
 	}
 
 	primaryKeys, err := queryPrimaryKeys(log, db, schemaNames)
@@ -101,18 +100,24 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			continue
 		}
 
-		schema, ok := schemas[pk.SchemaName]
+		tables, ok := schemas[pk.SchemaName]
 		if !ok {
 			log.Printf("Should be impossible: constraint %q references unknown schema %q", pk.Name, pk.SchemaName)
 			continue
 		}
-		table, ok := schema[pk.TableName]
-		if !ok {
+		var table *database.Table
+		for _, t := range tables {
+			if t.Name == pk.TableName {
+				table = t
+				break
+			}
+		}
+		if table == nil {
 			log.Printf("Should be impossible: constraint %q references unknown table %q in schema %q", pk.Name, pk.TableName, pk.SchemaName)
 			continue
 		}
 
-		for _, col := range table {
+		for _, col := range table.Columns {
 			if pk.ColumnName != col.Name {
 				continue
 			}
@@ -130,18 +135,24 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			continue
 		}
 
-		schema, ok := schemas[fk.SchemaName]
+		tables, ok := schemas[fk.SchemaName]
 		if !ok {
 			log.Printf("Should be impossible: constraint %q references unknown schema %q", fk.Name, fk.SchemaName)
 			continue
 		}
-		table, ok := schema[fk.TableName]
-		if !ok {
+		var table *database.Table
+		for _, t := range tables {
+			if t.Name == fk.TableName {
+				table = t
+				break
+			}
+		}
+		if table == nil {
 			log.Printf("Should be impossible: constraint %q references unknown table %q in schema %q", fk.Name, fk.TableName, fk.SchemaName)
 			continue
 		}
 
-		for _, col := range table {
+		for _, col := range table.Columns {
 			if fk.ColumnName != col.Name {
 				continue
 			}
@@ -169,27 +180,33 @@ outer:
 			continue
 		}
 
-		schema, ok := schemas[r.SchemaName]
+		tables, ok := schemas[r.SchemaName]
 		if !ok {
 			log.Printf("Should be impossible: index %q references unknown schema %q", r.IndexName, r.SchemaName)
 			continue
 		}
 
-		table, ok := schema[r.TableName]
-		if !ok {
+		var table *database.Table
+		for _, t := range tables {
+			if t.Name == r.TableName {
+				table = t
+				break
+			}
+		}
+		if table == nil {
 			log.Printf("Should be impossible: index %q references unknown table %q", r.IndexName, r.TableName)
 			continue
 		}
 
-		columnMap := make(map[string]*database.Column, len(table))
-		for _, c := range table {
+		columnMap := make(map[string]*database.Column, len(table.Columns))
+		for _, c := range table.Columns {
 			columnMap[c.Name] = c
 		}
 
 		columns := make([]*database.Column, 0)
 		for _, c := range r.Columns {
-			column, ok := columnMap[c]
-			if !ok {
+			column, cok := columnMap[c]
+			if !cok {
 				log.Printf("Should be impossible: index %q references unknown column %q", r.IndexName, c)
 				continue outer
 			}
@@ -210,30 +227,101 @@ outer:
 			}
 		}
 		if index == nil {
-			index = &database.Index{Name: r.IndexName}
+			index = &database.Index{Name: r.IndexName, IsUnique: r.IsUnique}
 			schemaIndex[r.TableName] = append(schemaIndex[r.TableName], index)
 		}
 
 		index.Columns = columns
 	}
 
+	columnCommentResults, err := queryColumnComments(log, db, schemaNames)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("found %d comments for all columns in all tables in all specified schemas", len(columnCommentResults))
+
+	for _, r := range columnCommentResults {
+		if !filterTables(r.SchemaName, r.TableName) {
+			continue
+		}
+
+		tables, ok := schemas[r.SchemaName]
+		if !ok {
+			log.Printf("Should be impossible: comment for %q.%q.%q references unknown schema %q",
+				r.SchemaName, r.TableName, r.ColumnName, r.SchemaName)
+			continue
+		}
+
+		var table *database.Table
+		for _, t := range tables {
+			if t.Name == r.TableName {
+				table = t
+				break
+			}
+		}
+		if table == nil {
+			log.Printf("Should be impossible: comment for %q.%q.%q references unknown table %q",
+				r.SchemaName, r.TableName, r.ColumnName, r.TableName)
+			continue
+		}
+
+		for _, c := range table.Columns {
+			if c.Name == r.ColumnName {
+				c.Comment = r.Comment
+				break
+			}
+		}
+	}
+
+	tableCommentResults, err := queryTableComments(log, db, schemaNames)
+	if err != nil {
+		return nil, err
+	}
+	log.Printf("found %d comments for all tables in all specified schemas", len(tableCommentResults))
+
+	for _, r := range tableCommentResults {
+		if !filterTables(r.SchemaName, r.TableName) {
+			continue
+		}
+
+		tables, ok := schemas[r.SchemaName]
+		if !ok {
+			log.Printf("Should be impossible: comment for %q.%q references unknown schema %q",
+				r.SchemaName, r.TableName, r.SchemaName)
+			continue
+		}
+
+		var table *database.Table
+		for _, t := range tables {
+			if t.Name == r.TableName {
+				table = t
+				break
+			}
+		}
+		if table == nil {
+			log.Printf("Should be impossible: comment for %q.%q references unknown table %s",
+				r.SchemaName, r.TableName, r.TableName)
+			continue
+		}
+
+		table.Comment = r.Comment
+	}
+
 	res := &database.Info{Schemas: make([]*database.Schema, 0, len(schemas))}
 	for _, schema := range schemaNames {
 		tables := schemas[schema]
 		s := &database.Schema{
-			Name:  schema,
-			Enums: enums[schema],
+			Name:   schema,
+			Tables: tables,
+			Enums:  enums[schema],
 		}
 
 		dbtables := make(map[string]*database.Table, len(tables))
-		for tname, columns := range tables {
-			dbtables[tname] = &database.Table{Name: tname, Columns: columns}
+		for _, t := range tables {
+			dbtables[t.Name] = t
 		}
 		for tname, index := range indexes[schema] {
 			dbtables[tname].Indexes = index
-		}
-		for _, table := range dbtables {
-			s.Tables = append(s.Tables, table)
 		}
 
 		res.Schemas = append(res.Schemas, s)
@@ -346,6 +434,7 @@ type indexResult struct {
 	SchemaName string
 	TableName  string
 	IndexName  string
+	IsUnique   bool
 	Columns    []string
 }
 
@@ -355,6 +444,7 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 		n.nspname as schema,
 		i.indrelid::regclass as table,
 		c.relname as name,
+		i.indisunique as is_unique,
 		array_to_string(ARRAY(
 			SELECT pg_get_indexdef(i.indexrelid, k + 1, true)
 			FROM generate_subscripts(i.indkey, 1) as k
@@ -376,16 +466,16 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 
 	query := fmt.Sprintf(q, strings.Join(spots, ", "))
 	rows, err := db.Query(query, vals...)
-	defer rows.Close()
 	if err != nil {
 		return nil, errors.WithMessage(err, "error querying indexes")
 	}
+	defer rows.Close()
 
 	var results []indexResult
 	for rows.Next() {
 		var r indexResult
 		var cs string
-		if err := rows.Scan(&r.SchemaName, &r.TableName, &r.IndexName, &cs); err != nil {
+		if err := rows.Scan(&r.SchemaName, &r.TableName, &r.IndexName, &r.IsUnique, &cs); err != nil {
 			return nil, errors.WithMessage(err, "error scanning index")
 		}
 		r.Columns = strings.Split(cs, ",") // array converted to string in query
@@ -396,6 +486,108 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 		}
 
 		results = append(results, r)
+	}
+
+	return results, nil
+}
+
+type columnCommentResult struct {
+	SchemaName string
+	TableName  string
+	ColumnName string
+	Comment    string
+}
+
+func queryColumnComments(log *log.Logger, db *sql.DB, schemaNames []string) ([]columnCommentResult, error) {
+	const q = `
+	SELECT
+		cols.table_schema,
+		cols.table_name,
+		cols.column_name,
+			(
+					SELECT pg_catalog.col_description(c.oid, cols.ordinal_position::int)
+					FROM pg_catalog.pg_class c
+					WHERE c.relname = cols.table_name
+			) AS column_comment
+	FROM information_schema.columns cols
+	WHERE cols.table_schema IN (%s)`
+
+	spots := make([]string, len(schemaNames))
+	vals := make([]interface{}, len(schemaNames))
+	for i := range schemaNames {
+		spots[i] = fmt.Sprintf("$%v", i+1)
+		vals[i] = schemaNames[i]
+	}
+
+	query := fmt.Sprintf(q, strings.Join(spots, ", "))
+	rows, err := db.Query(query, vals...)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error querying column comments")
+	}
+	defer rows.Close()
+
+	var results []columnCommentResult
+	for rows.Next() {
+		var r columnCommentResult
+		var c sql.NullString
+		if err := rows.Scan(&r.SchemaName, &r.TableName, &r.ColumnName, &c); err != nil {
+			return nil, errors.WithMessage(err, "error scanning column comment")
+		}
+
+		if c.Valid {
+			r.Comment = c.String
+			results = append(results, r)
+		}
+	}
+
+	return results, nil
+}
+
+type tableCommentResult struct {
+	SchemaName string
+	TableName  string
+	Comment    string
+}
+
+func queryTableComments(log *log.Logger, db *sql.DB, schemaNames []string) ([]tableCommentResult, error) {
+	const q = `
+	SELECT
+		tabs.table_schema,
+		tabs.table_name,
+			(
+					SELECT obj_description(c.oid)
+					FROM pg_class c
+					WHERE c.relname = tabs.table_name
+			) AS column_comment
+	FROM information_schema.tables tabs
+	WHERE tabs.table_schema IN (%s)`
+
+	spots := make([]string, len(schemaNames))
+	vals := make([]interface{}, len(schemaNames))
+	for i := range schemaNames {
+		spots[i] = fmt.Sprintf("$%v", i+1)
+		vals[i] = schemaNames[i]
+	}
+
+	query := fmt.Sprintf(q, strings.Join(spots, ", "))
+	rows, err := db.Query(query, vals...)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error querying table comments")
+	}
+	defer rows.Close()
+
+	var results []tableCommentResult
+	for rows.Next() {
+		var r tableCommentResult
+		var c sql.NullString
+		if err := rows.Scan(&r.SchemaName, &r.TableName, &c); err != nil {
+			return nil, errors.WithMessage(err, "error scanning table comment")
+		}
+
+		if c.Valid {
+			r.Comment = c.String
+			results = append(results, r)
+		}
 	}
 
 	return results, nil

@@ -28,9 +28,9 @@ Enum: {{.Name}}({{$schema}}.{{.DBName}})
 {{end -}}
 {{range .Tables}}
 Table: {{.Name}}({{$schema}}.{{.DBName}})
-{{makeTable .Columns "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.ColumnType}}|{{.IsArray}}|{{.IsPrimaryKey}}|{{.IsFK}}|{{.HasFKRef}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}" "Name" "DBName" "Type" "DBType" "ColumnType" "IsArray" "IsPrimaryKey" "IsFK" "HasFKRef" "Length" "UserDefined" "Nullable" "HasDefault" -}}
+{{makeTable .Columns "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.ColumnType}}|{{.IsArray}}|{{.IsPrimaryKey}}|{{.IsFK}}|{{.HasFKRef}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}|{{.Comment}}" "Name" "DBName" "Type" "DBType" "ColumnType" "IsArray" "IsPrimaryKey" "IsFK" "HasFKRef" "Length" "UserDefined" "Nullable" "HasDefault" "Comment" -}}
 Indexes:
-{{makeTable .Indexes "{{.Name}}|{{.DBName}}|{{join .Columns.Names \", \"}}" "Name" "DBName" "Columns"}}
+{{makeTable .Indexes "{{.Name}}|{{.DBName}}|{{.IsUnique}}|{{join .Columns.Names \", \"}}" "Name" "DBName" "IsUnique" "Columns"}}
 {{end -}}
 {{end -}}
 `))
