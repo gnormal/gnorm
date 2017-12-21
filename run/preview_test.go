@@ -316,7 +316,7 @@ Enum: abc enum(schema.enum)
 +---------------+-----------+-------+
 
 
-Table: abc table(schema.table)
+Table: abc table(schema.table); a table
 +----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+--------------+
 |   Name   | DBName |   Type   | DBType  | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |   Comment    |
 +----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+--------------+
