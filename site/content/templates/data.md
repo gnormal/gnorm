@@ -230,6 +230,7 @@ have the following properties:
 | --- | --- | --- |
 | Name | string | the converted name of the index
 | DBName | string | the name of the index from the database
+| IsUnique | bool | true if the index is unique
 | Columns | [Columns](#columns) | the list of the columns used in the index
 
 ### Indexes

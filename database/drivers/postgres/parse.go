@@ -227,7 +227,7 @@ outer:
 			}
 		}
 		if index == nil {
-			index = &database.Index{Name: r.IndexName}
+			index = &database.Index{Name: r.IndexName, IsUnique: r.IsUnique}
 			schemaIndex[r.TableName] = append(schemaIndex[r.TableName], index)
 		}
 
@@ -434,6 +434,7 @@ type indexResult struct {
 	SchemaName string
 	TableName  string
 	IndexName  string
+	IsUnique   bool
 	Columns    []string
 }
 
@@ -443,6 +444,7 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 		n.nspname as schema,
 		i.indrelid::regclass as table,
 		c.relname as name,
+		i.indisunique as is_unique,
 		array_to_string(ARRAY(
 			SELECT pg_get_indexdef(i.indexrelid, k + 1, true)
 			FROM generate_subscripts(i.indkey, 1) as k
@@ -464,16 +466,16 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 
 	query := fmt.Sprintf(q, strings.Join(spots, ", "))
 	rows, err := db.Query(query, vals...)
-	defer rows.Close()
 	if err != nil {
 		return nil, errors.WithMessage(err, "error querying indexes")
 	}
+	defer rows.Close()
 
 	var results []indexResult
 	for rows.Next() {
 		var r indexResult
 		var cs string
-		if err := rows.Scan(&r.SchemaName, &r.TableName, &r.IndexName, &cs); err != nil {
+		if err := rows.Scan(&r.SchemaName, &r.TableName, &r.IndexName, &r.IsUnique, &cs); err != nil {
 			return nil, errors.WithMessage(err, "error scanning index")
 		}
 		r.Columns = strings.Split(cs, ",") // array converted to string in query

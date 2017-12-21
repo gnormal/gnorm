@@ -114,7 +114,8 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 
 			for _, i := range t.Indexes {
 				index := &data.Index{
-					DBName: i.Name,
+					DBName:   i.Name,
+					IsUnique: i.IsUnique,
 				}
 				for _, c := range i.Columns {
 					index.Columns = append(index.Columns, table.ColumnsByName[c.Name])

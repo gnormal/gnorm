@@ -148,7 +148,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			}
 		}
 		if index == nil {
-			index = &database.Index{Name: s.IndexName}
+			index = &database.Index{Name: s.IndexName, IsUnique: s.NonUnique == 0}
 			schemaIndex[s.TableName] = append(schemaIndex[s.TableName], index)
 		}
 
