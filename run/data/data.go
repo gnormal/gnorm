@@ -50,6 +50,7 @@ type Schema struct {
 type Table struct {
 	Name           string                 // the converted name of the table
 	DBName         string                 // the original name of the table in the DB
+	Comment        string                 // the comment attached to the table
 	Schema         *Schema                `yaml:"-" json:"-"` // the schema this table is in
 	Columns        Columns                // Database columns
 	ColumnsByName  map[string]*Column     `yaml:"-" json:"-"` // dbname to column
@@ -89,6 +90,7 @@ type Column struct {
 	UserDefined        bool                         // true if the type is user-defined
 	Nullable           bool                         // true if the column is not NON NULL
 	HasDefault         bool                         // true if the column has a default
+	Comment            string                       // the comment attached to the column
 	IsPrimaryKey       bool                         // true if the column is a primary key
 	IsFK               bool                         // true if the column is a foreign key
 	HasFKRef           bool                         // true if the column is referenced by a foreign key

@@ -72,6 +72,7 @@ Column is the data about a DB column of a table.
 | UserDefined | boolean | true if the type is user-defined
 | Nullable | boolean | true if the column is not NON NULL
 | HasDefault | boolean | true if the column has a default
+| Comment | string | the comment attached to the column
 | IsPrimaryKey | boolean | true if the column is a primary key
 | IsFK | boolean | true if the column is a foreign key
 | HasFKRef | boolean | true if the column is referenced by a foreign key
@@ -200,6 +201,7 @@ Strings is a list of string values with the following methods
 | --- | ---- | --- |
 | Name | string   | the converted name of the table
 | DBName | string | the original name of the table in the DB
+| Comment | string | the comment attached to the table
 | Schema | [Schema](#schema)  | the schema this table is in
 | Columns | [Columns](#columns) | ordered list of Database columns
 | ColumnsByName | map[string][Column](#column) | map of column dbname to column

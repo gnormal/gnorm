@@ -51,10 +51,12 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 		Schemas: []*database.Schema{{
 			Name: "schema",
 			Tables: []*database.Table{{
-				Name: "table",
+				Name:    "table",
+				Comment: "a table",
 				Columns: []*database.Column{{
 					Name:         "col1",
 					Type:         "int",
+					Comment:      "first column",
 					IsPrimaryKey: true,
 				}, {
 					Name:     "col2",
@@ -73,6 +75,7 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 					Columns: []*database.Column{{
 						Name:         "col1",
 						Type:         "int",
+						Comment:      "first column",
 						IsPrimaryKey: true,
 					}},
 				}},
@@ -112,6 +115,7 @@ const expectYaml = `schemas:
   tables:
   - name: abc table
     dbname: table
+    comment: a table
     columns:
     - name: abc col1
       dbname: col1
@@ -122,6 +126,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: false
       hasdefault: false
+      comment: first column
       isprimarykey: true
       isfk: false
       hasfkref: true
@@ -139,6 +144,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: true
       hasdefault: false
+      comment: ""
       isprimarykey: false
       isfk: false
       hasfkref: false
@@ -153,6 +159,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: false
       hasdefault: false
+      comment: ""
       isprimarykey: false
       isfk: false
       hasfkref: false
@@ -167,6 +174,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: true
       hasdefault: false
+      comment: ""
       isprimarykey: false
       isfk: false
       hasfkref: false
@@ -182,6 +190,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: false
       hasdefault: false
+      comment: first column
       isprimarykey: true
       isfk: false
       hasfkref: true
@@ -203,6 +212,7 @@ const expectYaml = `schemas:
         userdefined: false
         nullable: false
         hasdefault: false
+        comment: first column
         isprimarykey: true
         isfk: false
         hasfkref: true
@@ -223,6 +233,7 @@ const expectYaml = `schemas:
         refcolumndbname: col1
   - name: abc tb2
     dbname: tb2
+    comment: ""
     columns:
     - name: abc col1
       dbname: col1
@@ -233,6 +244,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: false
       hasdefault: false
+      comment: ""
       isprimarykey: true
       isfk: false
       hasfkref: false
@@ -247,6 +259,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: false
       hasdefault: false
+      comment: ""
       isprimarykey: false
       isfk: true
       hasfkref: false
@@ -265,6 +278,7 @@ const expectYaml = `schemas:
       userdefined: false
       nullable: false
       hasdefault: false
+      comment: ""
       isprimarykey: true
       isfk: false
       hasfkref: false
@@ -300,15 +314,15 @@ Enum: abc enum(schema.enum)
 +---------------+-----------+-------+
 
 
-Table: abc table(schema.table)
-+----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
-|   Name   | DBName |   Type   | DBType  | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |
-+----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
-| abc col1 | col1   | INTEGER  | int     | false   | true         | false | true     |      0 | false       | false    | false      |
-| abc col2 | col2   | *INTEGER | *int    | false   | false        | false | false    |      0 | false       | true     | false      |
-| abc col3 | col3   |          | string  | false   | false        | false | false    |      0 | false       | false    | false      |
-| abc col4 | col4   |          | *string | false   | false        | false | false    |      0 | false       | true     | false      |
-+----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+
+Table: abc table(schema.table); a table
++----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+--------------+
+|   Name   | DBName |   Type   | DBType  | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |   Comment    |
++----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+--------------+
+| abc col1 | col1   | INTEGER  | int     | false   | true         | false | true     |      0 | false       | false    | false      | first column |
+| abc col2 | col2   | *INTEGER | *int    | false   | false        | false | false    |      0 | false       | true     | false      |              |
+| abc col3 | col3   |          | string  | false   | false        | false | false    |      0 | false       | false    | false      |              |
+| abc col4 | col4   |          | *string | false   | false        | false | false    |      0 | false       | true     | false      |              |
++----------+--------+----------+---------+---------+--------------+-------+----------+--------+-------------+----------+------------+--------------+
 Indexes:
 +---------------+-----------+----------+
 |     Name      |  DBName   | Columns  |
@@ -318,12 +332,12 @@ Indexes:
 
 
 Table: abc tb2(schema.tb2)
-+----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
-|   Name   | DBName |  Type   | DBType | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault |
-+----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
-| abc col1 | col1   | INTEGER | int    | false   | true         | false | false    |      0 | false       | false    | false      |
-| abc col2 | col2   | INTEGER | int    | false   | false        | true  | false    |      0 | false       | false    | false      |
-+----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+
++----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+---------+
+|   Name   | DBName |  Type   | DBType | IsArray | IsPrimaryKey | IsFK  | HasFKRef | Length | UserDefined | Nullable | HasDefault | Comment |
++----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+---------+
+| abc col1 | col1   | INTEGER | int    | false   | true         | false | false    |      0 | false       | false    | false      |         |
+| abc col2 | col2   | INTEGER | int    | false   | false        | true  | false    |      0 | false       | false    | false      |         |
++----------+--------+---------+--------+---------+--------------+-------+----------+--------+-------------+----------+------------+---------+
 Indexes:
 +------+--------+---------+
 | Name | DBName | Columns |
@@ -372,6 +386,7 @@ var expectJSON = `
         {
           "Name": "abc table",
           "DBName": "table",
+          "Comment": "a table",
           "Columns": [
             {
               "Name": "abc col1",
@@ -383,6 +398,7 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": false,
               "HasDefault": false,
+              "Comment": "first column",
               "IsPrimaryKey": true,
               "IsFK": false,
               "HasFKRef": true,
@@ -405,6 +421,7 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": true,
               "HasDefault": false,
+              "Comment": "",
               "IsPrimaryKey": false,
               "IsFK": false,
               "HasFKRef": false,
@@ -421,6 +438,7 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": false,
               "HasDefault": false,
+              "Comment": "",
               "IsPrimaryKey": false,
               "IsFK": false,
               "HasFKRef": false,
@@ -437,6 +455,7 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": true,
               "HasDefault": false,
+              "Comment": "",
               "IsPrimaryKey": false,
               "IsFK": false,
               "HasFKRef": false,
@@ -455,6 +474,7 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": false,
               "HasDefault": false,
+              "Comment": "first column",
               "IsPrimaryKey": true,
               "IsFK": false,
               "HasFKRef": true,
@@ -483,6 +503,7 @@ var expectJSON = `
                   "UserDefined": false,
                   "Nullable": false,
                   "HasDefault": false,
+                  "Comment": "first column",
                   "IsPrimaryKey": true,
                   "IsFK": false,
                   "HasFKRef": true,
@@ -518,6 +539,7 @@ var expectJSON = `
         {
           "Name": "abc tb2",
           "DBName": "tb2",
+          "Comment": "",
           "Columns": [
             {
               "Name": "abc col1",
@@ -529,6 +551,7 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": false,
               "HasDefault": false,
+              "Comment": "",
               "IsPrimaryKey": true,
               "IsFK": false,
               "HasFKRef": false,
@@ -545,6 +568,7 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": false,
               "HasDefault": false,
+              "Comment": "",
               "IsPrimaryKey": false,
               "IsFK": true,
               "HasFKRef": false,
@@ -567,6 +591,7 @@ var expectJSON = `
               "UserDefined": false,
               "Nullable": false,
               "HasDefault": false,
+              "Comment": "",
               "IsPrimaryKey": true,
               "IsFK": false,
               "HasFKRef": false,
