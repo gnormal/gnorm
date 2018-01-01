@@ -93,6 +93,7 @@ type Column struct {
 	Comment            string                       // the comment attached to the column
 	IsPrimaryKey       bool                         // true if the column is a primary key
 	IsFK               bool                         // true if the column is a foreign key
+	IsAutoIncrement    bool                         // true if the column is auto incremented
 	HasFKRef           bool                         // true if the column is referenced by a foreign key
 	FKColumn           *ForeignKeyColumn            // foreign key column definition
 	FKColumnRefs       ForeignKeyColumns            // all foreign key columns referencing this column
