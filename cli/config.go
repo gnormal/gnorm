@@ -109,6 +109,14 @@ type Config struct {
 	// The first plugin that is found will be the one used.
 	PluginDirs []string
 
+	// TemplatePaths is a list of file paths that will be parsed as templates and
+	// made available to your Table, Schema, And Enum templates.
+	TemplatePaths []string
+
+	// TemplateGlobs is a list of glob patterns that will be parsed as
+	// templates and made available to your Table, Schema, And Enum templates.
+	TemplateGlobs []string
+
 	// OutputDir is the directory relative to the project root (where the
 	// gnorm.toml file is located) in which all the generated files are written
 	// to.

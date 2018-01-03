@@ -11,6 +11,7 @@ import (
 	"github.com/BurntSushi/toml"
 	"github.com/pkg/errors"
 
+	"fmt"
 	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/database/drivers/mysql"
 	"gnorm.org/gnorm/database/drivers/postgres"
@@ -94,17 +95,17 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	}
 	cfg.NameConversion = t
 
-	cfg.SchemaPaths, err = parseOutputTargets(c.SchemaPaths)
+	cfg.SchemaPaths, err = parseOutputTargets(c.SchemaPaths, c.TemplatePaths, c.TemplateGlobs)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing SchemaPaths")
 	}
 
-	cfg.TablePaths, err = parseOutputTargets(c.TablePaths)
+	cfg.TablePaths, err = parseOutputTargets(c.TablePaths, c.TemplatePaths, c.TemplateGlobs)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing TablePaths")
 	}
 
-	cfg.EnumPaths, err = parseOutputTargets(c.EnumPaths)
+	cfg.EnumPaths, err = parseOutputTargets(c.EnumPaths, c.TemplatePaths, c.TemplateGlobs)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing EnumPaths")
 	}
@@ -163,7 +164,7 @@ func parseTables(tables, schemas []string) (map[string][]string, error) {
 	return out, nil
 }
 
-func parseOutputTargets(vals map[string]string) ([]run.OutputTarget, error) {
+func parseOutputTargets(vals map[string]string, userTemplates, userGlobs []string) ([]run.OutputTarget, error) {
 	out := make([]run.OutputTarget, 0, len(vals))
 	for fnTempl, contTempl := range vals {
 		fn, err := template.New("filename").Funcs(environ.FuncMap).Parse(fnTempl)
@@ -177,6 +178,18 @@ func parseOutputTargets(vals map[string]string) ([]run.OutputTarget, error) {
 		cont, err := template.New(contTempl).Funcs(environ.FuncMap).Parse(string(b))
 		if err != nil {
 			return nil, errors.WithMessage(err, "error parsing contents template")
+		}
+		if len(userTemplates) > 0 {
+			cont, err = cont.ParseFiles(userTemplates...)
+			if err != nil {
+				return nil, errors.WithMessage(err, "error parsing template paths")
+			}
+		}
+		for _, userGlob := range userGlobs {
+			cont, err = cont.ParseGlob(userGlob)
+			if err != nil {
+				return nil, errors.WithMessage(err, fmt.Sprintf("error parsing template glob %q", userGlob))
+			}
 		}
 		out = append(out, run.OutputTarget{Filename: fn, Contents: cont})
 	}

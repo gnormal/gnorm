@@ -39,6 +39,14 @@ DBType = "postgres"
 # Schemas holds the names of schemas to generate code for.
 Schemas = ["public"]
 
+# TemplatePaths is a list of file paths that will be parsed as templates and
+# made available to your Table, Schema, And Enum templates.
+TemplatePaths = []
+
+# TemplateGlobs is a list of glob patterns that will be parsed as
+# templates and made available to your Table, Schema, And Enum templates.
+TemplateGlobs = []
+
 # PluginDirs a list of paths that will be used for finding plugins.  The list
 # will be traversed in order, looking for a specifically named plugin. The first
 # plugin that is found will be the one used.
@@ -173,4 +181,5 @@ StaticDir = "static"
 # .Params value for all templates.
 [Params]
 mySpecialValue = "some value"`
+
 // [[[end]]]
