@@ -32,7 +32,7 @@ func TestAtomicGenerate(t *testing.T) {
 	}
 	defer os.Remove(filename)
 	contents := "hello world"
-	err = genFile(env, filename, contents, target, nil, ".")
+	err = genFile(env, filename, contents, target, nil, nil, ".")
 	if err == nil {
 		t.Fatal("Unexpected nil error generating contents. Should have failed.")
 	}
@@ -88,4 +88,78 @@ func TestCopyStaticFiles(t *testing.T) {
 	if !reflect.DeepEqual(originPaths, newPaths) {
 		t.Errorf("expected %v to equal %v", newPaths, originPaths)
 	}
+}
+
+func TestNoOverwriteGlobs(t *testing.T) {
+	target := OutputTarget{
+		Filename: template.Must(template.New("").Parse("{{.}}")),
+		Contents: template.Must(template.New("").Parse("{{.}}")),
+	}
+	env := environ.Values{
+		Log: log.New(ioutil.Discard, "", 0),
+	}
+
+	filename := "testfile.out"
+
+	t.Run("file exists and matches glob", func(t *testing.T) {
+		original := []byte("goodbye world")
+		err := ioutil.WriteFile(filename, original, 0600)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer os.Remove(filename)
+
+		err = genFile(env, filename, "hello world", target, []string{"*.out"}, nil, ".")
+		if err != nil {
+			t.Fatalf("Unexpected error generating contents: %s", err)
+		}
+
+		b, err := ioutil.ReadFile(filename)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if !bytes.Equal(b, original) {
+			t.Fatalf("Expected file to be unchanged, but was different.  Expected: %q, got: %q", original, b)
+		}
+
+		t.Run("does not match glob", func(t *testing.T) {
+			content := "hello world"
+			err = genFile(env, filename, content, target, []string{"bob"}, nil, ".")
+			if err != nil {
+				t.Fatalf("Unexpected error generating contents: %s", err)
+			}
+
+			b, err := ioutil.ReadFile(filename)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if !bytes.Equal(b, []byte(content)) {
+				t.Fatalf("Expected file to contain content, but did not.  Expected: %q, got: %q", content, b)
+			}
+		})
+	})
+
+	t.Run("file does not exist but matches glob", func(t *testing.T) {
+		if _, err := os.Stat(filename); err == nil {
+			t.Fatalf("File should not exist, but does.")
+		}
+
+		content := "hello world"
+		err := genFile(env, filename, content, target, []string{"*.out"}, nil, ".")
+		if err != nil {
+			t.Fatalf("Unexpected error generating contents: %s", err)
+		}
+		defer os.Remove(filename)
+
+		b, err := ioutil.ReadFile(filename)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if !bytes.Equal(b, []byte(content)) {
+			t.Fatalf("Expected file to contain content, but did not.  Expected: %q, got: %q", content, b)
+		}
+	})
 }

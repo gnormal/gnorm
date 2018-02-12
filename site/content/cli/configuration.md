@@ -44,7 +44,7 @@ gocog}}} -->
 ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 
 # DBType holds the type of db you're connecting to.  Possible values are
-# "postgres" or "mysql". 
+# "postgres" or "mysql".
 DBType = "postgres"
 
 # Schemas holds the names of schemas to generate code for.
@@ -100,6 +100,10 @@ OutputDir = "gnorm"
 # OutputDir
 StaticDir = "static"
 
+# NoOverwriteGlobs is a list of globs
+# (https://golang.org/pkg/path/filepath/#Match). If a filename matches a glob
+# *and* a file exists with that name, it will not be generated.
+NoOverwriteGlobs = ["*.perm.go"]
 
 # TablePaths is a map of output paths to template paths that tells Gnorm how to
 # render and output its table info and where to save that output.  Each template
@@ -184,5 +188,6 @@ StaticDir = "static"
 # .Params value for all templates.
 [Params]
 mySpecialValue = "some value"
+
 ```
 <!-- {{{end}}} -->
