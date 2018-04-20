@@ -535,7 +535,8 @@ func queryColumnComments(log *log.Logger, db *sql.DB, schemaNames []string) ([]c
 		}
 
 		if c.Valid {
-			r.Comment = c.String
+			replaced := strings.Replace(c.String, "\n", " ", -1)
+			r.Comment = replaced
 			results = append(results, r)
 		}
 	}
@@ -585,7 +586,8 @@ func queryTableComments(log *log.Logger, db *sql.DB, schemaNames []string) ([]ta
 		}
 
 		if c.Valid {
-			r.Comment = c.String
+			replaced := strings.Replace(c.String, "\n", " ", -1)
+			r.Comment = replaced
 			results = append(results, r)
 		}
 	}
