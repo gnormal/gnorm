@@ -139,7 +139,7 @@ func numbers(start, end int) data.Strings {
 	return s
 }
 
-// steps returns a live of strings of the numbers start with size of len
+// steps returns a slice of strings of the numbers from start with length of len
 func steps(start, len int) data.Strings {
 	var s data.Strings
 	for x := 0; x < len; x++ {
