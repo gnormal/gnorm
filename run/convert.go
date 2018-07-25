@@ -41,6 +41,9 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 			enum := &data.Enum{
 				DBName: e.Name,
 				Schema: sch,
+				Table: &data.Table{
+					DBName: e.Table,
+				},
 			}
 			sch.Enums = append(sch.Enums, enum)
 			enum.Name, err = convert(e.Name)
