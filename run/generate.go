@@ -74,7 +74,7 @@ func generateSchemas(env environ.Values, cfg *Config, db *data.DBData) error {
 func generateEnums(env environ.Values, cfg *Config, db *data.DBData) error {
 	for _, schema := range db.Schemas {
 		for _, enum := range schema.Enums {
-			fileData := struct{ Schema, Enum string }{Schema: schema.Name, Enum: enum.Name}
+			fileData := struct{ Schema, Enum, Table string }{Schema: schema.Name, Enum: enum.Name, Table: enum.Table.DBName}
 			contents := data.EnumData{
 				Enum:   enum,
 				DB:     db,
