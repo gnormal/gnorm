@@ -7,8 +7,6 @@ package main
 
 import (
 	"log"
-
-	"github.com/magefile/mage/mg"
 )
 
 // Runs go install for gnorm.  This generates the embedded docs and the version
@@ -34,7 +32,6 @@ func Build() error {
 // files will be dumped in the local directory with names according to their
 // supported platform.
 func All() error {
-	mg.Deps(installHugo, installStatik)
 	if err := genSite(); err != nil {
 		return err
 	}
