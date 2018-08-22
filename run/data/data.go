@@ -247,8 +247,8 @@ func (s Strings) Except(excludes []string) Strings {
 	return ret
 }
 
-// Sort returns a sorted copy of the Strings.
-func (s Strings) Sort(excludes []string) Strings {
+// Sorted returns a sorted copy of the Strings.
+func (s Strings) Sorted() Strings {
 	ret := make(Strings, 0, len(s))
 	copy(ret, s)
 	sort.Strings([]string(ret))

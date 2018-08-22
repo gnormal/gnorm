@@ -196,7 +196,7 @@ Strings is a list of string values with the following methods
 | Method | Arguments | Description |
 | --- | ---- | --- |
 | Except | vals ([]string) | Except returns a Strings value with the given values removed from the list (if they existed).  The check is case sensitive.
-| Sort | vals ([]string) | Sort returns a sorted Strings value. 
+| Sorted | vals () | Sorted returns a sorted Strings value. 
 | Sprintf | format (string) | Sprintf calls [fmt.Sprintf](https://golang.org/pkg/fmt/#Sprintf)(format, str) for every string in this value and returns the results as a new Strings value.
 
 ### Table

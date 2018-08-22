@@ -14,7 +14,6 @@ import (
 // Runs go install for gnorm.  This generates the embedded docs and the version
 // info into the binary.
 func Build() error {
-	mg.Deps(installHugo, installStatik)
 	if err := genSite(); err != nil {
 		return err
 	}
@@ -55,15 +54,6 @@ func All() error {
 		}
 	}
 	return err
-}
-
-func installHugo() error {
-	log.Print("downloading hugo")
-	return run("go", "get", "github.com/gohugoio/hugo")
-}
-func installStatik() error {
-	log.Print("downloading statik")
-	return run("go", "get", "github.com/rakyll/statik")
 }
 
 // Removes generated cruft.  This target shouldn't ever be necessary, since the
