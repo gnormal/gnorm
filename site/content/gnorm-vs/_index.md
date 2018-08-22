@@ -38,9 +38,6 @@ SqlBoiler is a database-first fluent-api generator for Go.
 4. Relationship support:
 * SQLBoiler supports complex joins and relationship queries which allows you to get the data you want efficiently out of your DB (one-to-one, one-to-many, many-to-many, eager loads all supported)
 * Gnorm's default templates do not support these out of the box just yet
-5. Database support:
-* SQLBoiler additionally supports mssql and sqlite on top of mysql and postgres
-* Gnorm only supports mysql and postgres
 
 ## [XO](https://github.com/knq/xo) 
 

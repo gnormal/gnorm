@@ -50,7 +50,7 @@ var (
 
 // Query retrieves rows from 'STATISTICS' as a slice of Row.
 func Query(db gnorm.DB, where gnorm.WhereClause) ([]*Row, error) {
-	const origsqlstr = `SELECT
+	const origsqlstr = `SELECT 
 		TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, NON_UNIQUE, INDEX_SCHEMA, INDEX_NAME, SEQ_IN_INDEX, COLUMN_NAME, COLLATION, CARDINALITY, SUB_PART, PACKED, NULLABLE, INDEX_TYPE, COMMENT, INDEX_COMMENT
 		FROM information_schema.STATISTICS WHERE (`
 
