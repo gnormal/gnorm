@@ -3,6 +3,7 @@ package data
 
 import (
 	"fmt"
+	"sort"
 )
 
 // This is all the data passed to templates.
@@ -243,6 +244,14 @@ func (s Strings) Except(excludes []string) Strings {
 			ret = append(ret, s[x])
 		}
 	}
+	return ret
+}
+
+// Sort returns a sorted copy of the Strings.
+func (s Strings) Sort(excludes []string) Strings {
+	ret := make(Strings, 0, len(s))
+	copy(ret, s)
+	sort.Strings([]string(ret))
 	return ret
 }
 
