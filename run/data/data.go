@@ -249,7 +249,7 @@ func (s Strings) Except(excludes []string) Strings {
 
 // Sorted returns a sorted copy of the Strings.
 func (s Strings) Sorted() Strings {
-	ret := make(Strings, 0, len(s))
+	ret := make(Strings, len(s))
 	copy(ret, s)
 	sort.Strings([]string(ret))
 	return ret
