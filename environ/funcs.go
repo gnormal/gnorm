@@ -28,7 +28,7 @@ var FuncMap = map[string]interface{}{
 	"hasPrefix":    strings.HasPrefix,
 	"hasSuffix":    strings.HasPrefix,
 	"inc":          inc,
-	"index":        strings.Index,
+	"strIndex":     strings.Index,
 	"indexAny":     strings.IndexAny,
 	"join":         strings.Join,
 	"kebab":        kace.Kebab,

@@ -90,7 +90,7 @@ gocog}}} -->
 <tr><td>hasPrefix</td><td>[https://golang.org/pkg/strings/#HasPrefix](https://golang.org/pkg/strings/#HasPrefix)</td></tr>
 <tr><td>hasSuffix</td><td>[https://golang.org/pkg/strings/#HasPrefix](https://golang.org/pkg/strings/#HasPrefix)</td></tr>
 <tr><td>inc</td><td>[inc (see below)](/templates/functions/#inc)</td></tr>
-<tr><td>index</td><td>[https://golang.org/pkg/strings/#Index](https://golang.org/pkg/strings/#Index)</td></tr>
+<tr><td>strIndex</td><td>[https://golang.org/pkg/strings/#Index](https://golang.org/pkg/strings/#Index)</td></tr>
 <tr><td>indexAny</td><td>[https://golang.org/pkg/strings/#IndexAny](https://golang.org/pkg/strings/#IndexAny)</td></tr>
 <tr><td>join</td><td>[https://golang.org/pkg/strings/#Join](https://golang.org/pkg/strings/#Join)</td></tr>
 <tr><td>kebab</td><td>[https://godoc.org/github.com/codemodus/kace#Kebab](https://godoc.org/github.com/codemodus/kace#Kebab)</td></tr>
