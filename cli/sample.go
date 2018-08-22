@@ -130,9 +130,11 @@ NoOverwriteGlobs = ["*.perm.go"]
 #
 # The enum path may be a template, in which case the values .Schema and .Enum
 # may be referenced, containing the name of the current schema and Enum being
-# rendered.  For example, "gnorm/{{.Schema}}/enums/{{.Enum}}.go" =
-# "enums.gotmpl" would render the enums.gotmpl template with data from the
-# "public.book_type" enum to ./gnorm/public/enums/users.go.
+# rendered.  For mysql enums, which are specific to a table, .Table will be
+# populated with the table name.  For example,
+# "gnorm/{{.Schema}}/enums/{{.Enum}}.go" = "enums.gotmpl" would render the
+# enums.gotmpl template with data from the "public.book_type" enum to
+# ./gnorm/public/enums/users.go.
 [EnumPaths]
 "{{.Schema}}/enums/{{.Enum}}.go" = "testdata/enum.tpl"
 
