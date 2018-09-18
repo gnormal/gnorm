@@ -9,7 +9,7 @@ helper function for calling external functions called `plugin`.
 
 Take for instance the following template extracted from the tests.
 
-```
+```plain
 {{plugin "nix" "echoPlugin" . }}
 ```
 
@@ -41,7 +41,7 @@ Set `PluginDirs` configuration value to the desired directories for plugin
 lookup
 
 
-```
+```toml
 ## Add this to gnorm.toml
 PluginDirs = ["/path/to/plugin/one" , "/path/to/plugin/two"]
 ```

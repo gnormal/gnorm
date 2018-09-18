@@ -13,7 +13,7 @@ import (
     "gnorm.org/gnorm/environ"
 )
 func main() {
-    fmt.Println("```\ngnorm docs\n")
+    fmt.Println("```plain\ngnorm docs\n")
     os.Stderr = os.Stdout
     x := cli.ParseAndRun(environ.Values{
         Stderr: os.Stdout,
@@ -24,7 +24,7 @@ func main() {
     os.Exit(x)
 }
 gocog}}} -->
-```
+```plain
 gnorm docs
 
 Starts a web server running at localhost:8080 that serves docs for this version

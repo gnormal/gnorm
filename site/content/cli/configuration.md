@@ -18,7 +18,7 @@ import (
     "path/filepath"
 )
 func main() {
-	fmt.Println("```")
+	fmt.Println("```toml")
     gopath := os.Getenv("GOPATH")
 	f, err := os.Open(filepath.Join(gopath, "src", "gnorm.org", "gnorm", "cli", "gnorm.toml"))
 	if err != nil {
@@ -34,7 +34,7 @@ func main() {
 	fmt.Println("\n```")
 }
 gocog}}} -->
-```
+```toml
 # ConnStr is the connection string for the database.  Any environment variables
 # in this string will be expanded, so for example dbname=$MY_DDB will do the
 # right thing.

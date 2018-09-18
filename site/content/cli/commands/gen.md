@@ -12,7 +12,7 @@ import (
     "gnorm.org/gnorm/environ"
 )
 func main() {
-    fmt.Println("```\ngnorm gen\n")
+    fmt.Println("```plain\ngnorm gen\n")
     os.Stderr = os.Stdout
     x := cli.ParseAndRun(environ.Values{
         Stderr: os.Stdout,
@@ -23,7 +23,7 @@ func main() {
     os.Exit(x)
 }
 gocog}}} -->
-```
+```plain
 gnorm gen
 
 Reads your gnorm.toml file and connects to your database, translating the schema
