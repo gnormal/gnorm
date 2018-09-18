@@ -13,7 +13,7 @@ import (
     "gnorm.org/gnorm/environ"
 )
 func main() {
-    fmt.Println("```")
+    fmt.Println("```plain")
     os.Stderr = os.Stdout
     x := cli.ParseAndRun(environ.Values{
         Stderr: os.Stdout,
@@ -24,7 +24,7 @@ func main() {
     os.Exit(x)
 }
 gocog}}} -->
-```
+```plain
 Shows the build date and commit hash used to build this binary.
 
 Usage:
@@ -37,7 +37,7 @@ Flags:
 
 Example output:
 
-```
+```plain
 $ gnorm version
 built at: 2017-08-23T21:55:35-04:00
 commit hash: 14b58c2e4904b13e8526d95486450617c5e0c4f6

@@ -14,14 +14,14 @@ import (
     "gnorm.org/gnorm/cli"
 )
 func main() {
-    fmt.Println("```")
+    fmt.Println("```plain")
     os.Stderr = os.Stdout
     x := cli.Run()
     fmt.Println("```")
     os.Exit(x)
 }
 gocog}}} -->
-```
+```plain
 A flexible code generator that turns your DB schema into
 runnable code.  See full docs at https://gnorm.org
 

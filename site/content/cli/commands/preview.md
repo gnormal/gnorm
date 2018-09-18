@@ -13,7 +13,7 @@ import (
     "gnorm.org/gnorm/environ"
 )
 func main() {
-    fmt.Println("```\ngnorm preview\n")
+    fmt.Println("```plain\ngnorm preview\n")
     os.Stderr = os.Stdout
     x := cli.ParseAndRun(environ.Values{
         Stderr: os.Stdout,
@@ -24,7 +24,7 @@ func main() {
     os.Exit(x)
 }
 gocog}}} -->
-```
+```plain
 gnorm preview
 
 Reads your gnorm.toml file and connects to your database, translating the schema
@@ -48,7 +48,7 @@ Flags:
 
 Example output for the following schema:
 
-```
+```sql
 CREATE TABLE authors (
   id uuid DEFAULT uuid_generate_v4() NOT NULL primary key,
   name text NOT NULL
@@ -77,7 +77,7 @@ CREATE TABLE books (
 CREATE INDEX books_title_idx ON books(author_id, title);
 ```
 
-```
+```plain
 $ gnorm preview
 Schema: Public(public)
 
