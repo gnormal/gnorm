@@ -7,11 +7,15 @@ package main
 
 import (
 	"log"
+
+	"github.com/magefile/mage/mg"
+	"github.com/magefile/mage/sh"
 )
 
 // Runs go install for gnorm.  This generates the embedded docs and the version
 // info into the binary.
 func Build() error {
+	mg.Deps(Generate)
 	if err := genSite(); err != nil {
 		return err
 	}
@@ -25,6 +29,11 @@ func Build() error {
 	log.Print("running go install")
 	// use -tags make so we can have different behavior for when we know we've built with mage.
 	return run("go", "install", "-tags", "make", "--ldflags="+ldf, "gnorm.org/gnorm")
+}
+
+// Runs go generate.
+func Generate() error {
+	return sh.Run("go", "generate", "./...")
 }
 
 // Generates binaries for all supported versions.  Currently that means a

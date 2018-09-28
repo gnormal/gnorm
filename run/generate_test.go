@@ -32,7 +32,7 @@ func TestAtomicGenerate(t *testing.T) {
 	}
 	defer os.Remove(filename)
 	contents := "hello world"
-	err = genFile(env, filename, contents, target, nil, nil, ".")
+	err = genFile(env, filename, contents, target, nil, nil, ".", templateEngine{})
 	if err == nil {
 		t.Fatal("Unexpected nil error generating contents. Should have failed.")
 	}
@@ -109,7 +109,7 @@ func TestNoOverwriteGlobs(t *testing.T) {
 		}
 		defer os.Remove(filename)
 
-		err = genFile(env, filename, "hello world", target, []string{"*.out"}, nil, ".")
+		err = genFile(env, filename, "hello world", target, []string{"*.out"}, nil, ".", templateEngine{})
 		if err != nil {
 			t.Fatalf("Unexpected error generating contents: %s", err)
 		}
@@ -125,7 +125,7 @@ func TestNoOverwriteGlobs(t *testing.T) {
 
 		t.Run("does not match glob", func(t *testing.T) {
 			content := "hello world"
-			err = genFile(env, filename, content, target, []string{"bob"}, nil, ".")
+			err = genFile(env, filename, content, target, []string{"bob"}, nil, ".", templateEngine{})
 			if err != nil {
 				t.Fatalf("Unexpected error generating contents: %s", err)
 			}
@@ -147,7 +147,7 @@ func TestNoOverwriteGlobs(t *testing.T) {
 		}
 
 		content := "hello world"
-		err := genFile(env, filename, content, target, []string{"*.out"}, nil, ".")
+		err := genFile(env, filename, content, target, []string{"*.out"}, nil, ".", templateEngine{})
 		if err != nil {
 			t.Fatalf("Unexpected error generating contents: %s", err)
 		}

@@ -184,6 +184,7 @@ func runExternalEngine(outputPath, templatePath string, contents interface{}, en
 			return errors.WithMessage(err, "failed to write json to file "+jsonDataFile)
 		}
 		f.Close()
+		defer os.Remove(jsonDataFile)
 	}
 	data := map[string]string{
 		"Data":     jsonDataFile,
@@ -211,7 +212,7 @@ func runExternalEngine(outputPath, templatePath string, contents interface{}, en
 	if err := cmd.Run(); err != nil {
 		cl := strings.Join(args, " ")
 		if stderr.Len() > 0 {
-			return errors.WithMessage(err, fmt.Sprintf("failed to run template engine command line %q\n%s", cl, stderr))
+			return errors.WithMessage(err, fmt.Sprintf("failed to run template engine command line %q\n%s", cl, stderr.String()))
 		}
 		return errors.WithMessage(err, "failed to run template engine command line: "+cl)
 	}

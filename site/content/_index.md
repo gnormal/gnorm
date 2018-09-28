@@ -3,15 +3,31 @@ title= "Home"
 date= 2017-08-17T13:16:04-04:00
 weight=20
 +++
-# GNORM is Not an ORM
+# GNORM
 
-Gnorm is a database-first code generator that generates boilerplate that matches
-your database's schema.
+Gnorm converts your database's schema into in-memory data structures which you
+can then feed into your own templates to produce code or documentation or
+whatever. 
+
+Gnorm is written in Go but can be used to generate any kind of textual output -
+ruby, python, protobufs, html, javascript, etc.
 
 Gnorm uses templates you control, so that you can make the output look exactly
-how you want it to look.  It can be used to generate type-safe database queries
-that are faster than a traditional ORM.  It can also be used to create a REST or
-RPC API that exposes the data in your database.
+how you want it to look.  
+
+## Gnorm Works with Any Template Engine and Any Language
+
+Gnorm can use any templating language, and can generate code or other textual
+output for any language or system.  
+
+It can also be used to create a REST or RPC API that exposes the data in your
+database.  It can be used to generate type-safe database queries that are faster than a
+traditional ORM.  It could even be used to create a yaml configuration for some tool
+that depends on the database.
+
+## Getting Started
+
+Check out how to [get started](/getting-started)
 
 ## Demo
 

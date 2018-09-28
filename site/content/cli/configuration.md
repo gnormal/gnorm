@@ -191,5 +191,21 @@ NoOverwriteGlobs = ["*.perm.go"]
 [Params]
 mySpecialValue = "some value"
 
+# TemplateEngine, if specified, describes a command line tool to run to
+# render your templates, allowing you to use your preferred templating
+# engine.  If not specified, go's text/template will be used to render.
+# [TemplateEngine]
+    # CommandLine is the command to run to render the template.  You may
+    # pass the following variables to the command line -
+    # {{.Data}} the name of a .json file containing the gnorm data serialized into json
+    # {{.Template}} - the name of the template file being rendered
+    # {{.Output}} the target file where output should be written
+    # CommandLine = ["yasha", "-v", "{{.Data}}", "{{.Template}}", "-o", "{{.Output}}"]
+
+    # If true, the json data will be sent via stdin to the rendering tool.
+    # UseStdin = false
+
+    # If true, the standard output of the tool will be written to the target file.
+    # UseStdout = false
 ```
 <!-- {{{end}}} -->

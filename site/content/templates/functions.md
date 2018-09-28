@@ -4,6 +4,8 @@ weight=2
 alwaysopen=true
 +++
 
+Note that template functions are not available for external template engines.
+
 <!-- {{{gocog
 package main
 
