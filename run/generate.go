@@ -3,12 +3,15 @@ package run // import "gnorm.org/gnorm/run"
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
+	"text/template"
 	"time"
 
 	"github.com/pkg/errors"
@@ -63,12 +66,18 @@ func generateSchemas(env environ.Values, cfg *Config, db *data.DBData) error {
 		}
 		for _, target := range cfg.SchemaPaths {
 			env.Log.Printf("Generating output for schema %v", schema.Name)
-			if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir); err != nil {
+			if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir, cfg.TemplateEngine); err != nil {
 				return errors.WithMessage(err, "generating file for schema "+schema.Name)
 			}
 		}
 	}
 	return nil
+}
+
+type templateEngine struct {
+	CommandLine []*template.Template
+	UseStdin    bool
+	UseStdout   bool
 }
 
 func generateEnums(env environ.Values, cfg *Config, db *data.DBData) error {
@@ -82,7 +91,7 @@ func generateEnums(env environ.Values, cfg *Config, db *data.DBData) error {
 				Params: cfg.Params,
 			}
 			for _, target := range cfg.EnumPaths {
-				if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir); err != nil {
+				if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir, cfg.TemplateEngine); err != nil {
 					env.Log.Printf("Generating output for enum %v", enum.Name)
 					return errors.WithMessage(err, "generating file for enum "+enum.Name)
 				}
@@ -103,7 +112,7 @@ func generateTables(env environ.Values, cfg *Config, db *data.DBData) error {
 			}
 			fileData := struct{ Schema, Table string }{Schema: schema.Name, Table: table.Name}
 			for _, target := range cfg.TablePaths {
-				if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir); err != nil {
+				if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir, cfg.TemplateEngine); err != nil {
 					env.Log.Printf("Generating output for table %v", table.Name)
 					return errors.WithMessage(err, "generating file for table "+table.Name)
 				}
@@ -113,7 +122,7 @@ func generateTables(env environ.Values, cfg *Config, db *data.DBData) error {
 	return nil
 }
 
-func genFile(env environ.Values, filedata, contents interface{}, target OutputTarget, noOverwriteGlobs, postrun []string, outputDir string) error {
+func genFile(env environ.Values, filedata, contents interface{}, target OutputTarget, noOverwriteGlobs, postrun []string, outputDir string, engine templateEngine) error {
 	buf := &bytes.Buffer{}
 	err := target.Filename.Execute(buf, filedata)
 	if err != nil {
@@ -139,15 +148,83 @@ func genFile(env environ.Values, filedata, contents interface{}, target OutputTa
 		return errors.WithMessage(err, "error creating template output directory")
 	}
 
-	outbuf := &bytes.Buffer{}
-	if err := target.Contents.Execute(outbuf, contents); err != nil {
-		return errors.WithMessage(err, "failed to run contents template")
-	}
-	if err := ioutil.WriteFile(outputPath, outbuf.Bytes(), 0600); err != nil {
-		return errors.Wrapf(err, "error writing generated file %q", outputPath)
+	if len(engine.CommandLine) != 0 {
+		if err := runExternalEngine(env.Env, outputPath, target.ContentsPath, contents, engine); err != nil {
+			return err
+		}
+	} else {
+		outbuf := &bytes.Buffer{}
+		if err := target.Contents.Execute(outbuf, contents); err != nil {
+			return errors.WithMessage(err, "failed to run contents template")
+		}
+		if err := ioutil.WriteFile(outputPath, outbuf.Bytes(), 0600); err != nil {
+			return errors.Wrapf(err, "error writing generated file %q", outputPath)
+		}
 	}
 	if len(postrun) > 0 {
 		return doPostRun(env, outputPath, postrun)
+	}
+	return nil
+}
+
+func runExternalEngine(env map[string]string, outputPath, templatePath string, contents interface{}, engine templateEngine) error {
+	b, err := json.Marshal(contents)
+	if err != nil {
+		return errors.WithMessage(err, "can't render data for template to json")
+	}
+	var jsonDataFile string
+	if !engine.UseStdin {
+		f, err := ioutil.TempFile("", "*.json")
+		if err != nil {
+			return errors.WithMessage(err, "can't create temp file with json")
+		}
+		defer f.Close()
+		jsonDataFile = f.Name()
+		if _, err = f.Write(b); err != nil {
+			return errors.WithMessage(err, "failed to write json to file "+jsonDataFile)
+		}
+		f.Close()
+		defer os.Remove(jsonDataFile)
+	}
+	data := map[string]string{
+		"Data":     jsonDataFile,
+		"Output":   outputPath,
+		"Template": templatePath,
+	}
+	var args []string
+	for _, t := range engine.CommandLine {
+		var buf bytes.Buffer
+		if err := t.Execute(&buf, data); err != nil {
+			return errors.WithMessage(err, "failed to run fill template engine command line variables")
+		}
+		args = append(args, buf.String())
+	}
+	cmd := exec.Command(args[0], args[1:]...)
+	if engine.UseStdin {
+		cmd.Stdin = bytes.NewReader(b)
+	}
+	var stderr bytes.Buffer
+	var stdout bytes.Buffer
+	cmd.Stderr = &stderr
+	if engine.UseStdout {
+		cmd.Stdout = &stdout
+	}
+	envvars := make([]string, 0, len(env))
+	for k, v := range env {
+		envvars = append(envvars, k+"="+v)
+	}
+	cmd.Env = envvars
+	if err := cmd.Run(); err != nil {
+		cl := strings.Join(args, " ")
+		if stderr.Len() > 0 {
+			return errors.WithMessage(err, fmt.Sprintf("failed to run template engine command line %q\n%s", cl, stderr.String()))
+		}
+		return errors.WithMessage(err, "failed to run template engine command line: "+cl)
+	}
+	if engine.UseStdout {
+		if err := ioutil.WriteFile(outputPath, stdout.Bytes(), 0600); err != nil {
+			return errors.WithMessage(err, "failed to write output file "+outputPath)
+		}
 	}
 	return nil
 }

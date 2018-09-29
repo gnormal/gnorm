@@ -25,11 +25,11 @@ func parseFile(env environ.Values, file string) (*run.Config, error) {
 		return nil, errors.WithMessage(err, "can't open config file")
 	}
 	defer f.Close()
-	return parse(env, f)
+	return Parse(env, f)
 }
 
-// parse reads the configuration file and returns a gnorm config value.
-func parse(env environ.Values, r io.Reader) (*run.Config, error) {
+// Parse reads the configuration file and returns a gnorm config value.
+func Parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	c := Config{}
 	m, err := toml.DecodeReader(r, &c)
 	if err != nil {
@@ -95,17 +95,30 @@ func parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	}
 	cfg.NameConversion = t
 
-	cfg.SchemaPaths, err = parseOutputTargets(c.SchemaPaths)
+	if len(c.TemplateEngine.CommandLine) != 0 {
+		for _, s := range c.TemplateEngine.CommandLine {
+			t, err = template.New("EngineCLI").Funcs(environ.FuncMap).Parse(s)
+			if err != nil {
+				return nil, errors.WithMessage(err, "error parsing TemplateEngine CLI template")
+			}
+			cfg.TemplateEngine.CommandLine = append(cfg.TemplateEngine.CommandLine, t)
+		}
+		cfg.TemplateEngine.UseStdin = c.TemplateEngine.UseStdin
+		cfg.TemplateEngine.UseStdout = c.TemplateEngine.UseStdout
+	}
+
+	useEngine := len(c.TemplateEngine.CommandLine) != 0
+	cfg.SchemaPaths, err = parseOutputTargets(c.SchemaPaths, useEngine)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing SchemaPaths")
 	}
 
-	cfg.TablePaths, err = parseOutputTargets(c.TablePaths)
+	cfg.TablePaths, err = parseOutputTargets(c.TablePaths, useEngine)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing TablePaths")
 	}
 
-	cfg.EnumPaths, err = parseOutputTargets(c.EnumPaths)
+	cfg.EnumPaths, err = parseOutputTargets(c.EnumPaths, useEngine)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing EnumPaths")
 	}
@@ -164,12 +177,21 @@ func parseTables(tables, schemas []string) (map[string][]string, error) {
 	return out, nil
 }
 
-func parseOutputTargets(vals map[string]string) ([]run.OutputTarget, error) {
+func parseOutputTargets(vals map[string]string, usePath bool) ([]run.OutputTarget, error) {
 	out := make([]run.OutputTarget, 0, len(vals))
 	for fnTempl, contTempl := range vals {
 		fn, err := template.New("filename").Funcs(environ.FuncMap).Parse(fnTempl)
 		if err != nil {
 			return nil, errors.WithMessage(err, "error parsing filename template")
+		}
+		if usePath {
+			// use path means we're using an external template engine, so don't try to
+			// parse the template.
+			if _, err := os.Stat(contTempl); err != nil {
+				return nil, errors.WithMessage(err, "error checking contents template")
+			}
+			out = append(out, run.OutputTarget{Filename: fn, ContentsPath: contTempl})
+			continue
 		}
 		b, err := ioutil.ReadFile(contTempl)
 		if err != nil {

@@ -191,7 +191,7 @@ A schema represents a namespace of tables and enums in a database.
 
 ### Strings
 
-Strings is a list of string values with the following methods
+Strings is a list of string values with the following methods (not avaialable with external template engines)
 
 | Method | Arguments | Description |
 | --- | ---- | --- |
@@ -213,7 +213,7 @@ Strings is a list of string values with the following methods
 | HasPrimaryKey | bool | does the column have at least one primary key
 | Indexes | [Indexes](#indexes) | the list of indexes on the table
 | IndexesByName | map[string][Index](#index) | map index dbname to index
-| ForeignKeys | [ForeignKeys](#foreignKeys) | foreign keys
+| ForeignKeys | [ForeignKey](#foreignKeys | list of foreign keys
 | ForeignKeyRefs | [ForeignKeys](#foreignKeys) | foreign keys referencing this table
 | FKByName | map[string][ForeignKey](#foreignKey) | foreign keys by foreign key name
 | FKRefsByName | map[string][ForeignKey](#foreignKey) | foreign keys referencing this table by name

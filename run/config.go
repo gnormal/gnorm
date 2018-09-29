@@ -52,11 +52,33 @@ type Config struct {
 	// for different situations.  The values in this field will be available in
 	// the .Params value for all templates.
 	Params map[string]interface{}
+
+	// TemplateEngine, if specified, describes a command line tool to run to
+	// render your templates, allowing you to use your preferred templating
+	// engine.  If not specified, go's text/template will be used to render.
+	TemplateEngine struct {
+		// CommandLine is the command to run to render the template.  You may
+		// pass the following variables to the command line - {{.Data}} the name
+		// of a .json file containing the gnorm data serialized into json,
+		// {{.Template}} - the name of the template file being rendered,
+		// {{.Output}} the target file where output should be written.
+		// text/template.
+		CommandLine []*template.Template
+
+		// If true, the json data will be sent via stdin to the rendering tool.
+		UseStdin bool
+
+		// If true, the output of the tool will be written to the target file.
+		UseStdout bool
+	}
 }
 
-// OutputTarget contains a template that generates a filename to write to, and
-// a template that generates the contents for that file.
+// OutputTarget contains a template that generates a filename to write to, and a
+// template that generates the contents for that file.  If an external template
+// engine is used, Contents will be nil, and the template at ContentsPath should
+// be used.
 type OutputTarget struct {
-	Filename *template.Template
-	Contents *template.Template
+	Filename     *template.Template
+	Contents     *template.Template
+	ContentsPath string
 }

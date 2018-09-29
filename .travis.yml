@@ -11,7 +11,10 @@ branches:
 # In theory, older versions would probably work fine, but since this isn't a 
 # library, I'm not going to worry about older versions for now.
 go:
-  - 1.9
+  - tip
+  - "1.11"
+  - "1.10"
+  - "1.9"
 
 # don't call go get ./... because this hides when deps are
 # not packaged into the vendor directory.
@@ -19,11 +22,5 @@ install: true
 
 # don't call go test -v because we want to be able to only show t.Log output when
 # a test fails
-script: go test ./...
+script: go test -race ./...
 
-# run a test for every major OS
-env:
-  - GOOS=linux
-  - GOOS=windows
-  - GOOS=darwin
-  
