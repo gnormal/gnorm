@@ -149,7 +149,7 @@ func genFile(env environ.Values, filedata, contents interface{}, target OutputTa
 	}
 
 	if len(engine.CommandLine) != 0 {
-		if err := runExternalEngine(outputPath, target.ContentsPath, contents, engine); err != nil {
+		if err := runExternalEngine(env.Env, outputPath, target.ContentsPath, contents, engine); err != nil {
 			return err
 		}
 	} else {
@@ -167,7 +167,7 @@ func genFile(env environ.Values, filedata, contents interface{}, target OutputTa
 	return nil
 }
 
-func runExternalEngine(outputPath, templatePath string, contents interface{}, engine templateEngine) error {
+func runExternalEngine(env map[string]string, outputPath, templatePath string, contents interface{}, engine templateEngine) error {
 	b, err := json.Marshal(contents)
 	if err != nil {
 		return errors.WithMessage(err, "can't render data for template to json")
@@ -209,6 +209,11 @@ func runExternalEngine(outputPath, templatePath string, contents interface{}, en
 	if engine.UseStdout {
 		cmd.Stdout = &stdout
 	}
+	envvars := make([]string, 0, len(env))
+	for k, v := range env {
+		envvars = append(envvars, k+"="+v)
+	}
+	cmd.Env = envvars
 	if err := cmd.Run(); err != nil {
 		cl := strings.Join(args, " ")
 		if stderr.Len() > 0 {

@@ -25,11 +25,11 @@ func parseFile(env environ.Values, file string) (*run.Config, error) {
 		return nil, errors.WithMessage(err, "can't open config file")
 	}
 	defer f.Close()
-	return parse(env, f)
+	return Parse(env, f)
 }
 
-// parse reads the configuration file and returns a gnorm config value.
-func parse(env environ.Values, r io.Reader) (*run.Config, error) {
+// Parse reads the configuration file and returns a gnorm config value.
+func Parse(env environ.Values, r io.Reader) (*run.Config, error) {
 	c := Config{}
 	m, err := toml.DecodeReader(r, &c)
 	if err != nil {
