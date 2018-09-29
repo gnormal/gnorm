@@ -4,6 +4,8 @@ weight=3
 alwaysopen=true
 +++
 
+Note that template plugins are not available for external template engines.
+
 You can call external applications as template functions. gnorm provides a
 helper function for calling external functions called `plugin`.
 

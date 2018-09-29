@@ -2,98 +2,143 @@
 
 
 [[projects]]
+  digest = "1:289dd4d7abfb3ad2b5f728fbe9b1d5c1bf7d265a3eb9ef92869af1f7baba4c7a"
   name = "github.com/BurntSushi/toml"
   packages = ["."]
+  pruneopts = ""
   revision = "b26d9c308763d68093482582cea63d69be07a0f0"
   version = "v0.3.0"
 
 [[projects]]
+  digest = "1:0c5ca94ea659aa92dc2eba7b4a35c8d50ec77498a3e5ca1fb90ddfcd13e3658f"
   name = "github.com/codemodus/kace"
-  packages = [".","ktrie"]
+  packages = [
+    ".",
+    "ktrie",
+  ]
+  pruneopts = ""
   revision = "5014436b6047e869bffac20eecddbbe55a0c050d"
   version = "v0.5.0"
 
 [[projects]]
+  digest = "1:24f8932912fd9331367d38715bb74be889dc2f94d401109c3aa3db8b3aa246c5"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
+  pruneopts = ""
   revision = "a0583e0143b1624142adab07e0e97fe106d99561"
   version = "v1.3"
 
 [[projects]]
+  digest = "1:9ed055a3aae12576c784609f6894cc05ea64f24c3a4859f1d0052bfea1bdde0e"
   name = "github.com/google/go-cmp"
-  packages = ["cmp","cmp/internal/diff","cmp/internal/function","cmp/internal/value"]
+  packages = [
+    "cmp",
+    "cmp/internal/diff",
+    "cmp/internal/function",
+    "cmp/internal/value",
+  ]
+  pruneopts = ""
   revision = "8099a9787ce5dc5984ed879a3bda47dc730a8e97"
   version = "v0.1.0"
 
 [[projects]]
+  digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
+  pruneopts = ""
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
   version = "v1.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:1559e09937fb91848d3d201213ef6e0aac0a521934d6f88166f0e381f085ef5f"
   name = "github.com/lib/pq"
-  packages = [".","oid"]
+  packages = [
+    ".",
+    "oid",
+  ]
+  pruneopts = ""
   revision = "e42267488fe361b9dc034be7a6bffef5b195bceb"
 
 [[projects]]
-  name = "github.com/magefile/mage"
-  packages = ["mg"]
-  revision = "2060ed78534d0e013c04f3d53ec664c11df784fe"
-  version = "v2"
-
-[[projects]]
+  digest = "1:81e673df85e765593a863f67cba4544cf40e8919590f04d67664940786c2b61a"
   name = "github.com/mattn/go-runewidth"
   packages = ["."]
+  pruneopts = ""
   revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
   version = "v0.0.2"
 
 [[projects]]
   branch = "master"
+  digest = "1:1a46c8156ee967592f8b74d1fed6dd2cf4d0a22162de056e8053dd3036acc6b7"
   name = "github.com/olekukonko/tablewriter"
   packages = ["."]
+  pruneopts = ""
   revision = "be5337e7b39e64e5f91445ce7e721888dbab7387"
 
 [[projects]]
   branch = "master"
+  digest = "1:0694c1b331648e7ec6a1ec4a5401e208d600ca27ccf4b58528f364d82e74e428"
   name = "github.com/pkg/browser"
   packages = ["."]
+  pruneopts = ""
   revision = "c90ca0c84f15f81c982e32665bffd8d7aac8f097"
 
 [[projects]]
+  digest = "1:7365acd48986e205ccb8652cc746f09c8b7876030d53710ea6ef7d0bd0dcd7ca"
   name = "github.com/pkg/errors"
   packages = ["."]
+  pruneopts = ""
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
   version = "v0.8.0"
 
 [[projects]]
+  digest = "1:a5274bdfcc63825d620dbd395605f5039a94c2af784907677cc589fca8b7a028"
   name = "github.com/rakyll/statik"
   packages = ["fs"]
+  pruneopts = ""
   revision = "fd36b3595eb2ec8da4b8153b107f7ea08504899d"
   version = "v0.1.1"
 
 [[projects]]
   branch = "master"
+  digest = "1:146327ce93be37e68bd3ff8541090d96da8cb3adc9e35d57570e9170a29f6bf6"
   name = "github.com/spf13/cobra"
   packages = ["."]
+  pruneopts = ""
   revision = "b78744579491c1ceeaaa3b40205e56b0591b93a3"
 
 [[projects]]
+  digest = "1:261bc565833ef4f02121450d74eb88d5ae4bd74bfe5d0e862cddb8550ec35000"
   name = "github.com/spf13/pflag"
   packages = ["."]
+  pruneopts = ""
   revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
   version = "v1.0.0"
 
 [[projects]]
   branch = "v2"
+  digest = "1:81314a486195626940617e43740b4fa073f265b0715c9f54ce2027fee1cb5f61"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
+  pruneopts = ""
   revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b5d9ed569ba87bf0d0d00c511b74bbf2c17004771b5d87e232a78221d31fc76d"
+  input-imports = [
+    "github.com/BurntSushi/toml",
+    "github.com/codemodus/kace",
+    "github.com/go-sql-driver/mysql",
+    "github.com/google/go-cmp/cmp",
+    "github.com/lib/pq",
+    "github.com/olekukonko/tablewriter",
+    "github.com/pkg/browser",
+    "github.com/pkg/errors",
+    "github.com/rakyll/statik/fs",
+    "github.com/spf13/cobra",
+    "gopkg.in/yaml.v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

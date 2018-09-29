@@ -5,7 +5,15 @@ alwaysopen=true
 +++
 
 Gnorm uses go templates you write to convert database schemas into code (or
-other text) that you can use.  To learn more about using go templates, [read the
+other text) that you can use.
+
+By default, gnorm uses Go's text/template.  However, you can configure gnorm
+to use whatever templating engine you want, so long as there is a command
+line tool that lets you render files.  To use a different templating engine,
+fill out the `TemplateEngine` section in the [configuration](/cli/configuration)
+
+
+To learn more about using go templates, [read the
 documentation](https://golang.org/pkg/text/template/).
 
 There are three templates that gnorm uses to generate code: 

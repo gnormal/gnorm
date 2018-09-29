@@ -30,6 +30,9 @@ current directory.  You need to at least set the `ConnStr`, `DBType`, and
 `DBType` tells Gnorm what kind of database it's working against, and `Schemas`
 tells it what DB schemas to query.
 
+If you want to use a template rendering engine other than Go's text/template,
+fill out the TemplateEngine section of the configuration.
+
 ## Test your config 
 
 Now, to test your configuration, run `gnorm preview`. This will query your

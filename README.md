@@ -6,8 +6,12 @@
 
 ## About
 
-Gnorm is a database-first code generator that generates boilerplate that matches
-your database's schema.  
+Gnorm converts your database's schema into in-memory data structures which you
+can then feed into your own templates to produce code or documentation or
+whatever. 
+
+Gnorm is written in Go but can be used to generate any kind of textual output -
+ruby, python, protobufs, html, javascript, etc.
 
 Gnorm uses templates you control, so that you can make the output look exactly
 how you want it to look.  It can be used to generate type-safe database queries
@@ -24,6 +28,8 @@ Gnorm has no dependencies, just download and run the executable for your
 operating system.  See our [latest release](https://github.com/gnormal/gnorm/releases/latest).
 
 ## Building
+
+
 
 __Note:__ Gnorm uses a go vanity url.  To install with go get, run 
 
