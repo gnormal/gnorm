@@ -12,9 +12,9 @@ branches:
 # library, I'm not going to worry about older versions for now.
 go:
   - tip
-  - 1.11
-  - 1.10
-  - 1.9
+  - "1.11"
+  - "1.10"
+  - "1.9"
 
 # don't call go get ./... because this hides when deps are
 # not packaged into the vendor directory.
