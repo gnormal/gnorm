@@ -53,6 +53,7 @@ func cleanup() error {
 	if err := rm("dist"); err != nil {
 		fmt.Println("error removing release folder:", err)
 	}
+	return nil
 }
 
 func genSite() error {
