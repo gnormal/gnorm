@@ -43,11 +43,16 @@ func gitTag() (string, error) {
 func cleanup() error {
 	log.Print("removing generated hugo site")
 	err := rm("./cli/public")
-	log.Print("removing generated statik package")
-	if err2 := rm("./cli/statik"); err2 != nil {
-		return err2
+	if err != nil {
+		fmt.Println("error removing generated hugo folder:", err)
 	}
-	return err
+	log.Print("removing generated statik package")
+	if err := rm("./cli/statik"); err != nil {
+		fmt.Println("error removing statik folder:", err)
+	}
+	if err := rm("dist"); err != nil {
+		fmt.Println("error removing release folder:", err)
+	}
 }
 
 func genSite() error {
