@@ -1,4 +1,4 @@
-# This is the gnorm.toml that generates the DB access code for mysql databases.
+# This is the gnorm.toml that generates the DB access code for postgres databases.
 # Its output is contained in the database/drivers/postgres/gnorm driectory.  It
 # assumes you have a postgres instance running locally.
 
