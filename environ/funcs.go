@@ -26,7 +26,7 @@ var FuncMap = map[string]interface{}{
 	"equalFold":    strings.EqualFold,
 	"fields":       strings.Fields,
 	"hasPrefix":    strings.HasPrefix,
-	"hasSuffix":    strings.HasPrefix,
+	"hasSuffix":    strings.HasSuffix,
 	"inc":          inc,
 	"strIndex":     strings.Index,
 	"indexAny":     strings.IndexAny,
