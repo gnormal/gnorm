@@ -13,6 +13,7 @@ import (
 	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/database/drivers/postgres/gnorm/columns"
 	"gnorm.org/gnorm/database/drivers/postgres/gnorm/tables"
+	"regexp"
 )
 
 //go:generate gnorm gen
@@ -332,18 +333,19 @@ outer:
 
 func toDBColumn(c *columns.Row, log *log.Logger) *database.Column {
 	col := &database.Column{
-		Name:       c.ColumnName.String,
-		Nullable:   c.IsNullable.String == "YES",
-		HasDefault: c.ColumnDefault.String != "",
-		Length:     int(c.CharacterMaximumLength.Int64),
-		Orig:       *c,
+		Name:            c.ColumnName.String,
+		Nullable:        c.IsNullable.String == "YES",
+		HasDefault:      c.ColumnDefault.String != "",
+		IsAutoIncrement: isAutoIncrement.MatchString(c.ColumnDefault.String),
+		Length:          int(c.CharacterMaximumLength.Int64),
+		Orig:            *c,
 	}
 
 	typ := c.DataType.String
 	switch typ {
 	case "ARRAY":
 		col.IsArray = true
-		// when it's an array, postges prepends an underscore to the standard
+		// when it's an array, postgres prepends an underscore to the standard
 		// name.
 		typ = c.UdtName.String[1:]
 
@@ -663,3 +665,5 @@ func queryValues(log *log.Logger, db *sql.DB, schema, enum string) ([]*database.
 	log.Printf("found %d values for enum %v.%v", len(vals), schema, enum)
 	return vals, nil
 }
+
+var isAutoIncrement = regexp.MustCompile(`^nextval\(.*\)$`)

@@ -64,18 +64,19 @@ type ForeignKey struct {
 
 // Column contains data about a column in a table.
 type Column struct {
-	Name         string      // the original name of the column in the DB
-	Type         string      // the original type of the column in the DB
-	IsArray      bool        // true if the column type is an array
-	Length       int         // non-zero if the type has a length (e.g. varchar[16])
-	UserDefined  bool        // true if the type is user-defined
-	Nullable     bool        // true if the column is not NON NULL
-	HasDefault   bool        // true if the column has a default
-	Comment      string      // the comment attached to the column
-	IsPrimaryKey bool        // true if the column is a primary key
-	IsForeignKey bool        // true if the column is a foreign key
-	ForeignKey   *ForeignKey // foreign key database definition
-	Orig         interface{} // the raw database column data
+	Name            string      // the original name of the column in the DB
+	Type            string      // the original type of the column in the DB
+	IsArray         bool        // true if the column type is an array
+	Length          int         // non-zero if the type has a length (e.g. varchar[16])
+	UserDefined     bool        // true if the type is user-defined
+	Nullable        bool        // true if the column is not NON NULL
+	HasDefault      bool        // true if the column has a default
+	Comment         string      // the comment attached to the column
+	IsPrimaryKey    bool        // true if the column is a primary key
+	IsForeignKey    bool        // true if the column is a foreign key
+	IsAutoIncrement bool        // true if the column is auto incremented
+	ForeignKey      *ForeignKey // foreign key database definition
+	Orig            interface{} // the raw database column data
 }
 
 // Driver defines the base interface for databases that are supported by gnorm

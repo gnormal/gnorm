@@ -217,13 +217,14 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 
 func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.Enum, error) {
 	col := &database.Column{
-		Name:         c.ColumnName,
-		Nullable:     c.IsNullable == "YES",
-		HasDefault:   c.ColumnDefault.String != "",
-		Type:         c.DataType,
-		Comment:      c.ColumnComment,
-		Orig:         *c,
-		IsPrimaryKey: strings.Contains(c.ColumnKey, "PRI"),
+		Name:            c.ColumnName,
+		Nullable:        c.IsNullable == "YES",
+		HasDefault:      c.ColumnDefault.String != "",
+		Type:            c.DataType,
+		Comment:         c.ColumnComment,
+		IsAutoIncrement: strings.Contains(c.Extra, "auto_increment"),
+		Orig:            *c,
+		IsPrimaryKey:    strings.Contains(c.ColumnKey, "PRI"),
 	}
 
 	// MySQL always specifies length even if it's not a part of the type. We

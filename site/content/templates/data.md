@@ -75,6 +75,7 @@ Column is the data about a DB column of a table.
 | Comment | string | the comment attached to the column
 | IsPrimaryKey | boolean | true if the column is a primary key
 | IsFK | boolean | true if the column is a foreign key
+| IsAutoIncrement | boolean | true if the column is auto incremented
 | HasFKRef | boolean | true if the column is referenced by a foreign key
 | FKColumn | [ForeignKeyColumn](#foreignkeycolumn) | foreign key column definition
 | FKColumnRefs | [ForeignKeyColumns](#foreignkeycolumns) | all foreign key columns referencing this column
