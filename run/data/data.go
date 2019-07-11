@@ -69,12 +69,12 @@ func (t *Table) HasPrimaryKey() bool {
 	return len(t.PrimaryKeys) > 0
 }
 
-// Returns true if Table has one or more foreign keys
+// HasForeignKeys returns true if Table has one or more foreign keys.
 func (t *Table) HasForeignKeys() bool {
 	return len(t.ForeignKeys) > 0
 }
 
-// Returns true if one or more foreign keys reference Table
+// HasForeignKeyRefs returns true if one or more foreign keys reference Table.
 func (t *Table) HasForeignKeyRefs() bool {
 	return len(t.ForeignKeyRefs) > 0
 }
@@ -93,6 +93,7 @@ type Column struct {
 	HasDefault         bool                         // true if the column has a default
 	Comment            string                       // the comment attached to the column
 	IsPrimaryKey       bool                         // true if the column is a primary key
+	Ordinal            int64                        // the column's ordinal position
 	IsFK               bool                         // true if the column is a foreign key
 	HasFKRef           bool                         // true if the column is referenced by a foreign key
 	FKColumn           *ForeignKeyColumn            // foreign key column definition
@@ -264,7 +265,7 @@ func contains(list []string, s string) bool {
 	return false
 }
 
-// Foreign keys represents a list of ForeignKey
+// ForeignKeys is a list of ForeignKey.
 type ForeignKeys []*ForeignKey
 
 // DBNames returns the list of db foreign key names
@@ -334,6 +335,30 @@ func (c Columns) DBNames() Strings {
 		names[x] = c[x].DBName
 	}
 	return names
+}
+
+type columnsByOrdinal Columns
+
+func (cc columnsByOrdinal) Len() int {
+	return len(cc)
+}
+
+func (cc columnsByOrdinal) Less(i, j int) bool {
+	return cc[i].Ordinal < cc[j].Ordinal
+}
+
+func (cc columnsByOrdinal) Swap(i, j int) {
+	cc[i], cc[j] = cc[j], cc[i]
+}
+
+// ByOrdinal returns a copy of Columns sorted by Ordinal.
+func (c Columns) ByOrdinal() Columns {
+	cc := make(Columns, len(c))
+	for i := range c {
+		cc[i] = c[i]
+	}
+	sort.Sort(columnsByOrdinal(cc))
+	return cc
 }
 
 // Tables is a list of tables in this schema.

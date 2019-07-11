@@ -73,6 +73,7 @@ type Column struct {
 	HasDefault   bool        // true if the column has a default
 	Comment      string      // the comment attached to the column
 	IsPrimaryKey bool        // true if the column is a primary key
+	Ordinal      int64       // the column's ordinal position
 	IsForeignKey bool        // true if the column is a foreign key
 	ForeignKey   *ForeignKey // foreign key database definition
 	Orig         interface{} // the raw database column data

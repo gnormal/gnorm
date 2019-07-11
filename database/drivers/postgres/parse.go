@@ -336,6 +336,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) *database.Column {
 		Nullable:   c.IsNullable.String == "YES",
 		HasDefault: c.ColumnDefault.String != "",
 		Length:     int(c.CharacterMaximumLength.Int64),
+		Ordinal:    c.OrdinalPosition.Int64,
 		Orig:       *c,
 	}
 

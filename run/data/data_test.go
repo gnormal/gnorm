@@ -33,3 +33,21 @@ func TestStringsSort(t *testing.T) {
 		t.Fatalf("expected %q, but got %q", expected, vals)
 	}
 }
+
+func TestColumnsByOrdinal(t *testing.T) {
+	t.Parallel()
+
+	cc := Columns{
+		&Column{Ordinal: 3},
+		&Column{Ordinal: 1},
+		&Column{Ordinal: 2},
+		&Column{Ordinal: 4},
+	}
+
+	actuals := cc.ByOrdinal()
+	for i, actual := range actuals {
+		if actual.Ordinal != int64(i+1) {
+			t.Fatalf("expected %d, got %d", i+1, actual.Ordinal)
+		}
+	}
+}
