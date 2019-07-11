@@ -222,6 +222,7 @@ func toDBColumn(c *columns.Row, log *log.Logger) (*database.Column, *database.En
 		HasDefault:   c.ColumnDefault.String != "",
 		Type:         c.DataType,
 		Comment:      c.ColumnComment,
+		Ordinal:      c.OrdinalPosition,
 		Orig:         *c,
 		IsPrimaryKey: strings.Contains(c.ColumnKey, "PRI"),
 	}
