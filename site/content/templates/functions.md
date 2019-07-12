@@ -90,7 +90,7 @@ gocog}}} -->
 <tr><td>equalFold</td><td>[https://golang.org/pkg/strings/#EqualFold](https://golang.org/pkg/strings/#EqualFold)</td></tr>
 <tr><td>fields</td><td>[https://golang.org/pkg/strings/#Fields](https://golang.org/pkg/strings/#Fields)</td></tr>
 <tr><td>hasPrefix</td><td>[https://golang.org/pkg/strings/#HasPrefix](https://golang.org/pkg/strings/#HasPrefix)</td></tr>
-<tr><td>hasSuffix</td><td>[https://golang.org/pkg/strings/#HasPrefix](https://golang.org/pkg/strings/#HasPrefix)</td></tr>
+<tr><td>hasSuffix</td><td>[https://golang.org/pkg/strings/#HasSuffix](https://golang.org/pkg/strings/#HasSuffix)</td></tr>
 <tr><td>inc</td><td>[inc (see below)](/templates/functions/#inc)</td></tr>
 <tr><td>strIndex</td><td>[https://golang.org/pkg/strings/#Index](https://golang.org/pkg/strings/#Index)</td></tr>
 <tr><td>indexAny</td><td>[https://golang.org/pkg/strings/#IndexAny](https://golang.org/pkg/strings/#IndexAny)</td></tr>

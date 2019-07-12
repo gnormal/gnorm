@@ -74,6 +74,7 @@ Column is the data about a DB column of a table.
 | HasDefault | boolean | true if the column has a default
 | Comment | string | the comment attached to the column
 | IsPrimaryKey | boolean | true if the column is a primary key
+| Ordinal | int64 | the column's ordinal position
 | IsFK | boolean | true if the column is a foreign key
 | HasFKRef | boolean | true if the column is referenced by a foreign key
 | FKColumn | [ForeignKeyColumn](#foreignkeycolumn) | foreign key column definition
@@ -90,6 +91,7 @@ have the following properties:
 | --- | ---- | --- |
 | DBNames | [Strings](#strings) | the ordered list of DBNames of all the columns
 | Names | [Strings](#strings) | the ordered list of Names of all the columns
+| ByOrdinal | [Columns](#columns) | the columns in ordinal order
 
 ### ConfigData
 
@@ -196,7 +198,7 @@ Strings is a list of string values with the following methods (not avaialable wi
 | Method | Arguments | Description |
 | --- | ---- | --- |
 | Except | vals ([]string) | Except returns a Strings value with the given values removed from the list (if they existed).  The check is case sensitive.
-| Sorted | vals () | Sorted returns a sorted Strings value. 
+| Sorted | vals () | Sorted returns a sorted Strings value.
 | Sprintf | format (string) | Sprintf calls [fmt.Sprintf](https://golang.org/pkg/fmt/#Sprintf)(format, str) for every string in this value and returns the results as a new Strings value.
 
 ### Table
@@ -213,10 +215,10 @@ Strings is a list of string values with the following methods (not avaialable wi
 | HasPrimaryKey | bool | does the column have at least one primary key
 | Indexes | [Indexes](#indexes) | the list of indexes on the table
 | IndexesByName | map[string][Index](#index) | map index dbname to index
-| ForeignKeys | [ForeignKey](#foreignKeys | list of foreign keys
-| ForeignKeyRefs | [ForeignKeys](#foreignKeys) | foreign keys referencing this table
-| FKByName | map[string][ForeignKey](#foreignKey) | foreign keys by foreign key name
-| FKRefsByName | map[string][ForeignKey](#foreignKey) | foreign keys referencing this table by name
+| ForeignKeys | [ForeignKeys](#foreignkeys) | list of foreign keys
+| ForeignKeyRefs | [ForeignKeys](#foreignkeys) | foreign keys referencing this table
+| FKByName | map[string][ForeignKey](#foreignkey) | foreign keys by foreign key name
+| FKRefsByName | map[string][ForeignKey](#foreignkey) | foreign keys referencing this table by name
 
 ### Tables
 
