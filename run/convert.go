@@ -237,7 +237,7 @@ func mapForeignTable(fkc data.ForeignKeyColumns, convert nameConverter) error {
 	}
 
 	table.ForeignKeys = append(table.ForeignKeys, fk)
-	refTable.ForeignKeyRefs = append(table.ForeignKeyRefs, fk)
+	refTable.ForeignKeyRefs = append(refTable.ForeignKeyRefs, fk)
 	table.FKByName[fk.DBName] = fk
 	refTable.FKRefsByName[fk.DBName] = fk
 
