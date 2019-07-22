@@ -50,6 +50,14 @@
   version = "v1.0"
 
 [[projects]]
+  digest = "1:a7b97371fb9af808b6a4fcc6693276ef7869bb1f282c3c87038c6c7e74ef4ae6"
+  name = "github.com/jinzhu/inflection"
+  packages = ["."]
+  pruneopts = ""
+  revision = "f5c5f50e6090ae76a29240b61ae2a90dd810112e"
+  version = "v1.0.0"
+
+[[projects]]
   branch = "master"
   digest = "1:1559e09937fb91848d3d201213ef6e0aac0a521934d6f88166f0e381f085ef5f"
   name = "github.com/lib/pq"
@@ -132,6 +140,7 @@
     "github.com/codemodus/kace",
     "github.com/go-sql-driver/mysql",
     "github.com/google/go-cmp/cmp",
+    "github.com/jinzhu/inflection",
     "github.com/lib/pq",
     "github.com/olekukonko/tablewriter",
     "github.com/pkg/browser",

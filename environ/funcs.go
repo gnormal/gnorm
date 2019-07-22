@@ -11,6 +11,7 @@ import (
 	"gnorm.org/gnorm/run/data"
 
 	"github.com/codemodus/kace"
+	"github.com/jinzhu/inflection"
 	"github.com/pkg/errors"
 )
 
@@ -39,8 +40,10 @@ var FuncMap = map[string]interface{}{
 	"makeSlice":    makeSlice,
 	"numbers":      numbers,
 	"pascal":       kace.Pascal,
+	"plural":       inflection.Plural,
 	"repeat":       strings.Repeat,
 	"replace":      strings.Replace,
+	"singular":     inflection.Singular,
 	"sliceString":  sliceString,
 	"snake":        kace.Snake,
 	"snakeUpper":   kace.SnakeUpper,
