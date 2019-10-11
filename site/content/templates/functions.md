@@ -103,8 +103,10 @@ gocog}}} -->
 <tr><td>makeSlice</td><td>[makeSlice (see below)](/templates/functions/#makeslice)</td></tr>
 <tr><td>numbers</td><td>[numbers (see below)](/templates/functions/#numbers)</td></tr>
 <tr><td>pascal</td><td>[https://godoc.org/github.com/codemodus/kace#Pascal](https://godoc.org/github.com/codemodus/kace#Pascal)</td></tr>
+<tr><td>plural</td><td>[https://godoc.org/github.com/jinzhu/inflection#Plural](https://godoc.org/github.com/jinzhu/inflection#Plural)</td></tr>
 <tr><td>repeat</td><td>[https://golang.org/pkg/strings/#Repeat](https://golang.org/pkg/strings/#Repeat)</td></tr>
 <tr><td>replace</td><td>[https://golang.org/pkg/strings/#Replace](https://golang.org/pkg/strings/#Replace)</td></tr>
+<tr><td>singular</td><td>[https://godoc.org/github.com/jinzhu/inflection#Singular](https://godoc.org/github.com/jinzhu/inflection#Singular)</td></tr>
 <tr><td>sliceString</td><td>[sliceString (see below)](/templates/functions/#slicestring)</td></tr>
 <tr><td>snake</td><td>[https://godoc.org/github.com/codemodus/kace#Snake](https://godoc.org/github.com/codemodus/kace#Snake)</td></tr>
 <tr><td>snakeUpper</td><td>[https://godoc.org/github.com/codemodus/kace#SnakeUpper](https://godoc.org/github.com/codemodus/kace#SnakeUpper)</td></tr>
