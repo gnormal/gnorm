@@ -52,6 +52,7 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 			Name: "schema",
 			Tables: []*database.Table{{
 				Name:    "table",
+				Type:    "BASE TABLE",
 				Comment: "a table",
 				Columns: []*database.Column{{
 					Name:         "col1",
@@ -83,6 +84,7 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 				}},
 			}, {
 				Name: "tb2",
+				Type: "BASE TABLE",
 				Columns: []*database.Column{{
 					Name:         "col1",
 					Type:         "int",
@@ -117,6 +119,7 @@ const expectYaml = `schemas:
   tables:
   - name: abc table
     dbname: table
+    type: BASE TABLE
     comment: a table
     columns:
     - name: abc col1
@@ -242,6 +245,7 @@ const expectYaml = `schemas:
         refcolumndbname: col1
   - name: abc tb2
     dbname: tb2
+    type: BASE TABLE
     comment: ""
     columns:
     - name: abc col1
@@ -398,6 +402,7 @@ var expectJSON = `
         {
           "Name": "abc table",
           "DBName": "table",
+          "Type": "BASE TABLE",
           "Comment": "a table",
           "Columns": [
             {
@@ -558,6 +563,7 @@ var expectJSON = `
         {
           "Name": "abc tb2",
           "DBName": "tb2",
+          "Type": "BASE TABLE",
           "Comment": "",
           "Columns": [
             {

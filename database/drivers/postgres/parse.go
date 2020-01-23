@@ -54,6 +54,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 
 		schemas[t.TableSchema.String] = append(schemas[t.TableSchema.String], &database.Table{
 			Name: t.TableName.String,
+			Type: t.TableType.String,
 		})
 	}
 
