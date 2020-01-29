@@ -69,12 +69,31 @@
   revision = "e42267488fe361b9dc034be7a6bffef5b195bceb"
 
 [[projects]]
+  digest = "1:6183625fea2930a52d8da06fbdc29177ba206ed0d982d8c50d87e6fc24c5e541"
+  name = "github.com/magefile/mage"
+  packages = [
+    "mg",
+    "sh",
+  ]
+  pruneopts = ""
+  revision = "1c36bf78a98209d91af71354deb001cca75e11fc"
+  version = "v1.9.0"
+
+[[projects]]
   digest = "1:81e673df85e765593a863f67cba4544cf40e8919590f04d67664940786c2b61a"
   name = "github.com/mattn/go-runewidth"
   packages = ["."]
   pruneopts = ""
   revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
   version = "v0.0.2"
+
+[[projects]]
+  digest = "1:ec6771c3f9a5f406047d997d55d0d9dd7c94eaff05155385167cab94700c0f2d"
+  name = "github.com/mattn/go-sqlite3"
+  packages = ["."]
+  pruneopts = ""
+  revision = "53cff3fcebd1e177d04129dc131523635bc45d3d"
+  version = "v2.0.2"
 
 [[projects]]
   branch = "master"
@@ -142,6 +161,9 @@
     "github.com/google/go-cmp/cmp",
     "github.com/jinzhu/inflection",
     "github.com/lib/pq",
+    "github.com/magefile/mage/mg",
+    "github.com/magefile/mage/sh",
+    "github.com/mattn/go-sqlite3",
     "github.com/olekukonko/tablewriter",
     "github.com/pkg/browser",
     "github.com/pkg/errors",
