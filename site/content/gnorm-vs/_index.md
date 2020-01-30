@@ -56,6 +56,6 @@ XO is a code generator focused on producing Go code for your database.
 ## Caveats
 
 Many of these tools support more databases that Gnorm at this time (gnorm only
-supports Postgres and MySQL).  All of these tools are fine works of
+supports Postgres, MySQL and sqlite).  All of these tools are fine works of
 craftsmanship and if they fit your need, you should absolutely use them.
 
