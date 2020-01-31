@@ -38,16 +38,18 @@ gocog}}} -->
 # ConnStr is the connection string for the database.  Any environment variables
 # in this string will be expanded, so for example dbname=$MY_DDB will do the
 # right thing.
-# MySQL example:
-# ConnStr = "root:admin@tcp/"
-# Postgres example:
+# sqlite:   ConnStr = "./sqlite.db"
+# MySQL:    ConnStr = "root:admin@tcp/"
+# Postgres: ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 
 # DBType holds the type of db you're connecting to.  Possible values are
-# "postgres" or "mysql".
+# "postgres", "mysql" or "sqlite".
 DBType = "postgres"
 
 # Schemas holds the names of schemas to generate code for.
+# postgres: "public"
+# sqlite: "main"
 Schemas = ["public"]
 
 # PluginDirs a list of paths that will be used for finding plugins.  The list
@@ -74,6 +76,7 @@ IncludeTables = []
 # generation. You cannot set ExcludeTables if IncludeTables is set.  By
 # default, tables will be excluded from all schemas.  To specify tables for
 # a specific schema only, use the schema.tablenmae format.
+# sqlite: ExcludeTables = ["sqlite_sequence", "sqlite_master"]
 ExcludeTables = ["xyzzx"]
 
 # PostRun is a command with arguments that is run after each file is generated
@@ -90,7 +93,7 @@ PostRun = ["echo", "$GNORMFILE"]
 #
 # This defaults to the current working directory i.e the directory in which
 # gnorm.toml is found.
-OutputDir = "gnorm"
+OutputDir = "output"
 
 # StaticDir is the directory relative to the project root (where the
 # gnorm.toml file is located) in which all static files , which are
@@ -156,6 +159,16 @@ NoOverwriteGlobs = ["*.perm.go"]
 # not in this mapping, Column.Type will be an empty string.  Note that because
 # of the way tables in TOML work, TypeMap and NullableTypeMap must be at the end
 # of your configuration file.
+#
+# Example for mapping sqlite types to Go types:
+# https://www.sqlite.org/datatype3.html
+# [TypeMap]
+# "INTEGER" = "int"
+# "NUMERIC" = "float64"
+# "REAL" = "float64"
+# "TEXT" = "string"
+# "BLOB" = "byte[]"
+#
 # Example for mapping postgres types to Go types:
 [TypeMap]
 "timestamp with time zone" = "time.Time"
