@@ -79,7 +79,7 @@ PostRun = ["echo", "$GNORMFILE"]
 #
 # This defaults to the current working directory i.e the directory in which
 # gnorm.toml is found.
-OutputDir = "gnorm"
+OutputDir = "output"
 
 # StaticDir is the directory relative to the project root (where the
 # gnorm.toml file is located) in which all static files , which are
