@@ -4,27 +4,39 @@ package columns
 
 import (
 	"database/sql"
-	"log"
-	"strings"
-
 	"gnorm.org/gnorm/database/drivers/mssql/gnorm"
+	"log"
 )
 
 // Row represents a row from 'COLUMNS'.
 type Row struct {
-	ColumnName      string         // COLUMN_NAME
-	OrdinalPosition int64          // ORDINAL_POSITION
-	ColumnDefault   sql.NullString // COLUMN_DEFAULT
-	IsNullable      bool           // IS_NULLABLE
-	DataType        string         // DATA_TYPE
-	ColumnType      string         // COLUMN_TYPE
-	ColumnKey       int            // COLUMN_KEY
+	TableCatalog           string         // TABLE_CATALOG
+	TableSchema            string         // TABLE_SCHEMA
+	TableName              string         // TABLE_NAME
+	ColumnName             string         // COLUMN_NAME
+	OrdinalPosition        int64          // ORDINAL_POSITION
+	ColumnDefault          sql.NullString // COLUMN_DEFAULT
+	IsNullable             string         // IS_NULLABLE
+	DataType               string         // DATA_TYPE
+	NumericPrecision       sql.NullInt64  // NUMERIC_PRECISION
+	NumericPrecisionRadix  sql.NullInt64  // NUMERIC_PRECISION_RADIX
+	NumericScale           sql.NullInt64  // NUMERIC_SCALE
+	DatetimePrecision      sql.NullInt64  // DATETIME_PRECISION
+	CharacterMaximumLength sql.NullInt64  // CHARACTER_MAXIMUM_LENGTH
+	CharacterSetCatalog    sql.NullString // CHARACTER_SET_CATALOG
+	CharacterSetSchema     sql.NullString // CHARACTER_SET_SCHEMA
+	CharacterSetName       sql.NullString // CHARACTER_SET_NAME
+	CollationCatalog       sql.NullString // COLLATION_CATALOG
+	CollationSchema        sql.NullString // COLLATION_SCHEMA
+	CollationName          sql.NullString // COLLATION_NAME
+	DomainCatalog          sql.NullString // DOMAIN_CATALOG
+	DomainSchema           sql.NullString // DOMAIN_SCHEMA
+	DomainName             sql.NullString // DOMAIN_NAME
 }
 
 // Query retrieves rows from 'COLUMNS' as a slice of Row.
 func Query(db gnorm.DB, schema string, table string) ([]*Row, error) {
-	const sqlstr = `
-
+	const strsql = `
 
 SELECT TABLE_CATALOG,
        TABLE_SCHEMA,
@@ -34,12 +46,11 @@ SELECT TABLE_CATALOG,
 	   COLUMN_DEFAULT,
 	   IS_NULLABLE,
 	   DATA_TYPE,
-	   CHARACTER_MAXIMUM_LENGTH,
-	   CHARACTER_SET_CATALOG,
 	   NUMERIC_PRECISION,
 	   NUMERIC_PRECISION_RADIX, 
 	   NUMERIC_SCALE, 
 	   DATETIME_PRECISION, 
+	   CHARACTER_MAXIMUM_LENGTH,
 	   CHARACTER_SET_CATALOG,
 	   CHARACTER_SET_SCHEMA,
 	   CHARACTER_SET_NAME,
@@ -51,24 +62,50 @@ SELECT TABLE_CATALOG,
 	   DOMAIN_NAME
        
   FROM INFORMATION_SCHEMA.COLUMNS
-  WHERE TABLE_SCHEMA = ?
-       AND TABLE_NAME = ?
+  WHERE TABLE_SCHEMA = @schema
+       AND TABLE_NAME = @table
   ;
 `
-
-	execsql := strings.Replace(sqlstr, "XXXTABLEXXX", table, -1)
-	log.Println("querying columns ", execsql)
+	log.Println("querying columns ", strsql)
+	log.Println("from schema ", schema)
 	log.Println("from table ", table)
 
 	var vals []*Row
-	q, err := db.Query(execsql, schema, table)
+	q, err := db.Query(strsql,
+		sql.Named("schema", schema),
+		sql.Named("table", table),
+	)
+
 	if err != nil {
 		return nil, err
 	}
 	for q.Next() {
 		r := Row{}
 
-		err = q.Scan(&r.OrdinalPosition, &r.ColumnName, &r.DataType, &r.IsNullable, &r.ColumnDefault, &r.ColumnKey)
+		err = q.Scan(
+			&r.TableCatalog,
+			&r.TableSchema,
+			&r.TableName,
+			&r.ColumnName,
+			&r.OrdinalPosition,
+			&r.ColumnDefault,
+			&r.IsNullable,
+			&r.DataType,
+			&r.NumericPrecision,
+			&r.NumericPrecisionRadix,
+			&r.NumericScale,
+			&r.DatetimePrecision,
+			&r.CharacterMaximumLength,
+			&r.CharacterSetCatalog,
+			&r.CharacterSetSchema,
+			&r.CharacterSetName,
+			&r.CollationCatalog,
+			&r.CollationSchema,
+			&r.CollationName,
+			&r.DomainCatalog,
+			&r.DomainSchema,
+			&r.DomainName,
+		)
 		if err != nil {
 			return nil, err
 		}

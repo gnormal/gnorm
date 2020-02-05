@@ -21,12 +21,33 @@
   version = "v0.5.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:97197c76912cbffe77f8a2ed5c65d0eca779056171ba3fbc02b730e10589b567"
+  name = "github.com/denisenkom/go-mssqldb"
+  packages = [
+    ".",
+    "internal/cp",
+    "internal/decimal",
+    "internal/querytext",
+  ]
+  pruneopts = ""
+  revision = "0f454e2ecd6ad8fb4691cdbf10e399e05ca03784"
+
+[[projects]]
   digest = "1:24f8932912fd9331367d38715bb74be889dc2f94d401109c3aa3db8b3aa246c5"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   pruneopts = ""
   revision = "a0583e0143b1624142adab07e0e97fe106d99561"
   version = "v1.3"
+
+[[projects]]
+  branch = "master"
+  digest = "1:914bae0d7af57d7f9c2c8eff864071e57c3effebd78eeef26eff4afb0372ed2f"
+  name = "github.com/golang-sql/civil"
+  packages = ["."]
+  pruneopts = ""
+  revision = "cb61b32ac6fe84d34b81730175f91965e43d0f90"
 
 [[projects]]
   digest = "1:9ed055a3aae12576c784609f6894cc05ea64f24c3a4859f1d0052bfea1bdde0e"
@@ -67,6 +88,17 @@
   ]
   pruneopts = ""
   revision = "e42267488fe361b9dc034be7a6bffef5b195bceb"
+
+[[projects]]
+  digest = "1:6183625fea2930a52d8da06fbdc29177ba206ed0d982d8c50d87e6fc24c5e541"
+  name = "github.com/magefile/mage"
+  packages = [
+    "mg",
+    "sh",
+  ]
+  pruneopts = ""
+  revision = "1c36bf78a98209d91af71354deb001cca75e11fc"
+  version = "v1.9.0"
 
 [[projects]]
   digest = "1:81e673df85e765593a863f67cba4544cf40e8919590f04d67664940786c2b61a"
@@ -125,6 +157,14 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:9fda9c2e3083ce93ccd5f46154df778c31c5da1194224b0e3fd2587869e7bec0"
+  name = "golang.org/x/crypto"
+  packages = ["md4"]
+  pruneopts = ""
+  revision = "c9f3fb736b729628ec1e9c1a6b4313e883f452f9"
+
+[[projects]]
   branch = "v2"
   digest = "1:81314a486195626940617e43740b4fa073f265b0715c9f54ce2027fee1cb5f61"
   name = "gopkg.in/yaml.v2"
@@ -138,10 +178,13 @@
   input-imports = [
     "github.com/BurntSushi/toml",
     "github.com/codemodus/kace",
+    "github.com/denisenkom/go-mssqldb",
     "github.com/go-sql-driver/mysql",
     "github.com/google/go-cmp/cmp",
     "github.com/jinzhu/inflection",
     "github.com/lib/pq",
+    "github.com/magefile/mage/mg",
+    "github.com/magefile/mage/sh",
     "github.com/olekukonko/tablewriter",
     "github.com/pkg/browser",
     "github.com/pkg/errors",

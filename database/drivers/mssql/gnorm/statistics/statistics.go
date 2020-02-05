@@ -3,29 +3,42 @@
 package statistics
 
 import (
+	"database/sql"
 	"gnorm.org/gnorm/database/drivers/mssql/gnorm"
 	"log"
-	"strings"
 )
 
 // Row represents a row from 'STATISTICS'.
 type Row struct {
-	TableName  string // TableName
-	TableId    int64  // TableId
-	Unique     bool   // NON_UNIQUE
-	IndexName  string // INDEX_NAME
-	SeqInIndex int64  // SEQ_IN_INDEX
-	Origin     string // SEQ_IN_INDEX
-	Partial    int64  // SEQ_IN_INDEX
+	TableName          string         // TableName
+	TableId            int64          // TableId
+	ObjectId           int64          // object_id
+	Name               string         // name
+	IndexId            int            // index_id
+	TypeNum            int            // type_num
+	TypeDesc           string         // type_desc
+	IsUnique           bool           // is_unique
+	DataSpaceId        int            // data_space_id
+	IgnoreDupKey       bool           // ignore_dup_key
+	IsPrimaryKey       bool           // is_primary_key
+	IsUniqueConstraint bool           // is_unique_constraint
+	FillFactor         int            // fill_factor
+	IsPadded           bool           // is_padded
+	IsDisabled         bool           // is_disabled
+	IsHypothetical     bool           // is_hypothetical
+	AllowRowLocks      bool           // allow_row_locks
+	AllowPageLocks     bool           // allow_page_locks
+	HasFilter          bool           // has_filter
+	FilterDefinition   sql.NullString // filter_definition
+	CompressionDelay   sql.NullString // compression_delay
 }
 
 type RowColumns struct {
-	SeqNo int
-	Cid   int
-	Name  string
-	Desc  string
-	Coll  string
-	Key   int
+	TableName  string
+	IndexName  string
+	IndexId    int64
+	ColumnId   int64
+	ColumnName string
 }
 
 // Query retrieves rows from 'STATISTICS' as a slice of Row.
@@ -56,23 +69,23 @@ func Query(db gnorm.DB, table string) ([]*Row, error) {
 		   ind.filter_definition,
 		   ind.compression_delay
 
-
       FROM sys.indexes ind
 
  LEFT JOIN sys.tables t 
         ON ind.object_id = t.object_id 
 
 	 WHERE t.type = 'U'
-		   AND t.name = 'Contact'
+		   AND t.name = @table
 	;
 
 `
-	sql := strings.Replace(sqlstr, "XXXTABLEXXX", table, -1)
-	log.Println("querying indices ", sql)
+	log.Println("querying indices ", sqlstr)
 	log.Println("from table ", table)
 
 	var vals []*Row
-	q, err := db.Query(sql)
+	q, err := db.Query(sqlstr,
+		sql.Named("table", table),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -80,11 +93,27 @@ func Query(db gnorm.DB, table string) ([]*Row, error) {
 		r := Row{}
 
 		err = q.Scan(
-			&r.SeqInIndex,
-			&r.IndexName,
-			&r.Unique,
-			&r.Origin,
-			&r.Partial,
+			&r.TableName,
+			&r.TableId,
+			&r.ObjectId,
+			&r.Name,
+			&r.IndexId,
+			&r.TypeNum,
+			&r.TypeDesc,
+			&r.IsUnique,
+			&r.DataSpaceId,
+			&r.IgnoreDupKey,
+			&r.IsPrimaryKey,
+			&r.IsUniqueConstraint,
+			&r.FillFactor,
+			&r.IsPadded,
+			&r.IsDisabled,
+			&r.IsHypothetical,
+			&r.AllowRowLocks,
+			&r.AllowPageLocks,
+			&r.HasFilter,
+			&r.FilterDefinition,
+			&r.CompressionDelay,
 		)
 
 		if err != nil {
@@ -106,69 +135,7 @@ func QueryIndex(db gnorm.DB, index string) ([]*RowColumns, error) {
            ind.name as IndexName,
            ind.index_id as IndexId,      
            ic.index_column_id as ColumnId, 
-           col.name as ColumnName,
-           
-           object_id,
-           name,
-           index_id,
-           type,
-           type_desc,
-           is_unique,
-           data_space_id, 
-           ignore_dup_key,
-           is_primary_key,
-           is_unique_constraint, 
-           fill_factor, 
-           is_padded,   
-           is_disabled,  
-           is_hypothetical,  
-           allow_row_locks, 
-           allow_page_locks,
-           has_filter,
-           filter_definition,
-           compression_delay,
-           object_id,
-           index_id,
-           index_column_id,
-           column_id,
-           key_ordinal, 
-           partition_ordinal, 
-           is_descending_key,  
-           is_included_column, 
-           object_id,    
-           name,     
-           column_id,  
-           system_type_id,     
-           user_type_id,   
-           max_length,   
-           precision,     
-           scale,    
-           collation_name,   
-           is_nullable,      
-           is_ansi_padded,   
-           is_rowguidcol,    
-           is_identity,     
-           is_computed,    
-           is_filestream, 
-           is_replicated, 
-           is_non_sql_subscribed,   
-           is_merge_published,      
-           is_dts_replicated,   
-           is_xml_document,    
-           xml_collection_id,  
-           default_object_id,  
-           rule_object_id,     
-           is_sparse,     
-           is_column_set, 
-           generated_always_type,     
-           generated_always_type_desc, 
-           encryption_type,     
-           encryption_type_desc,
-           encryption_algorithm_name, 
-           column_encryption_key_id,  
-           column_encryption_key_database_name,  
-           is_hidden,     
-           is_masked
+           col.name as ColumnName
 		
       FROM sys.indexes ind 
 
@@ -183,7 +150,8 @@ INNER JOIN sys.columns col
 INNER JOIN sys.tables t 
         ON ind.object_id = t.object_id 
 
-     WHERE t.name = 'Groupe'
+     WHERE ind.name = @index
+
   ORDER BY t.name, 
            ind.name, 
            ind.index_id, 
@@ -191,12 +159,13 @@ INNER JOIN sys.tables t
 
 ;
 `
-	sql := strings.Replace(sqlstr, "XXXINDEXXXX", index, -1)
-	log.Println("querying index info ", sql)
+	log.Println("querying index info ", sqlstr)
 	log.Println("from index ", index)
 
 	var vals []*RowColumns
-	q, err := db.Query(sql)
+	q, err := db.Query(sqlstr,
+		sql.Named("index", index),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -204,12 +173,11 @@ INNER JOIN sys.tables t
 		r := RowColumns{}
 
 		err = q.Scan(
-			&r.SeqNo,
-			&r.Cid,
-			&r.Name,
-			&r.Desc,
-			&r.Coll,
-			&r.Key,
+			&r.TableName,
+			&r.IndexName,
+			&r.IndexId,
+			&r.ColumnId,
+			&r.ColumnName,
 		)
 
 		if err != nil {

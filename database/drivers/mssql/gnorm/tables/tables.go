@@ -3,6 +3,7 @@
 package tables
 
 import (
+	"database/sql"
 	"gnorm.org/gnorm/database/drivers/mssql/gnorm"
 	"log"
 )
@@ -26,13 +27,13 @@ SELECT TABLE_NAME,
        TABLE_SCHEMA
        
   FROM INFORMATION_SCHEMA.TABLES
-  WHERE TABLE_SCHEMA = ?
+  WHERE TABLE_SCHEMA = @schema
   ;
 `
 	log.Println("querying tables ", sqlstr)
 
 	var vals []*Row
-	q, err := db.Query(sqlstr, schema)
+	q, err := db.Query(sqlstr, sql.Named("schema", schema))
 	if err != nil {
 		return nil, err
 	}

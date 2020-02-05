@@ -69,12 +69,12 @@ func parseTables(log *log.Logger, db gnorm.DB, schema string, filterTables func(
 			continue
 		}
 
-		cols, err := parseColumns(log, db, t.TableName)
+		cols, err := parseColumns(log, db, schema, t.TableName)
 		if err != nil {
 			return nil, err
 		}
 
-		indices, err := parseIndices(log, db, t.TableName)
+		indices, err := parseIndices(log, db, schema, t.TableName)
 		if err != nil {
 			return nil, err
 		}
@@ -90,12 +90,12 @@ func parseTables(log *log.Logger, db gnorm.DB, schema string, filterTables func(
 	return result, nil
 }
 
-func parseColumns(log *log.Logger, db gnorm.DB, table string) ([]*database.Column, error) {
+func parseColumns(log *log.Logger, db gnorm.DB, schema string, table string) ([]*database.Column, error) {
 
 	log.Println("Columns for table", table)
 
 	result := make([]*database.Column, 0)
-	cols, err := columns.Query(db, table)
+	cols, err := columns.Query(db, schema, table)
 	if err != nil {
 		return nil, err
 	}
@@ -104,14 +104,14 @@ func parseColumns(log *log.Logger, db gnorm.DB, table string) ([]*database.Colum
 	for _, c := range cols {
 
 		result = append(result, &database.Column{
-			Name:         c.ColumnName,
-			Type:         c.DataType,
-			IsArray:      false,
-			Length:       0,
-			UserDefined:  false,
-			Nullable:     c.IsNullable,
-			HasDefault:   c.ColumnDefault.Valid,
-			IsPrimaryKey: c.ColumnKey == 1,
+			Name:        c.ColumnName,
+			Type:        c.DataType,
+			IsArray:     false,
+			Length:      0,
+			UserDefined: false,
+			Nullable:    c.IsNullable == "YES",
+			HasDefault:  c.ColumnDefault.Valid,
+			// IsPrimaryKey: c.ColumnKey == 1,
 			Ordinal:      c.OrdinalPosition,
 			IsForeignKey: false,
 			ForeignKey:   nil,
@@ -121,7 +121,7 @@ func parseColumns(log *log.Logger, db gnorm.DB, table string) ([]*database.Colum
 	return result, nil
 }
 
-func parseIndices(log *log.Logger, db gnorm.DB, table string) ([]*database.Index, error) {
+func parseIndices(log *log.Logger, db gnorm.DB, schema string, table string) ([]*database.Index, error) {
 
 	log.Println("Indices for table", table)
 
@@ -133,19 +133,19 @@ func parseIndices(log *log.Logger, db gnorm.DB, table string) ([]*database.Index
 	for _, idx := range indices {
 
 		rcols := make([]*database.Column, 0)
-		cols, err := statistics.QueryIndex(db, idx.IndexName)
+		cols, err := statistics.QueryIndex(db, idx.Name)
 		if err != nil {
 			return nil, err
 		}
 		for _, col := range cols {
 			rcols = append(rcols, &database.Column{
-				Name: col.Name,
+				Name: col.ColumnName,
 			})
 		}
 
 		result = append(result, &database.Index{
-			Name:     idx.IndexName,
-			IsUnique: idx.Unique,
+			Name:     idx.Name,
+			IsUnique: idx.IsUnique,
 			Columns:  rcols,
 		})
 	}
