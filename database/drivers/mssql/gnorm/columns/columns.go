@@ -14,7 +14,7 @@ type Row struct {
 	TableSchema            string         // TABLE_SCHEMA
 	TableName              string         // TABLE_NAME
 	ColumnName             string         // COLUMN_NAME
-	OrdinalPosition        int64          // ORDINAL_POSITION
+	OrdinalPosition        int            // ORDINAL_POSITION
 	ColumnDefault          sql.NullString // COLUMN_DEFAULT
 	IsNullable             string         // IS_NULLABLE
 	DataType               string         // DATA_TYPE
@@ -32,36 +32,54 @@ type Row struct {
 	DomainCatalog          sql.NullString // DOMAIN_CATALOG
 	DomainSchema           sql.NullString // DOMAIN_SCHEMA
 	DomainName             sql.NullString // DOMAIN_NAME
+	Pk                     bool           // PK
 }
 
 // Query retrieves rows from 'COLUMNS' as a slice of Row.
 func Query(db gnorm.DB, schema string, table string) ([]*Row, error) {
 	const strsql = `
 
-SELECT TABLE_CATALOG,
-       TABLE_SCHEMA,
-	   TABLE_NAME,
-	   COLUMN_NAME,
-	   ORDINAL_POSITION,
-	   COLUMN_DEFAULT,
-	   IS_NULLABLE,
-	   DATA_TYPE,
-	   NUMERIC_PRECISION,
-	   NUMERIC_PRECISION_RADIX, 
-	   NUMERIC_SCALE, 
-	   DATETIME_PRECISION, 
-	   CHARACTER_MAXIMUM_LENGTH,
-	   CHARACTER_SET_CATALOG,
-	   CHARACTER_SET_SCHEMA,
-	   CHARACTER_SET_NAME,
-	   COLLATION_CATALOG,
-	   COLLATION_SCHEMA,
-	   COLLATION_NAME,
-	   DOMAIN_CATALOG,
-	   DOMAIN_SCHEMA,
-	   DOMAIN_NAME
-       
-  FROM INFORMATION_SCHEMA.COLUMNS
+SELECT c.TABLE_CATALOG,
+       c.TABLE_SCHEMA,
+	   c.TABLE_NAME,
+	   c.COLUMN_NAME,
+	   c.ORDINAL_POSITION,
+	   c.COLUMN_DEFAULT,
+	   c.IS_NULLABLE,
+	   c.DATA_TYPE,
+	   c.NUMERIC_PRECISION,
+	   c.NUMERIC_PRECISION_RADIX, 
+	   c.NUMERIC_SCALE, 
+	   c.DATETIME_PRECISION, 
+	   c.CHARACTER_MAXIMUM_LENGTH,
+	   c.CHARACTER_SET_CATALOG,
+	   c.CHARACTER_SET_SCHEMA,
+	   c.CHARACTER_SET_NAME,
+	   c.COLLATION_CATALOG,
+	   c.COLLATION_SCHEMA,
+	   c.COLLATION_NAME,
+	   c.DOMAIN_CATALOG,
+	   c.DOMAIN_SCHEMA,
+	   c.DOMAIN_NAME,
+CASE WHEN EXISTS 
+  	    (
+
+SELECT cu.Column_Name
+ from 
+    INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc, 
+    INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE cu 
+WHERE 
+    cu.Constraint_Name = tc.Constraint_Name
+    AND cu.Table_Name = tc.Table_Name
+    AND tc.Constraint_Type = 'PRIMARY KEY'
+    AND cu.Table_Name = c.TABLE_NAME
+	AND cu.Column_Name = c.COLUMN_NAME) 
+       THEN 'TRUE' 
+       ELSE 'FALSE'
+  END AS PK
+
+  FROM INFORMATION_SCHEMA.COLUMNS c
+
   WHERE TABLE_SCHEMA = @schema
        AND TABLE_NAME = @table
   ;
@@ -105,6 +123,7 @@ SELECT TABLE_CATALOG,
 			&r.DomainCatalog,
 			&r.DomainSchema,
 			&r.DomainName,
+			&r.Pk,
 		)
 		if err != nil {
 			return nil, err

@@ -103,20 +103,22 @@ func parseColumns(log *log.Logger, db gnorm.DB, schema string, table string) ([]
 
 	for _, c := range cols {
 
-		result = append(result, &database.Column{
-			Name:        c.ColumnName,
-			Type:        c.DataType,
-			IsArray:     false,
-			Length:      0,
-			UserDefined: false,
-			Nullable:    c.IsNullable == "YES",
-			HasDefault:  c.ColumnDefault.Valid,
-			// IsPrimaryKey: c.ColumnKey == 1,
-			Ordinal:      c.OrdinalPosition,
+		col := &database.Column{
+			Name:         c.ColumnName,
+			Type:         c.DataType,
+			IsArray:      false,
+			Length:       0,
+			UserDefined:  false,
+			Nullable:     c.IsNullable == "YES",
+			HasDefault:   c.ColumnDefault.Valid,
+			IsPrimaryKey: c.Pk,
+			Ordinal:      int64(c.OrdinalPosition),
 			IsForeignKey: false,
-			ForeignKey:   nil,
 			Orig:         nil,
-		})
+		}
+
+		result = append(result, col)
+
 	}
 	return result, nil
 }
