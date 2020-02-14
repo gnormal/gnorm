@@ -133,3 +133,65 @@ WHERE
 	}
 	return vals, nil
 }
+
+
+// Row represents a row from 'COLUMNS'.
+type ForeignRow struct {
+	PkTableQualifier string // PKTABLE_QUALIFIER
+	PkTableOwner     string // PKTABLE_OWNER
+	PkTableName      string // PKTABLE_NAME
+	PkColumnName     string // PKCOLUMN_NAME
+	FkTableQualifier string // FKTABLE_QUALIFIER
+	FkTableOwner     string // FKTABLE_OWNER
+	FkTableName      string // FKTABLE_NAME
+	FkColumnName     string // FKCOLUMN_NAME
+	KeySeq           int    // KEY_SEQ
+	UpdateRule       int    // UPDATE_RULE
+	DeleteRule       int    // DELETE_RULE
+	FkName           string // FK_NAME
+	PkName           string // PK_NAME
+	Deferrability    int    // DEFERRABILITY
+}
+
+// Query retrieves rows from 'COLUMNS' as a slice of Row.
+func QueryForeign(db gnorm.DB, schema string, table string) ([]*ForeignRow, error) {
+	const strsql = ` EXEC sp_fkeys @fktable_name =  @table ; `
+	log.Println("querying foreignkeys ", strsql)
+	log.Println("from table ", table)
+
+	var vals []*ForeignRow
+	q, err := db.Query(strsql,
+		sql.Named("table", table),
+	)
+
+	if err != nil {
+		return nil, err
+	}
+	for q.Next() {
+		r := ForeignRow{}
+
+		err = q.Scan(
+			&r.PkTableQualifier,
+			&r.PkTableOwner,
+			&r.PkTableName,
+			&r.PkColumnName,
+			&r.FkTableQualifier,
+			&r.FkTableOwner,
+			&r.FkTableName,
+			&r.FkColumnName,
+			&r.KeySeq,
+			&r.UpdateRule,
+			&r.DeleteRule,
+			&r.FkName,
+			&r.PkName,
+			&r.Deferrability,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		vals = append(vals, &r)
+	}
+	return vals, nil
+}
+

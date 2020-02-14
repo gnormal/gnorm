@@ -13,7 +13,7 @@ type Row struct {
 	TableName          string         // TableName
 	TableId            int64          // TableId
 	ObjectId           int64          // object_id
-	Name               string         // name
+	Name               string // name
 	IndexId            int            // index_id
 	TypeNum            int            // type_num
 	TypeDesc           string         // type_desc
@@ -75,6 +75,7 @@ func Query(db gnorm.DB, table string) ([]*Row, error) {
         ON ind.object_id = t.object_id 
 
 	 WHERE t.type = 'U'
+           AND ind.name IS NOT NULL
 		   AND t.name = @table
 	;
 

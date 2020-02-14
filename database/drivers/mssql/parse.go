@@ -90,6 +90,7 @@ func parseTables(log *log.Logger, db gnorm.DB, schema string, filterTables func(
 	return result, nil
 }
 
+
 func parseColumns(log *log.Logger, db gnorm.DB, schema string, table string) ([]*database.Column, error) {
 
 	log.Println("Columns for table", table)
@@ -101,7 +102,34 @@ func parseColumns(log *log.Logger, db gnorm.DB, schema string, table string) ([]
 	}
 	log.Println("Columns for table ", len(cols))
 
+	foreigns, err := columns.QueryForeign(db, schema, table)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Foreigns for table ", len(foreigns))
+
+	fks := make(map[string]*columns.ForeignRow)
+	for _, fk := range foreigns {
+		fks[fk.FkColumnName] = fk
+	}
+
 	for _, c := range cols {
+
+		fk, isForeignKey := fks[c.ColumnName]
+
+		var colfk *database.ForeignKey = nil
+
+		if isForeignKey {
+			colfk = &database.ForeignKey{
+				SchemaName: schema,
+				TableName:  fk.PkTableName,
+				ColumnName: fk.PkColumnName,
+				Name:       fk.FkName,
+				UniqueConstraintPosition: 0,
+				ForeignTableName:         fk.PkTableName,
+				ForeignColumnName:        fk.PkColumnName,
+			}
+		}
 
 		col := &database.Column{
 			Name:         c.ColumnName,
@@ -111,11 +139,14 @@ func parseColumns(log *log.Logger, db gnorm.DB, schema string, table string) ([]
 			UserDefined:  false,
 			Nullable:     c.IsNullable == "YES",
 			HasDefault:   c.ColumnDefault.Valid,
+			Comment:      "",
 			IsPrimaryKey: c.Pk,
 			Ordinal:      int64(c.OrdinalPosition),
-			IsForeignKey: false,
+			IsForeignKey: isForeignKey,
+			ForeignKey:   colfk,
 			Orig:         nil,
 		}
+
 
 		result = append(result, col)
 
