@@ -1,6 +1,7 @@
 package cli // import "gnorm.org/gnorm/cli"
 
 import (
+	"gnorm.org/gnorm/database/drivers/mssql"
 	"io"
 	"io/ioutil"
 	"log"
@@ -139,6 +140,8 @@ func getDriver(name string) (database.Driver, error) {
 		return postgres.PG{}, nil
 	case "mysql":
 		return mysql.MySQL{}, nil
+	case "mssql":
+		return mssql.Mssql{}, nil
 	default:
 		return nil, errors.Errorf("unknown database type: %v", name)
 	}

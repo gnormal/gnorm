@@ -40,14 +40,18 @@ gocog}}} -->
 # right thing.
 # MySQL example:
 # ConnStr = "root:admin@tcp/"
+# Mssql example:
+# ConnStr = "sqlserver://username:password@server:1433?database=dbname&connection+timeout=30"
 # Postgres example:
 ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 
 # DBType holds the type of db you're connecting to.  Possible values are
-# "postgres" or "mysql".
+# "postgres" "mssql" or "mysql".
 DBType = "postgres"
 
 # Schemas holds the names of schemas to generate code for.
+# Mssql example :
+# Schemas = ["dbo"]
 Schemas = ["public"]
 
 # PluginDirs a list of paths that will be used for finding plugins.  The list
@@ -74,6 +78,8 @@ IncludeTables = []
 # generation. You cannot set ExcludeTables if IncludeTables is set.  By
 # default, tables will be excluded from all schemas.  To specify tables for
 # a specific schema only, use the schema.tablenmae format.
+# Mssql example:
+# ExcludeTables = ["sysdiagrams"]
 ExcludeTables = ["xyzzx"]
 
 # PostRun is a command with arguments that is run after each file is generated
@@ -90,7 +96,7 @@ PostRun = ["echo", "$GNORMFILE"]
 #
 # This defaults to the current working directory i.e the directory in which
 # gnorm.toml is found.
-OutputDir = "gnorm"
+OutputDir = "output"
 
 # StaticDir is the directory relative to the project root (where the
 # gnorm.toml file is located) in which all static files , which are

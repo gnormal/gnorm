@@ -32,10 +32,16 @@ aliases = [
 # 	}
 # }
 # gocog]]]
+"/gnorm/.idea",
 "/gnorm/cli",
 "/gnorm/cli/testdata",
 "/gnorm/database",
 "/gnorm/database/drivers",
+"/gnorm/database/drivers/mssql",
+"/gnorm/database/drivers/mssql/gnorm",
+"/gnorm/database/drivers/mssql/gnorm/columns",
+"/gnorm/database/drivers/mssql/gnorm/statistics",
+"/gnorm/database/drivers/mssql/gnorm/tables",
 "/gnorm/database/drivers/mysql",
 "/gnorm/database/drivers/mysql/gnorm",
 "/gnorm/database/drivers/mysql/gnorm/columns",
