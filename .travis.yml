@@ -14,7 +14,9 @@ go:
   - tip
   - "1.11"
   - "1.10"
-  - "1.9"
+# https://github.com/go-sql-driver/mysql/issues/1040
+# go-sql-driver/mysql : Go 1.9 is not supported
+#  - "1.9"
 
 # don't call go get ./... because this hides when deps are
 # not packaged into the vendor directory.

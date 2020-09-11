@@ -39,6 +39,8 @@ DBType = "postgres"
 # Schemas holds the names of schemas to generate code for.
 # postgres: "public"
 # sqlite: "main"
+# Mssql example :
+# Schemas = ["dbo"]
 Schemas = ["public"]
 
 # PluginDirs a list of paths that will be used for finding plugins.  The list
@@ -66,6 +68,8 @@ IncludeTables = []
 # default, tables will be excluded from all schemas.  To specify tables for
 # a specific schema only, use the schema.tablenmae format.
 # sqlite: ExcludeTables = ["sqlite_sequence", "sqlite_master"]
+# Mssql example:
+# ExcludeTables = ["sysdiagrams"]
 ExcludeTables = ["xyzzx"]
 
 # PostRun is a command with arguments that is run after each file is generated

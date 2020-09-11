@@ -41,15 +41,17 @@ gocog}}} -->
 # sqlite:   ConnStr = "./sqlite.db"
 # MySQL:    ConnStr = "root:admin@tcp/"
 # Postgres: ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
+# mssql:    ConnStr = "sqlserver://username:password@server:1433?database=dbname&connection+timeout=30"
+
 ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 
 # DBType holds the type of db you're connecting to.  Possible values are
-# "postgres", "mysql" or "sqlite".
+# "postgres", "mssql", "mysql" or "sqlite".
 DBType = "postgres"
 
 # Schemas holds the names of schemas to generate code for.
-# postgres: "public"
-# sqlite: "main"
+# Mssql example :
+# Schemas = ["dbo"]
 Schemas = ["public"]
 
 # PluginDirs a list of paths that will be used for finding plugins.  The list
@@ -77,6 +79,7 @@ IncludeTables = []
 # default, tables will be excluded from all schemas.  To specify tables for
 # a specific schema only, use the schema.tablenmae format.
 # sqlite: ExcludeTables = ["sqlite_sequence", "sqlite_master"]
+# mssql: ExcludeTables = ["sysdiagrams"]
 ExcludeTables = ["xyzzx"]
 
 # PostRun is a command with arguments that is run after each file is generated
