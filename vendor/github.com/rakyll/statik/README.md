@@ -12,7 +12,7 @@ Install the command line tool first.
 
 	go get github.com/rakyll/statik
 
-statik is a tiny program that reads a directory and generates a source file contains its contents. The generated source file registers the directory contents to be used by statik file system.
+statik is a tiny program that reads a directory and generates a source file that contains its contents. The generated source file registers the directory contents to be used by statik file system.
 
 The command below will walk on the public path and generate a package called `statik` under the current working directory.
 
@@ -29,12 +29,17 @@ import (
 
 // ...
 
-statikFS, _ := fs.New()
-http.ListenAndServe(":8080", http.FileServer(statikFS))
+  statikFS, err := fs.New()
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  http.Handle("/public/", http.StripPrefix("/public/", http.FileServer(statikFS)))
+  http.ListenAndServe(":8080", nil)
 ~~~
 
-Visit http://localhost:8080/path/to/file to see your file.
+Visit http://localhost:8080/public/path/to/file to see your file.
 
 There is also a working example under [example](https://github.com/rakyll/statik/tree/master/example) directory, follow the instructions to build and run it.
 
-Note: The idea and the implementation are hijacked from [camlistore](http://camlistore.org/). I decided to decouple it from its codebase due to the fact I'm actively in need of a similar solution for many of my projects. ![Analytics](https://ga-beacon.appspot.com/UA-46881978-1/statik?pixel)
+Note: The idea and the implementation are hijacked from [camlistore](http://camlistore.org/). I decided to decouple it from its codebase due to the fact I'm actively in need of a similar solution for many of my projects.
