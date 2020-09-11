@@ -15,6 +15,7 @@ import (
 	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/database/drivers/mysql"
 	"gnorm.org/gnorm/database/drivers/postgres"
+	"gnorm.org/gnorm/database/drivers/sqlite"
 	"gnorm.org/gnorm/environ"
 	"gnorm.org/gnorm/run"
 	"gnorm.org/gnorm/run/data"
@@ -140,6 +141,8 @@ func getDriver(name string) (database.Driver, error) {
 		return postgres.PG{}, nil
 	case "mysql":
 		return mysql.MySQL{}, nil
+	case "sqlite":
+		return sqlite.Sqlite{}, nil
 	case "mssql":
 		return mssql.Mssql{}, nil
 	default:

@@ -33,6 +33,7 @@ aliases = [
 # }
 # gocog]]]
 "/gnorm/.idea",
+"/gnorm/.idea/dataSources",
 "/gnorm/cli",
 "/gnorm/cli/testdata",
 "/gnorm/database",
@@ -54,13 +55,23 @@ aliases = [
 "/gnorm/database/drivers/postgres/gnorm/columns",
 "/gnorm/database/drivers/postgres/gnorm/tables",
 "/gnorm/database/drivers/postgres/templates",
+"/gnorm/database/drivers/sqlite",
+"/gnorm/database/drivers/sqlite/gnorm",
+"/gnorm/database/drivers/sqlite/gnorm/columns",
+"/gnorm/database/drivers/sqlite/gnorm/statistics",
+"/gnorm/database/drivers/sqlite/gnorm/tables",
 "/gnorm/environ",
+"/gnorm/output",
+"/gnorm/output/Main",
+"/gnorm/output/Main/tables",
 "/gnorm/run",
 "/gnorm/run/data",
 "/gnorm/run/testdata",
 "/gnorm/run/testdata/base",
 "/gnorm/run/testdata/base/level_one",
 "/gnorm/run/testdata/base/level_two",
+"/gnorm/static",
+"/gnorm/templates",
 # [[[end]]]
 ]
 +++

@@ -111,6 +111,15 @@
   version = "v0.0.8"
 
 [[projects]]
+  digest = "1:ec6771c3f9a5f406047d997d55d0d9dd7c94eaff05155385167cab94700c0f2d"
+  name = "github.com/mattn/go-sqlite3"
+  packages = ["."]
+  pruneopts = ""
+  revision = "53cff3fcebd1e177d04129dc131523635bc45d3d"
+  version = "v2.0.2"
+
+[[projects]]
+  branch = "master"
   digest = "1:be76fb5b006046835859bbfd38adfc01574c672685fd5d4c6f0bce073ac16bfb"
   name = "github.com/olekukonko/tablewriter"
   packages = ["."]
@@ -185,6 +194,7 @@
     "github.com/google/go-cmp/cmp",
     "github.com/jinzhu/inflection",
     "github.com/lib/pq",
+    "github.com/mattn/go-sqlite3",
     "github.com/magefile/mage/mg",
     "github.com/magefile/mage/sh",
     "github.com/olekukonko/tablewriter",

@@ -38,15 +38,15 @@ gocog}}} -->
 # ConnStr is the connection string for the database.  Any environment variables
 # in this string will be expanded, so for example dbname=$MY_DDB will do the
 # right thing.
-# MySQL example:
-# ConnStr = "root:admin@tcp/"
-# Mssql example:
-# ConnStr = "sqlserver://username:password@server:1433?database=dbname&connection+timeout=30"
-# Postgres example:
+# sqlite:   ConnStr = "./sqlite.db"
+# MySQL:    ConnStr = "root:admin@tcp/"
+# Postgres: ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
+# mssql:    ConnStr = "sqlserver://username:password@server:1433?database=dbname&connection+timeout=30"
+
 ConnStr = "dbname=mydb host=127.0.0.1 sslmode=disable user=admin"
 
 # DBType holds the type of db you're connecting to.  Possible values are
-# "postgres" "mssql" or "mysql".
+# "postgres", "mssql", "mysql" or "sqlite".
 DBType = "postgres"
 
 # Schemas holds the names of schemas to generate code for.
@@ -78,8 +78,8 @@ IncludeTables = []
 # generation. You cannot set ExcludeTables if IncludeTables is set.  By
 # default, tables will be excluded from all schemas.  To specify tables for
 # a specific schema only, use the schema.tablenmae format.
-# Mssql example:
-# ExcludeTables = ["sysdiagrams"]
+# sqlite: ExcludeTables = ["sqlite_sequence", "sqlite_master"]
+# mssql: ExcludeTables = ["sysdiagrams"]
 ExcludeTables = ["xyzzx"]
 
 # PostRun is a command with arguments that is run after each file is generated
@@ -162,6 +162,16 @@ NoOverwriteGlobs = ["*.perm.go"]
 # not in this mapping, Column.Type will be an empty string.  Note that because
 # of the way tables in TOML work, TypeMap and NullableTypeMap must be at the end
 # of your configuration file.
+#
+# Example for mapping sqlite types to Go types:
+# https://www.sqlite.org/datatype3.html
+# [TypeMap]
+# "INTEGER" = "int"
+# "NUMERIC" = "float64"
+# "REAL" = "float64"
+# "TEXT" = "string"
+# "BLOB" = "byte[]"
+#
 # Example for mapping postgres types to Go types:
 [TypeMap]
 "timestamp with time zone" = "time.Time"
