@@ -2,44 +2,66 @@
 
 
 [[projects]]
-  digest = "1:289dd4d7abfb3ad2b5f728fbe9b1d5c1bf7d265a3eb9ef92869af1f7baba4c7a"
+  digest = "1:e4b30804a381d7603b8a344009987c1ba351c26043501b23b8c7ce21f0b67474"
   name = "github.com/BurntSushi/toml"
   packages = ["."]
   pruneopts = ""
-  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
-  version = "v0.3.0"
+  revision = "3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005"
+  version = "v0.3.1"
 
 [[projects]]
-  digest = "1:0c5ca94ea659aa92dc2eba7b4a35c8d50ec77498a3e5ca1fb90ddfcd13e3658f"
+  digest = "1:7defcd5ff48da94dff55bcb83d76973854c54fefe87340607b9e801154390fd3"
   name = "github.com/codemodus/kace"
   packages = [
     ".",
     "ktrie",
   ]
   pruneopts = ""
-  revision = "5014436b6047e869bffac20eecddbbe55a0c050d"
-  version = "v0.5.0"
+  revision = "e3ecf78ee2a5e58652cb2be34d3159ad9c89acf8"
+  version = "v0.5.1"
 
 [[projects]]
-  digest = "1:24f8932912fd9331367d38715bb74be889dc2f94d401109c3aa3db8b3aa246c5"
+  branch = "master"
+  digest = "1:97197c76912cbffe77f8a2ed5c65d0eca779056171ba3fbc02b730e10589b567"
+  name = "github.com/denisenkom/go-mssqldb"
+  packages = [
+    ".",
+    "internal/cp",
+    "internal/decimal",
+    "internal/querytext",
+  ]
+  pruneopts = ""
+  revision = "0f454e2ecd6ad8fb4691cdbf10e399e05ca03784"
+
+[[projects]]
+  digest = "1:a67f9275b42e8bb95ba38f705062175ef65538bcdc107e0771763e6cde80c3c3"
   name = "github.com/go-sql-driver/mysql"
   packages = ["."]
   pruneopts = ""
-  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
-  version = "v1.3"
+  revision = "17ef3dd9d98b69acec3e85878995ada9533a9370"
+  version = "v1.5.0"
 
 [[projects]]
-  digest = "1:9ed055a3aae12576c784609f6894cc05ea64f24c3a4859f1d0052bfea1bdde0e"
+  branch = "master"
+  digest = "1:914bae0d7af57d7f9c2c8eff864071e57c3effebd78eeef26eff4afb0372ed2f"
+  name = "github.com/golang-sql/civil"
+  packages = ["."]
+  pruneopts = ""
+  revision = "cb61b32ac6fe84d34b81730175f91965e43d0f90"
+
+[[projects]]
+  digest = "1:c35d25413dce110e4ff2ca871c648bf5365ab8c954021394cabd39f5e0566fd8"
   name = "github.com/google/go-cmp"
   packages = [
     "cmp",
     "cmp/internal/diff",
+    "cmp/internal/flags",
     "cmp/internal/function",
     "cmp/internal/value",
   ]
   pruneopts = ""
-  revision = "8099a9787ce5dc5984ed879a3bda47dc730a8e97"
-  version = "v0.1.0"
+  revision = "5a6f75716e1203a923a78c9efb94089d857df0f6"
+  version = "v0.4.0"
 
 [[projects]]
   digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
@@ -58,79 +80,108 @@
   version = "v1.0.0"
 
 [[projects]]
-  branch = "master"
-  digest = "1:1559e09937fb91848d3d201213ef6e0aac0a521934d6f88166f0e381f085ef5f"
+  digest = "1:b424ab60bdff8b8899fa0b27c9b35083f2607fbbaa7b6430617c53ca4501d286"
   name = "github.com/lib/pq"
   packages = [
     ".",
     "oid",
+    "scram",
   ]
   pruneopts = ""
-  revision = "e42267488fe361b9dc034be7a6bffef5b195bceb"
+  revision = "99274577be97ac9b1d95a2d61d566dc9b7cc6a54"
+  version = "v1.3.0"
 
 [[projects]]
-  digest = "1:81e673df85e765593a863f67cba4544cf40e8919590f04d67664940786c2b61a"
+  digest = "1:6183625fea2930a52d8da06fbdc29177ba206ed0d982d8c50d87e6fc24c5e541"
+  name = "github.com/magefile/mage"
+  packages = [
+    "mg",
+    "sh",
+  ]
+  pruneopts = ""
+  revision = "1c36bf78a98209d91af71354deb001cca75e11fc"
+  version = "v1.9.0"
+
+[[projects]]
+  digest = "1:82725fe571631a8f41977b19a30a74d62a53a83275bd2d92b7d7bb952acfa063"
   name = "github.com/mattn/go-runewidth"
   packages = ["."]
   pruneopts = ""
-  revision = "9e777a8366cce605130a531d2cd6363d07ad7317"
-  version = "v0.0.2"
+  revision = "a4df4ddbff020e131056d91f580a1cdcd806e3ae"
+  version = "v0.0.8"
+
+[[projects]]
+  digest = "1:ec6771c3f9a5f406047d997d55d0d9dd7c94eaff05155385167cab94700c0f2d"
+  name = "github.com/mattn/go-sqlite3"
+  packages = ["."]
+  pruneopts = ""
+  revision = "53cff3fcebd1e177d04129dc131523635bc45d3d"
+  version = "v2.0.2"
 
 [[projects]]
   branch = "master"
-  digest = "1:1a46c8156ee967592f8b74d1fed6dd2cf4d0a22162de056e8053dd3036acc6b7"
+  digest = "1:be76fb5b006046835859bbfd38adfc01574c672685fd5d4c6f0bce073ac16bfb"
   name = "github.com/olekukonko/tablewriter"
   packages = ["."]
   pruneopts = ""
-  revision = "be5337e7b39e64e5f91445ce7e721888dbab7387"
+  revision = "876dd0e0227ec99c0243b639b92139915b65331a"
+  version = "v0.0.4"
 
 [[projects]]
   branch = "master"
-  digest = "1:0694c1b331648e7ec6a1ec4a5401e208d600ca27ccf4b58528f364d82e74e428"
+  digest = "1:f8c5b1a7be7de5bc373f5c8e30c06b593887e04a9dffd8ca5f15a939c361cdcc"
   name = "github.com/pkg/browser"
   packages = ["."]
   pruneopts = ""
-  revision = "c90ca0c84f15f81c982e32665bffd8d7aac8f097"
+  revision = "0a3d74bf9ce488f035cf5bc36f753a711bc74334"
 
 [[projects]]
-  digest = "1:7365acd48986e205ccb8652cc746f09c8b7876030d53710ea6ef7d0bd0dcd7ca"
+  digest = "1:c45802472e0c06928cd997661f2af610accd85217023b1d5f6331bebce0671d3"
   name = "github.com/pkg/errors"
   packages = ["."]
   pruneopts = ""
-  revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
-  version = "v0.8.0"
+  revision = "614d223910a179a466c1767a985424175c39b465"
+  version = "v0.9.1"
 
 [[projects]]
-  digest = "1:a5274bdfcc63825d620dbd395605f5039a94c2af784907677cc589fca8b7a028"
+  digest = "1:79c3c0b8805e9331a87c459b37dd007d4389cc511dfa2beeae1d6f35986cd4a4"
   name = "github.com/rakyll/statik"
   packages = ["fs"]
   pruneopts = ""
-  revision = "fd36b3595eb2ec8da4b8153b107f7ea08504899d"
-  version = "v0.1.1"
+  revision = "3bac566d30cdbeddef402a80f3d6305860e59f12"
+  version = "v0.1.6"
 
 [[projects]]
-  branch = "master"
-  digest = "1:146327ce93be37e68bd3ff8541090d96da8cb3adc9e35d57570e9170a29f6bf6"
+  digest = "1:0c63b3c7ad6d825a898f28cb854252a3b29d37700c68a117a977263f5ec94efe"
   name = "github.com/spf13/cobra"
   packages = ["."]
   pruneopts = ""
-  revision = "b78744579491c1ceeaaa3b40205e56b0591b93a3"
+  revision = "f2b07da1e2c38d5f12845a4f607e2e1018cbb1f5"
+  version = "v0.0.5"
 
 [[projects]]
-  digest = "1:261bc565833ef4f02121450d74eb88d5ae4bd74bfe5d0e862cddb8550ec35000"
+  digest = "1:688428eeb1ca80d92599eb3254bdf91b51d7e232fead3a73844c1f201a281e51"
   name = "github.com/spf13/pflag"
   packages = ["."]
   pruneopts = ""
-  revision = "e57e3eeb33f795204c1ca35f56c44f83227c6e66"
-  version = "v1.0.0"
+  revision = "2e9d26c8c37aae03e3f9d4e90b7116f5accb7cab"
+  version = "v1.0.5"
 
 [[projects]]
-  branch = "v2"
-  digest = "1:81314a486195626940617e43740b4fa073f265b0715c9f54ce2027fee1cb5f61"
+  branch = "master"
+  digest = "1:9fda9c2e3083ce93ccd5f46154df778c31c5da1194224b0e3fd2587869e7bec0"
+  name = "golang.org/x/crypto"
+  packages = ["md4"]
+  pruneopts = ""
+  revision = "c9f3fb736b729628ec1e9c1a6b4313e883f452f9"
+
+[[projects]]
+  digest = "1:2efc9662a6a1ff28c65c84fc2f9030f13d3afecdb2ecad445f3b0c80e75fc281"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
   pruneopts = ""
-  revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
+  revision = "53403b58ad1b561927d19068c655246f2db79d48"
+  version = "v2.2.8"
 
 [solve-meta]
   analyzer-name = "dep"
@@ -138,10 +189,14 @@
   input-imports = [
     "github.com/BurntSushi/toml",
     "github.com/codemodus/kace",
+    "github.com/denisenkom/go-mssqldb",
     "github.com/go-sql-driver/mysql",
     "github.com/google/go-cmp/cmp",
     "github.com/jinzhu/inflection",
     "github.com/lib/pq",
+    "github.com/mattn/go-sqlite3",
+    "github.com/magefile/mage/mg",
+    "github.com/magefile/mage/sh",
     "github.com/olekukonko/tablewriter",
     "github.com/pkg/browser",
     "github.com/pkg/errors",

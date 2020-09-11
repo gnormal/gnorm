@@ -89,7 +89,7 @@ func TestParseConfig(t *testing.T) {
 			"numeric":           "sql.NullFloat64",
 		},
 		PluginDirs:       []string{"plugins"},
-		OutputDir:        "gnorm",
+		OutputDir:        "output",
 		StaticDir:        "static",
 		NoOverwriteGlobs: []string{"*.perm.go"},
 	}
