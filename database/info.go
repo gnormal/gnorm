@@ -31,6 +31,7 @@ type EnumValue struct {
 // Table contains the definition of a database table.
 type Table struct {
 	Name    string    // the original name of the table in the DB
+	Type    string    // the table type (e.g. VIEW or BASE TABLE)
 	Comment string    // the comment attached to the table
 	Columns []*Column // ordered list of columns in this table
 	Indexes []*Index  // list of indexes in this table
