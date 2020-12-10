@@ -16,8 +16,6 @@ import (
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/tables"
 )
 
-//go:generate gnorm gen
-
 // MySQL implements drivers.Driver interface for MySQL database.
 type MySQL struct{}
 

@@ -15,8 +15,6 @@ import (
 	"gnorm.org/gnorm/database/drivers/postgres/gnorm/tables"
 )
 
-//go:generate gnorm gen
-
 // PG implements drivers.Driver interface for interacting with postgresql
 // database.
 type PG struct{}
