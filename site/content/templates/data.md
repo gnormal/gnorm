@@ -208,6 +208,8 @@ Strings is a list of string values with the following methods (not avaialable wi
 | Name | string   | the converted name of the table
 | DBName | string | the original name of the table in the DB
 | Comment | string | the comment attached to the table
+| IsView | bool | true if the table is actually a view
+| IsInsertable | bool | true if the table accepts inserts (postgres only)
 | Schema | [Schema](#schema)  | the schema this table is in
 | Columns | [Columns](#columns) | ordered list of Database columns
 | ColumnsByName | map[string][Column](#column) | map of column dbname to column

@@ -49,6 +49,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			Name:    t.TableName,
 			Type:    t.TableType,
 			Comment: t.TableComment,
+			IsView:  t.TableType == "VIEW",
 		})
 	}
 

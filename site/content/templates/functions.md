@@ -81,6 +81,7 @@ func main() {
 }
 gocog}}} -->
 <table>
+var FuncMap = map[string]interface{}
 <tr><td>camel</td><td>[https://godoc.org/github.com/codemodus/kace#Camel](https://godoc.org/github.com/codemodus/kace#Camel)</td></tr>
 <tr><td>compare</td><td>[https://golang.org/pkg/strings/#Compare](https://golang.org/pkg/strings/#Compare)</td></tr>
 <tr><td>contains</td><td>[https://golang.org/pkg/strings/#Contains](https://golang.org/pkg/strings/#Contains)</td></tr>
@@ -128,40 +129,56 @@ gocog}}} -->
 <tr><td>trimSuffix</td><td>[https://golang.org/pkg/strings/#TrimSuffix](https://golang.org/pkg/strings/#TrimSuffix)</td></tr>
 </table>
 ## dec
-` func dec(x int) int `
+` package environ // import "gnorm.org/gnorm/environ" `
 
+
+func dec(x int) int
 dec decrements the argument's value by 1.
 ## inc
-` func inc(x int) int `
+` package environ // import "gnorm.org/gnorm/environ" `
 
+
+func inc(x int) int
 inc increments the argument's value by 1.
 ## makeMap
-` func makeMap(vals ...interface{}) (map[string]interface{}, error) `
+` package environ // import "gnorm.org/gnorm/environ" `
 
+
+func makeMap(vals ...interface{}) (map[string]interface{}, error)
 makeMap expects an even number of parameters, in order to have name:value
 pairs. All even values must be strings as keys. Odd values may be any value.
 This is used to make maps to pass information into sub templates, range
 statements, etc.
 ## makeSlice
-` func makeSlice(vals ...interface{}) interface{} `
+` package environ // import "gnorm.org/gnorm/environ" `
 
+
+func makeSlice(vals ...interface{}) interface{}
 makeSlice returns the arguments as a single slice. If all the arguments are
 strings, they are returned as a []string, otherwise they're returned as
 []interface{}.
 ## numbers
-` func numbers(start, end int) data.Strings `
+` package environ // import "gnorm.org/gnorm/environ" `
 
+
+func numbers(start, end int) data.Strings
 numbers returns a slice of strings of the numbers start to end (inclusive).
 ## sliceString
-` func sliceString(s string, start, end int) string `
+` package environ // import "gnorm.org/gnorm/environ" `
 
+
+func sliceString(s string, start, end int) string
 sliceString returns a slice of s from index start to end.
 ## sub
-` func sub(x int, vals ...int) int `
+` package environ // import "gnorm.org/gnorm/environ" `
 
+
+func sub(x int, vals ...int) int
 sub subtracts the second and following values from the first argument.
 ## sum
-` func sum(vals ...int) int `
+` package environ // import "gnorm.org/gnorm/environ" `
 
+
+func sum(vals ...int) int
 sum returns the sum of its arguments.
 <!-- {{{end}}} -->
