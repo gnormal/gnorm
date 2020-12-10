@@ -15,8 +15,6 @@ import (
 	"gnorm.org/gnorm/database/drivers/postgres/gnorm/tables"
 )
 
-//go:generate gnorm gen
-
 // PG implements drivers.Driver interface for interacting with postgresql
 // database.
 type PG struct{}
@@ -53,8 +51,8 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 		}
 
 		schemas[t.TableSchema.String] = append(schemas[t.TableSchema.String], &database.Table{
-			Name: t.TableName.String,
-			Type: t.TableType.String,
+			Name:         t.TableName.String,
+			Type:         t.TableType.String,
 			IsView:       t.TableType.String == "VIEW",
 			IsInsertable: t.IsInsertableInto.String == "YES",
 		})

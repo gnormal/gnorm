@@ -12,13 +12,13 @@ branches:
 # library, I'm not going to worry about older versions for now.
 go:
   - tip
-  - "1.11"
-  - "1.10"
-  - "1.9"
+  - "1.15"
+  - "1.14"
+  - "1.13"
+  - "1.12"
 
-# don't call go get ./... because this hides when deps are
-# not packaged into the vendor directory.
-install: true
+env:
+  - GO111MODULE=on
 
 # don't call go test -v because we want to be able to only show t.Log output when
 # a test fails
