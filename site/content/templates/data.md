@@ -207,6 +207,7 @@ Strings is a list of string values with the following methods (not avaialable wi
 | --- | ---- | --- |
 | Name | string   | the converted name of the table
 | DBName | string | the original name of the table in the DB
+| Type | string | the type of table (usually VIEW or TABLE BASE)
 | Comment | string | the comment attached to the table
 | IsView | bool | true if the table is actually a view
 | IsInsertable | bool | true if the table accepts inserts (postgres only)
