@@ -16,8 +16,6 @@ import (
 	"gnorm.org/gnorm/database/drivers/mysql/gnorm/tables"
 )
 
-//go:generate gnorm gen
-
 // MySQL implements drivers.Driver interface for MySQL database.
 type MySQL struct{}
 
@@ -49,6 +47,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 			Name:    t.TableName,
 			Type:    t.TableType,
 			Comment: t.TableComment,
+			IsView:  t.TableType == "VIEW",
 		})
 	}
 

@@ -11,14 +11,12 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 )
 
 // Runs go install for gnorm.  This generates the embedded docs and the version
 // info into the binary.
 func Build() error {
-	mg.Deps(Generate)
 	if err := genSite(); err != nil {
 		return err
 	}

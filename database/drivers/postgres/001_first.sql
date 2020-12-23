@@ -28,6 +28,9 @@ CREATE TABLE books (
 
 CREATE INDEX books_title_idx ON books(author_id, title);
 
+
+
+
 ---- create above / drop below ----
 
 DROP TABLE IF EXISTS books CASCADE;

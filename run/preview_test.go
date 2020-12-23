@@ -6,6 +6,7 @@ import (
 	"testing"
 	"text/template"
 
+	"github.com/andreyvit/diff"
 	"github.com/google/go-cmp/cmp"
 	"gnorm.org/gnorm/database"
 	"gnorm.org/gnorm/environ"
@@ -51,9 +52,11 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 		Schemas: []*database.Schema{{
 			Name: "schema",
 			Tables: []*database.Table{{
-				Name:    "table",
-				Type:    "BASE TABLE",
-				Comment: "a table",
+				Name:         "table",
+				Type:         "BASE TABLE",
+				IsView:       false,
+				IsInsertable: true,
+				Comment:      "a table",
 				Columns: []*database.Column{{
 					Name:         "col1",
 					Type:         "int",
@@ -83,8 +86,10 @@ func (dummyDriver) Parse(log *log.Logger, conn string, schemaNames []string, fil
 					}},
 				}},
 			}, {
-				Name: "tb2",
-				Type: "BASE TABLE",
+				Name:         "tb2",
+				Type:         "VIEW",
+				IsView:       true,
+				IsInsertable: false,
 				Columns: []*database.Column{{
 					Name:         "col1",
 					Type:         "int",
@@ -120,6 +125,8 @@ const expectYaml = `schemas:
   - name: abc table
     dbname: table
     type: BASE TABLE
+    isview: false
+    isinsertable: true
     comment: a table
     columns:
     - name: abc col1
@@ -245,7 +252,9 @@ const expectYaml = `schemas:
         refcolumndbname: col1
   - name: abc tb2
     dbname: tb2
-    type: BASE TABLE
+    type: VIEW
+    isview: true
+    isinsertable: false
     comment: ""
     columns:
     - name: abc col1
@@ -388,7 +397,7 @@ func TestPreviewYAML(t *testing.T) {
 	}
 	v := out.String()
 	if v != expectYaml {
-		t.Errorf(cmp.Diff(expectYaml, v))
+		t.Errorf(diff.LineDiff(expectYaml, v))
 	}
 }
 
@@ -403,6 +412,8 @@ var expectJSON = `
           "Name": "abc table",
           "DBName": "table",
           "Type": "BASE TABLE",
+          "IsView": false,
+          "IsInsertable": true,
           "Comment": "a table",
           "Columns": [
             {
@@ -563,7 +574,9 @@ var expectJSON = `
         {
           "Name": "abc tb2",
           "DBName": "tb2",
-          "Type": "BASE TABLE",
+          "Type": "VIEW",
+          "IsView": true,
+          "IsInsertable": false,
           "Comment": "",
           "Columns": [
             {
@@ -689,7 +702,7 @@ func TestPreviewJSON(t *testing.T) {
 	}
 	v := out.String()
 	if v != expectJSON {
-		t.Errorf(cmp.Diff(expectJSON, v))
+		t.Error(diff.LineDiff(expectJSON, v))
 	}
 }
 

@@ -52,6 +52,8 @@ type Table struct {
 	Name           string                 // the converted name of the table
 	DBName         string                 // the original name of the table in the DB
 	Type           string                 // the table type (e.g. VIEW or BASE TABLE)
+	IsView         bool                   // true if the table represents a view
+	IsInsertable   bool                   // true if the table accepts inserts (postgres only)
 	Comment        string                 // the comment attached to the table
 	Schema         *Schema                `yaml:"-" json:"-"` // the schema this table is in
 	Columns        Columns                // Database columns

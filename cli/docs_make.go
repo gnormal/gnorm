@@ -11,8 +11,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/rakyll/statik/fs"
 	"github.com/spf13/cobra"
-
-	_ "gnorm.org/gnorm/cli/statik"
 	"gnorm.org/gnorm/environ"
 )
 
