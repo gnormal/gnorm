@@ -597,14 +597,12 @@ func queryTableComments(log *log.Logger, db *sql.DB, schemaNames []string) ([]ta
 
 func queryEnums(log *log.Logger, db *sql.DB, schemas []string) (map[string][]*database.Enum, error) {
 	// TODO: make this work with Gnorm generated types
-	const q = `
-	SELECT      n.nspname, t.typname as type
-	FROM        pg_type t
-	LEFT JOIN   pg_catalog.pg_namespace n ON n.oid = t.typnamespace
-	JOIN        pg_enum e ON t.oid = e.enumtypid
-	WHERE       (t.typrelid = 0 OR (SELECT c.relkind = 'c' FROM pg_catalog.pg_class c WHERE c.oid = t.typrelid))
-	AND     NOT EXISTS(SELECT 1 FROM pg_catalog.pg_type el WHERE el.oid = t.typelem AND el.typarray = t.oid)
-	AND     n.nspname IN (%s)`
+	const q = `SELECT n.nspname, t.typname AS type
+	FROM pg_type t 
+	JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace 
+	WHERE typtype='e'
+	AND n.nspname IN (%s)`
+
 	spots := make([]string, len(schemas))
 	vals := make([]interface{}, len(schemas))
 	for x := range schemas {
