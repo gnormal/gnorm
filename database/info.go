@@ -12,6 +12,7 @@ type Info struct {
 type Schema struct {
 	Name   string   // the original name of the schema in the DB
 	Tables []*Table // the list of tables in this schema
+	Procs  []*Proc  // the list of procs in this schema
 	Enums  []*Enum  // the list of enums in this schema
 }
 
@@ -30,10 +31,22 @@ type EnumValue struct {
 
 // Table contains the definition of a database table.
 type Table struct {
-	Name    string    // the original name of the table in the DB
-	Comment string    // the comment attached to the table
-	Columns []*Column // ordered list of columns in this table
-	Indexes []*Index  // list of indexes in this table
+	Name         string    // the original name of the table in the DB
+	Type         string    // the table type (e.g. VIEW or BASE TABLE)
+	Comment      string    // the comment attached to the table
+	IsView       bool      // true if the table is actually a view
+	IsInsertable bool      // true if the table accepts inserts
+	Columns      []*Column // ordered list of columns in this table
+	Indexes      []*Index  // list of indexes in this table
+}
+
+// Proc contains the definition of a database proc.
+type Proc struct {
+	Name       string       // the original name of the proc in the DB
+	Type       string       // the proc type (e.g. USER or SYSTEM)
+	Comment    string       // the comment attached to the proc
+	IsSystem   bool         // true if the proc is actually a system proc
+	Parameters []*Parameter // ordered list of parameters in this proc
 }
 
 // Index contains the definition of a database index.
@@ -77,6 +90,20 @@ type Column struct {
 	IsForeignKey bool        // true if the column is a foreign key
 	ForeignKey   *ForeignKey // foreign key database definition
 	Orig         interface{} // the raw database column data
+}
+
+// Parameter contains data about a Parameter in a proc.
+type Parameter struct {
+	Name        string      // the original name of the parameter in the DB
+	Type        string      // the original type of the parameter in the DB
+	IsArray     bool        // true if the parameter type is an array
+	Length      int         // non-zero if the type has a length (e.g. varchar[16])
+	UserDefined bool        // true if the type is user-defined
+	Nullable    bool        // true if the parameter is not NON NULL
+	HasDefault  bool        // true if the parameter has a default
+	Comment     string      // the comment attached to the parameter
+	Ordinal     int64       // the parameter's ordinal position
+	Orig        interface{} // the raw database parameter data
 }
 
 // Driver defines the base interface for databases that are supported by gnorm

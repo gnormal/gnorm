@@ -30,6 +30,14 @@ type TableData struct {
 	Params map[string]interface{}
 }
 
+// ProcData is the data passed to table templates.
+type ProcData struct {
+	Proc   *Proc
+	DB     *DBData
+	Config ConfigData
+	Params map[string]interface{}
+}
+
 // EnumData is the data passed to enum templates.
 type EnumData struct {
 	Enum   *Enum
@@ -43,8 +51,10 @@ type Schema struct {
 	Name         string            // the converted name of the schema
 	DBName       string            // the original name of the schema in the DB
 	Tables       Tables            // the list of tables in this schema
+	Procs        Procs             // the list of procs in this schema
 	Enums        Enums             // the list of enums in this schema
 	TablesByName map[string]*Table `yaml:"-" json:"-"` // dbnames to tables
+	ProcsByName  map[string]*Proc  `yaml:"-" json:"-"` // dbnames to tables
 }
 
 // Table is the data about a DB Table.
@@ -62,6 +72,16 @@ type Table struct {
 	ForeignKeyRefs ForeignKeys            // Foreign Keys referencing this table
 	FKByName       map[string]*ForeignKey `yaml:"-" json:"-"` // Foreign Keys by foreign key name
 	FKRefsByName   map[string]*ForeignKey `yaml:"-" json:"-"` // Foreign Keys referencing this table by foreign key name
+}
+
+// Proc is the data about a DB Proc.
+type Proc struct {
+	Name             string                // the converted name of the proc
+	DBName           string                // the original name of the proc in the DB
+	Comment          string                // the comment attached to the proc
+	Schema           *Schema               `yaml:"-" json:"-"` // the schema this proc is in
+	Parameters       Parameters            // Proc parameters
+	ParametersByName map[string]*Parameter `yaml:"-" json:"-"` // dbname to parameter
 }
 
 // HasPrimaryKey returns true if Table has one or more primary keys.
@@ -100,6 +120,23 @@ type Column struct {
 	FKColumnRefs       ForeignKeyColumns            // all foreign key columns referencing this column
 	FKColumnRefsByName map[string]*ForeignKeyColumn `yaml:"-" json:"-"` // all foreign key columns referencing this column by foreign key name
 	Orig               interface{}                  `yaml:"-" json:"-"` // the raw database column data
+}
+
+// Parameter is the data about a DB Parameter of a proc.
+type Parameter struct {
+	Proc        *Proc       `yaml:"-" json:"-"` // the proc this parameter is in
+	Name        string      // the converted name of the parameter
+	DBName      string      // the original name of the parameter in the DB
+	Type        string      // the converted name of the type
+	DBType      string      // the original type of the column in the DB
+	IsArray     bool        // true if the parameter type is an array
+	Length      int         // non-zero if the type has a length (e.g. varchar[16])
+	UserDefined bool        // true if the type is user-defined
+	Nullable    bool        // true if the parameter is not NON NULL
+	HasDefault  bool        // true if the parameter has a default
+	Comment     string      // the comment attached to the parameter
+	Ordinal     int64       // the parameter's ordinal position
+	Orig        interface{} `yaml:"-" json:"-"` // the raw database parameter data
 }
 
 // ForeignKey contains the
@@ -319,6 +356,9 @@ func (fkc ForeignKeyColumns) RefColumnDBNames() Strings {
 // Columns represents the ordered list of columns in a table.
 type Columns []*Column
 
+// Parameters represents the ordered list of Parameter of a proc.
+type Parameters []*Parameter
+
 // Names returns the ordered list of column Names in this table.
 func (c Columns) Names() Strings {
 	names := make(Strings, len(c))
@@ -363,6 +403,9 @@ func (c Columns) ByOrdinal() Columns {
 
 // Tables is a list of tables in this schema.
 type Tables []*Table
+
+// Procs is a list of proc in this schema.
+type Procs []*Proc
 
 // Names returns a list of table Names in this schema.
 func (t Tables) Names() Strings {

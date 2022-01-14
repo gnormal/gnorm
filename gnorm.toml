@@ -1,0 +1,84 @@
+#
+# Generation de code automatisée
+#
+ConnStr = "sqlserver://cfr:h6zdg2LZKHPRBi@arc-srv-sql-01.arcantel.local/sql2016?database=cfr-dev&connection+timeout=30"
+DBType = "mssql"
+Schemas = ["dbo"]
+PluginDirs = ["plugins"]
+
+NameConversion = "{{.}}"
+IncludeTables = []
+ExcludeTables = []
+OutputDir = "output"
+
+NoOverwriteGlobs = ["*.perm.go"]
+[TablePaths]
+
+# 20220111 Luc Duchosal <luc.duchosal@arcantel.ch>
+# Réalisé automatiquement dans le dossier solution
+# regarder le fichier gnorm-bo-dto.toml
+# ne pas utiliser ce toml pour générer les BO et DTOs
+#
+# "Bo/{{.Table}}Bo.cs" = "template/Bo/bo.tpl"
+# "Dto/{{.Table}}Dto.cs" = "template/Dto/dto.tpl"
+
+# "Dal/{{.Table}}Provider.cs" = "template/Dal/provider.tpl"
+# "Dal/Interface/I{{.Table}}Provider.cs" = "template/Dal/iprovider.tpl"
+
+# "Business/{{.Table}}Business.cs" = "template/Business/business.tpl"
+# "Business/Result/{{.Table}}Result.cs" = "template/Business/result.tpl"
+# "Business/Result/Enum/ResultEnum.cs" = "template/Business/resultEnum.tpl"
+
+# "Test/Mock/Mock{{.Table}}Provider.cs" = "template/Test/mockprovider.tpl"
+
+
+#"Dal.Mock/Mock{{.Table}}Provider.cs" = "template/Dal.Mock/mockprovider.tpl"
+
+
+# "Web/Controllers/{{.Table}}Controller.cs" = "template/Web/controller.tpl"
+
+[ProcPaths]
+
+"Proc/{{.Proc}}.txt" = "template/proc.tpl"
+
+[SchemaPaths]
+# "{{.Schema}}.go" = "template/schema.tpl"
+# "Web/Util/IServiceCollectionExt.cs" = "template/Web/Util/injectiondependances.tpl"
+# "Business/DependencyInjection.cs" = "template/Business/injectiondependances.tpl"
+# "Dal/DependencyInjection.cs" = "template/Dal/injectiondependances.tpl"
+
+# "Business/MappingProfile.cs" = "template/Business/mappingprofile.tpl"
+
+
+[EnumPaths]
+# "{{.Schema}}/enums/{{.Enum}}.go" = "template/enum.tpl"
+
+[TypeMap]
+"int" = "int"
+"bigint" = "long"
+"nvarchar" = "string"
+"nchar" = "string"
+"bit" = "bool"
+"datetime" = "DateTime"
+"varbinary" = "byte[]"
+"decimal" = "double"
+"geography" = "SqlGeography"
+"char" = "string"
+"date" = "DateTime"
+
+[NullableTypeMap]
+"int" = "int?"
+"bigint" = "long?"
+"nvarchar" = "string?"
+"nchar" = "string?"
+"bit" = "bool?"
+"datetime" = "DateTime?"
+"varbinary" = "byte[]?"
+"decimal" = "double?"
+"geography" = "SqlGeography?"
+"float" = "double"
+"char" = "string?"
+"date" = "DateTime?"
+
+[Params]
+mySpecialValue = "some value"

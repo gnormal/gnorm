@@ -19,6 +19,14 @@ type Config struct {
 	// "public.users" table to ./public/users/users.go.
 	TablePaths []OutputTarget
 
+	// ProcPaths is a list of output targets used to render proc data.
+	//
+	// The filename template may reference the values .Schema and .Proc,
+	// containing the name of the current schema and proc being rendered.  For
+	// example, "{{.Schema}}/{{.Proc}}/{{.Proc}}.go" would render the
+	// "public.users" proc to ./public/users/users.go.
+	ProcPaths []OutputTarget
+
 	// SchemaPaths is a list of output targets used to render schema data.
 	//
 	// The filename template may reference the value .Schema, containing the

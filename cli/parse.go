@@ -119,12 +119,17 @@ func Parse(env environ.Values, r io.Reader) (*run.Config, error) {
 		return nil, errors.WithMessage(err, "error parsing TablePaths")
 	}
 
+	cfg.ProcPaths, err = parseOutputTargets(c.ProcPaths, useEngine)
+	if err != nil {
+		return nil, errors.WithMessage(err, "error parsing ProcPaths")
+	}
+
 	cfg.EnumPaths, err = parseOutputTargets(c.EnumPaths, useEngine)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error parsing EnumPaths")
 	}
 
-	if len(cfg.EnumPaths) == 0 && len(cfg.TablePaths) == 0 && len(cfg.SchemaPaths) == 0 {
+	if len(cfg.EnumPaths) == 0 && len(cfg.TablePaths) == 0 && len(cfg.ProcPaths) == 0 && len(cfg.SchemaPaths) == 0 {
 		return nil, errors.New("no output paths defined, so no output will be generated")
 	}
 

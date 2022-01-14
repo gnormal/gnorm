@@ -3,6 +3,8 @@ package mssql // import "gnorm.org/gnorm/database/drivers/mssql"
 import (
 	"database/sql"
 	"gnorm.org/gnorm/database/drivers/mssql/gnorm"
+	"gnorm.org/gnorm/database/drivers/mssql/gnorm/parameters"
+	"gnorm.org/gnorm/database/drivers/mssql/gnorm/procs"
 	"log"
 	// mssql driver
 	_ "github.com/denisenkom/go-mssqldb"
@@ -39,6 +41,11 @@ func (Mssql) Parse(log *log.Logger, conn string, schemaNames []string, filterTab
 			return nil, errors.WithStack(err)
 		}
 
+		procs, err := parseProcs(log, db, schema, filterTables)
+		if err != nil {
+			return nil, errors.WithStack(err)
+		}
+
 		enums, err := parseEnums(log, db, schema, filterTables)
 		if err != nil {
 			return nil, errors.WithStack(err)
@@ -47,11 +54,74 @@ func (Mssql) Parse(log *log.Logger, conn string, schemaNames []string, filterTab
 		s := &database.Schema{
 			Name:   schema,
 			Tables: tbls,
+			Procs:  procs,
 			Enums:  enums,
 		}
 		res.Schemas = append(res.Schemas, s)
 	}
 	return res, nil
+}
+
+func parseProcs(log *log.Logger, db gnorm.DB, schema string, filterTables func(schema, table string) bool) ([]*database.Proc, error) {
+
+	log.Println("Procs for schema", schema)
+
+	result := make([]*database.Proc, 0)
+	tbls, err := procs.Query(db, schema)
+	if err != nil {
+		return nil, err
+	}
+	for _, t := range tbls {
+
+		if !filterTables(schema, t.ProcName) {
+			continue
+		}
+
+		parameters, err := parseParameters(log, db, schema, t.ProcName)
+		if err != nil {
+			return nil, err
+		}
+
+		ta := &database.Proc{
+			Name:       t.ProcName,
+			Comment:    t.ProcComment,
+			Parameters: parameters,
+		}
+		result = append(result, ta)
+	}
+	return result, nil
+}
+
+func parseParameters(log *log.Logger, db gnorm.DB, schema string, proc string) ([]*database.Parameter, error) {
+
+	log.Println("Columns for proc", proc)
+
+	result := make([]*database.Parameter, 0)
+	params, err := parameters.Query(db, schema, proc)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Parameters for proc ", len(params))
+
+	for _, p := range params {
+
+		param := &database.Parameter{
+			Name:        p.ParameterName,
+			Type:        p.DataType,
+			IsArray:     false,
+			Length:      0,
+			UserDefined: false,
+			Nullable:    p.IsNullable == "YES",
+			HasDefault:  p.ParameterDefault.Valid,
+			Comment:     "",
+			Ordinal:     int64(p.OrdinalPosition),
+			Orig:        nil,
+		}
+
+		result = append(result, param)
+
+	}
+	return result, nil
 }
 
 func parseTables(log *log.Logger, db gnorm.DB, schema string, filterTables func(schema, table string) bool) ([]*database.Table, error) {
@@ -90,7 +160,6 @@ func parseTables(log *log.Logger, db gnorm.DB, schema string, filterTables func(
 	return result, nil
 }
 
-
 func parseColumns(log *log.Logger, db gnorm.DB, schema string, table string) ([]*database.Column, error) {
 
 	log.Println("Columns for table", table)
@@ -121,10 +190,10 @@ func parseColumns(log *log.Logger, db gnorm.DB, schema string, table string) ([]
 
 		if isForeignKey {
 			colfk = &database.ForeignKey{
-				SchemaName: schema,
-				TableName:  fk.PkTableName,
-				ColumnName: fk.PkColumnName,
-				Name:       fk.FkName,
+				SchemaName:               schema,
+				TableName:                fk.PkTableName,
+				ColumnName:               fk.PkColumnName,
+				Name:                     fk.FkName,
 				UniqueConstraintPosition: 0,
 				ForeignTableName:         fk.PkTableName,
 				ForeignColumnName:        fk.PkColumnName,
@@ -146,7 +215,6 @@ func parseColumns(log *log.Logger, db gnorm.DB, schema string, table string) ([]
 			ForeignKey:   colfk,
 			Orig:         nil,
 		}
-
 
 		result = append(result, col)
 

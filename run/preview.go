@@ -26,6 +26,10 @@ Schema: {{.Name}}({{.DBName}})
 Enum: {{.Name}}({{$schema}}.{{.DBName}})
 {{makeTable .Values "{{.Name}}|{{.DBName}}|{{.Value}}" "Name" "DBName" "Value" }}
 {{end -}}
+{{range .Procs}}
+Proc: {{.Name}}({{$schema}}.{{.DBName}}){{if ne .Comment ""}}; {{.Comment}}{{end}}
+{{makeTable .Parameters "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.Ordinal}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}|{{.Comment}}" "Name" "DBName" "Type" "DBType" "IsArray" "Ordinal" "Length" "UserDefined" "Nullable" "HasDefault" "Comment" -}}
+{{end -}}
 {{range .Tables}}
 Table: {{.Name}}({{$schema}}.{{.DBName}}){{if ne .Comment ""}}; {{.Comment}}{{end}}
 {{makeTable .Columns "{{.Name}}|{{.DBName}}|{{.Type}}|{{.DBType}}|{{.IsArray}}|{{.IsPrimaryKey}}|{{.Ordinal}}|{{.IsFK}}|{{.HasFKRef}}|{{.Length}}|{{.UserDefined}}|{{.Nullable}}|{{.HasDefault}}|{{.Comment}}" "Name" "DBName" "Type" "DBType" "IsArray" "IsPrimaryKey" "Ordinal" "IsFK" "HasFKRef" "Length" "UserDefined" "Nullable" "HasDefault" "Comment" -}}
@@ -39,12 +43,12 @@ Indexes:
 type PreviewFormat int
 
 const (
+	// PreviewJSON shows the data in JSON.
+	PreviewJSON PreviewFormat = iota
 	// PreviewTabular shows the data in textual tables.
-	PreviewTabular PreviewFormat = iota
+	PreviewTabular
 	// PreviewYAML shows the data in YAML.
 	PreviewYAML
-	// PreviewJSON shows the data in JSON.
-	PreviewJSON
 	// PreviewTypes just prints out the column types used by the DB.
 	PreviewTypes
 )

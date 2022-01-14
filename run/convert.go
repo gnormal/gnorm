@@ -29,6 +29,7 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 		sch := &data.Schema{
 			DBName:       s.Name,
 			TablesByName: make(map[string]*data.Table, len(s.Tables)),
+			ProcsByName:  make(map[string]*data.Proc, len(s.Procs)),
 		}
 		db.Schemas = append(db.Schemas, sch)
 		db.SchemasByName[sch.DBName] = sch
@@ -59,6 +60,53 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 				val.Name, err = convert(v.Name)
 				if err != nil {
 					return nil, errors.WithMessage(err, "enum value")
+				}
+			}
+		}
+		for _, p := range s.Procs {
+			proc := &data.Proc{
+				DBName:           p.Name,
+				Comment:          p.Comment,
+				Schema:           sch,
+				ParametersByName: make(map[string]*data.Parameter, len(p.Parameters)),
+			}
+			sch.Procs = append(sch.Procs, proc)
+			sch.ProcsByName[proc.DBName] = proc
+			proc.Name, err = convert(p.Name)
+			if err != nil {
+				return nil, errors.WithMessage(err, "table")
+			}
+			for _, c := range p.Parameters {
+				param := &data.Parameter{
+					Proc:        proc,
+					DBName:      c.Name,
+					DBType:      c.Type,
+					IsArray:     c.IsArray,
+					Length:      c.Length,
+					UserDefined: c.UserDefined,
+					Nullable:    c.Nullable,
+					HasDefault:  c.HasDefault,
+					Comment:     c.Comment,
+					Ordinal:     c.Ordinal,
+					Orig:        c.Orig,
+				}
+				proc.Parameters = append(proc.Parameters, param)
+				proc.ParametersByName[param.DBName] = param
+				param.Name, err = convert(c.Name)
+				if err != nil {
+					return nil, errors.WithMessage(err, "column")
+				}
+				var ok bool
+				if c.Nullable {
+					param.Type, ok = cfg.NullableTypeMap[c.Type]
+					if !ok {
+						log.Println("Unmapped nullable type:", c.Type)
+					}
+				} else {
+					param.Type, ok = cfg.TypeMap[c.Type]
+					if !ok {
+						log.Println("Unmapped type:", c.Type)
+					}
 				}
 			}
 		}

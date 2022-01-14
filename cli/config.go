@@ -73,6 +73,19 @@ type Config struct {
 	// ./public/users/users.go.
 	TablePaths map[string]string
 
+	// ProcPaths is a set of "output-path" = "template-path" pairs that tells
+	// Gnorm how to render and output its proc info.  Each template will be
+	// rendered with each proc in turn and written out to the given output
+	// path. If no pairs are specified, proc will not be rendered.
+	//
+	// The proc path may be a template, in which case the values .Schema and
+	// .Proc may be referenced, containing the name of the current schema and
+	// pèroc being rendered.  For example,
+	// "{{.Schema}}/{{.Proc}}/{{.Proc}}.go" = "proc.gotmpl" would render
+	// proc.gotmpl template with data from the the "public.users" proc to
+	// ./public/users/users.go.
+	ProcPaths map[string]string
+
 	// SchemaPaths is a set of "output-path" = "template-path" pairs that tells
 	// Gnorm how to render and output its schema info.  Each template will be
 	// rendered with each schema in turn and written out to the given output

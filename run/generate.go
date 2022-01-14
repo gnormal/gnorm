@@ -52,6 +52,13 @@ func Generate(env environ.Values, cfg *Config) error {
 			return err
 		}
 	}
+	if len(cfg.ProcPaths) == 0 {
+		env.Log.Println("No proc path specified, skipping procs.")
+	} else {
+		if err := generateProcs(env, cfg, db); err != nil {
+			return err
+		}
+	}
 	return copyStaticFiles(env, cfg.StaticDir, cfg.OutputDir)
 }
 
@@ -115,6 +122,27 @@ func generateTables(env environ.Values, cfg *Config, db *data.DBData) error {
 				if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir, cfg.TemplateEngine); err != nil {
 					env.Log.Printf("Generating output for table %v", table.Name)
 					return errors.WithMessage(err, "generating file for table "+table.Name)
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func generateProcs(env environ.Values, cfg *Config, db *data.DBData) error {
+	for _, schema := range db.Schemas {
+		for _, proc := range schema.Procs {
+			contents := data.ProcData{
+				Proc:   proc,
+				DB:     db,
+				Config: cfg.ConfigData,
+				Params: cfg.Params,
+			}
+			fileData := struct{ Schema, Proc string }{Schema: schema.Name, Proc: proc.Name}
+			for _, target := range cfg.ProcPaths {
+				if err := genFile(env, fileData, contents, target, cfg.NoOverwriteGlobs, cfg.PostRun, cfg.OutputDir, cfg.TemplateEngine); err != nil {
+					env.Log.Printf("Generating output for proc %v", proc.Name)
+					return errors.WithMessage(err, "generating file for proc "+proc.Name)
 				}
 			}
 		}
