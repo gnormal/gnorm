@@ -21,16 +21,16 @@ type Row struct {
 func Query(db gnorm.DB, schema string) ([]*Row, error) {
 	const sqlstr = `
 
-SELECT TABLE_NAME,
-       TABLE_TYPE,
-       TABLE_CATALOG,
-       TABLE_SCHEMA
+SELECT ROUTINE_NAME,
+       ROUTINE_TYPE,
+       ROUTINE_CATALOG,
+       ROUTINE_SCHEMA
        
-  FROM INFORMATION_SCHEMA.TABLES
-  WHERE TABLE_SCHEMA = @schema
+  FROM INFORMATION_SCHEMA.ROUTINES
+  WHERE ROUTINE_SCHEMA = @schema
   ;
 `
-	log.Println("querying tables ", sqlstr)
+	log.Println("querying procs ", sqlstr)
 
 	var vals []*Row
 	q, err := db.Query(sqlstr, sql.Named("schema", schema))

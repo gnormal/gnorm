@@ -38,36 +38,37 @@ type Row struct {
 func Query(db gnorm.DB, schema string, proc string) ([]*Row, error) {
 	const strsql = `
 
-SELECT c.TABLE_CATALOG,
-       c.TABLE_SCHEMA,
-	   c.TABLE_NAME,
-	   c.COLUMN_NAME,
-	   c.ORDINAL_POSITION,
-	   c.COLUMN_DEFAULT,
-	   c.IS_NULLABLE,
-	   c.DATA_TYPE,
-	   c.NUMERIC_PRECISION,
-	   c.NUMERIC_PRECISION_RADIX, 
-	   c.NUMERIC_SCALE, 
-	   c.DATETIME_PRECISION, 
-	   c.CHARACTER_MAXIMUM_LENGTH,
-	   c.CHARACTER_SET_CATALOG,
-	   c.CHARACTER_SET_SCHEMA,
-	   c.CHARACTER_SET_NAME,
-	   c.COLLATION_CATALOG,
-	   c.COLLATION_SCHEMA,
-	   c.COLLATION_NAME,
-	   c.DOMAIN_CATALOG,
-	   c.DOMAIN_SCHEMA,
-	   c.DOMAIN_NAME
+SELECT p.SPECIFIC_CATALOG,
+       p.SPECIFIC_SCHEMA,
+	   p.SPECIFIC_NAME,
+	   p.PARAMETER_NAME,
+	   p.ORDINAL_POSITION,
+	   null as PARAMETER_DEFAULT, --p.PARAMETER_DEFAULT,
+	   0 as IS_NULLABLE, -- p.IS_NULLABLE,
+	   p.DATA_TYPE,
+	   p.NUMERIC_PRECISION,
+	   p.NUMERIC_PRECISION_RADIX, 
+	   p.NUMERIC_SCALE, 
+	   p.DATETIME_PRECISION, 
+	   p.CHARACTER_MAXIMUM_LENGTH,
+	   p.CHARACTER_SET_CATALOG,
+	   p.CHARACTER_SET_SCHEMA,
+	   p.CHARACTER_SET_NAME,
+	   p.COLLATION_CATALOG,
+	   p.COLLATION_SCHEMA,
+	   p.COLLATION_NAME,
+	   null AS DOMAIN_CATALOG, -- c.DOMAIN_CATALOG,
+	   null AS DOMAIN_SCHEMA, -- c.DOMAIN_SCHEMA,
+	   null AS DOMAIN_NAME -- c.DOMAIN_NAME
+ 
+	FROM INFORMATION_SCHEMA.PARAMETERS p
 
-  FROM INFORMATION_SCHEMA.COLUMNS c
+  WHERE p.SPECIFIC_SCHEMA = @schema
+       AND p.SPECIFIC_NAME = @proc
 
-  WHERE TABLE_SCHEMA = @schema
-       AND TABLE_NAME = @proc
   ;
 `
-	log.Println("querying columns ", strsql)
+	log.Println("querying parameters ", strsql)
 	log.Println("from schema ", schema)
 	log.Println("from proc ", proc)
 
