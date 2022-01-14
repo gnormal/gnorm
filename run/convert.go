@@ -113,6 +113,7 @@ func makeData(log *log.Logger, info *database.Info, cfg *Config) (*data.DBData, 
 		for _, t := range s.Tables {
 			table := &data.Table{
 				DBName:        t.Name,
+				Type:          t.Type,
 				Comment:       t.Comment,
 				Schema:        sch,
 				ColumnsByName: make(map[string]*data.Column, len(t.Columns)),

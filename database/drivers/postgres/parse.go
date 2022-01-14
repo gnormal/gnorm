@@ -54,6 +54,7 @@ func parse(log *log.Logger, conn string, schemaNames []string, filterTables func
 
 		schemas[t.TableSchema.String] = append(schemas[t.TableSchema.String], &database.Table{
 			Name: t.TableName.String,
+			Type: t.TableType.String,
 		})
 	}
 
@@ -443,7 +444,7 @@ func queryIndexes(log *log.Logger, db *sql.DB, schemaNames []string) ([]indexRes
 	const q = `
 	SELECT
 		n.nspname as schema,
-		i.indrelid::regclass as table,
+		trim(both '"' from i.indrelid::regclass::text) as table,
 		c.relname as name,
 		i.indisunique as is_unique,
 		array_to_string(ARRAY(
