@@ -12,7 +12,7 @@ require (
 	github.com/jessevdk/go-flags v1.4.0 // indirect
 	github.com/jinzhu/inflection v1.0.0
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
-	github.com/lib/pq v0.0.0-20170810061220-e42267488fe3
+	github.com/lib/pq v1.10.4
 	github.com/magefile/mage v1.10.0
 	github.com/mattn/go-runewidth v0.0.2 // indirect
 	github.com/natefinch/gocog v0.0.0-20170818170132-3af1fb832aae // indirect
