@@ -559,7 +559,9 @@ func queryTableComments(log *log.Logger, db *sql.DB, schemaNames []string) ([]ta
 			(
 					SELECT obj_description(c.oid)
 					FROM pg_class c
+					JOIN pg_namespace n ON n.oid = c.relnamespace
 					WHERE c.relname = tabs.table_name
+					AND n.nspname IN (%s)
 			) AS column_comment
 	FROM information_schema.tables tabs
 	WHERE tabs.table_schema IN (%s)`
@@ -571,7 +573,8 @@ func queryTableComments(log *log.Logger, db *sql.DB, schemaNames []string) ([]ta
 		vals[i] = schemaNames[i]
 	}
 
-	query := fmt.Sprintf(q, strings.Join(spots, ", "))
+	spotsStr := strings.Join(spots, ", ")
+	query := fmt.Sprintf(q, spotsStr, spotsStr)
 	rows, err := db.Query(query, vals...)
 	if err != nil {
 		return nil, errors.WithMessage(err, "error querying table comments")
